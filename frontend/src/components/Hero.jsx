@@ -11,7 +11,7 @@ const Hero = () => {
     { value: "R2.5B+", label: "Properties Sold", icon: "💰" }
   ]
 
-      return (
+    return (
     <section className='max-padd-container pt-[99px] relative overflow-hidden min-h-screen'>
       {/* Elegant gradient background */}
       <div className='absolute inset-0'>
@@ -25,21 +25,21 @@ const Hero = () => {
         <div className='absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-amber-200/30 to-yellow-300/30 rounded-full blur-3xl'></div>
         <div className='absolute bottom-20 right-10 w-64 h-64 bg-gradient-to-r from-blue-200/30 to-cyan-300/30 rounded-full blur-3xl'></div>
         <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-amber-100/20 to-blue-100/20 rounded-full blur-3xl'></div>
-      </div>
+                    </div>
       
       {/* Main content */}
       <div className='relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-4'>
         {/* Premium badge */}
-        <motion.div 
+          <motion.div 
           className='inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-yellow-500 px-6 py-3 rounded-full text-secondary font-semibold text-sm mb-8 shadow-lg'
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <FaStar className='text-tertiary' />
-          <span>Premium South African Real Estate</span>
-        </motion.div>
-        
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <FaStar className='text-tertiary' />
+            <span>Premium South African Real Estate</span>
+          </motion.div>
+          
         {/* Main heading */}
         <motion.h1 
           className='text-5xl md:text-7xl font-bold text-secondary mb-6'
@@ -63,39 +63,39 @@ const Hero = () => {
         </motion.p>
         
         {/* Stats */}
-        <motion.div 
+          <motion.div 
           className='grid grid-cols-2 md:grid-cols-4 gap-8 mb-12'
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              className='text-center'
-              whileHover={{ scale: 1.05 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+          >
+            {stats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                className='text-center'
+                whileHover={{ scale: 1.05 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
-            >
+              >
               <div className='text-3xl mb-2'>{stat.icon}</div>
               <div className='text-2xl font-bold text-secondary mb-1'>{stat.value}</div>
-              <div className='text-sm text-neutral-600'>{stat.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-        
+                <div className='text-sm text-neutral-600'>{stat.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
+          
         {/* CTA Buttons */}
-        <motion.div 
+          <motion.div 
           className='flex flex-col sm:flex-row gap-6 items-center'
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
-        >
+            >
           <Link to='/listing' className='btn-premium rounded-xl flexCenter !py-4 !px-8 text-lg'>
-            <FaSearch className='mr-2' />
-            Explore Properties
-          </Link>
+                <FaSearch className='mr-2' />
+                Explore Properties
+              </Link>
           
           <div className='card-premium p-6 max-w-sm'>
             <div className='text-center'>
@@ -104,15 +104,15 @@ const Hero = () => {
             </div>
           </div>
         </motion.div>
-        
+          
         {/* Location highlights */}
-        <motion.div 
+          <motion.div 
           className='flex flex-wrap gap-4 mt-12 justify-center'
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.2 }}
-        >
-                      {['Cape Town', 'Johannesburg', 'Durban', 'Stellenbosch', 'Plettenberg Bay'].map((city, index) => (
+          >
+            {['Cape Town', 'Johannesburg', 'Durban', 'Stellenbosch', 'Plettenberg Bay'].map((city, index) => (
               <motion.div
                 key={city}
                 className='flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full border border-neutral-200 shadow-lg hover:shadow-xl transition-all duration-300'
@@ -125,10 +125,10 @@ const Hero = () => {
                 <span className='text-sm font-medium text-neutral-700'>{city}</span>
               </motion.div>
             ))}
-        </motion.div>
-      </div>
-    </section>
-  )
+          </motion.div>
+            </div>
+        </section>
+    )
 }
 
 export default Hero

@@ -106,11 +106,11 @@ export const getAllProperties = async (req, res) => {
         take: limitNum,
         orderBy: { [sortField]: order },
         include: {
-          user: {
+          owner: {
             select: {
               name: true,
               email: true,
-              avatar: true
+              image: true
             }
           }
         }
@@ -171,12 +171,11 @@ export const getPropertyById = async (req, res) => {
     const property = await prisma.residency.findUnique({
       where: { id },
       include: {
-        user: {
+        owner: {
           select: {
             name: true,
             email: true,
-            avatar: true,
-            phone: true
+            image: true
           }
         }
       }

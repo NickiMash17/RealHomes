@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FaCrown, FaBars, FaTimes, FaSearch, FaUser, FaHeart } from 'react-icons/fa'
+import { useAuth0 } from '@auth0/auth0-react'
+import { Avatar, Menu } from '@mantine/core'
 import Navbar from './Navbar'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,6 +18,22 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const handleLogin = () => {
+    loginWithRedirect()
+  }
+
+  const handleLogout = () => {
+    logout({ logoutParams: { returnTo: window.location.origin } })
+  }
+
+  const handleFavourites = () => {
+    if (isAuthenticated) {
+      navigate('/favourites')
+    } else {
+      loginWithRedirect()
+    }
+  }
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -50,13 +70,47 @@ const Header = () => {
 
             {/* Action Buttons */}
             <div className='flex items-center gap-4'>
-              <button className='p-2 rounded-full bg-white/95 backdrop-blur-sm hover:bg-amber-50 border border-neutral-200 transition-all duration-300'>
+              <button 
+                onClick={handleFavourites}
+                className='p-2 rounded-full bg-white/95 backdrop-blur-sm hover:bg-amber-50 border border-neutral-200 transition-all duration-300'
+                title={isAuthenticated ? 'View Favourites' : 'Login to view favourites'}
+              >
                 <FaHeart className='text-neutral-700 hover:text-red-500 transition-colors' />
               </button>
               
-              <button className='p-2 rounded-full bg-white/95 backdrop-blur-sm hover:bg-amber-50 border border-neutral-200 transition-all duration-300'>
-                <FaUser className='text-neutral-700' />
-              </button>
+              {isAuthenticated ? (
+                <Menu>
+                  <Menu.Target>
+                    <Avatar 
+                      src={user?.picture} 
+                      alt={user?.name || 'User'} 
+                      radius="xl" 
+                      className='cursor-pointer'
+                    />
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Label>Welcome, {user?.name}</Menu.Label>
+                    <Menu.Item onClick={() => navigate('/favourites')}>
+                      Favourites
+                    </Menu.Item>
+                    <Menu.Item onClick={() => navigate('/bookings')}>
+                      Bookings
+                    </Menu.Item>
+                    <Menu.Label>Account</Menu.Label>
+                    <Menu.Item onClick={handleLogout} color="red">
+                      Logout
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
+              ) : (
+                <button 
+                  onClick={handleLogin}
+                  className='p-2 rounded-full bg-white/95 backdrop-blur-sm hover:bg-amber-50 border border-neutral-200 transition-all duration-300'
+                  title='Login'
+                >
+                  <FaUser className='text-neutral-700' />
+                </button>
+              )}
             </div>
           </div>
 
@@ -105,15 +159,40 @@ const Header = () => {
 
               {/* Mobile Action Buttons */}
               <div className='flex items-center gap-4 pt-4 border-t border-neutral-200'>
-                <button className='flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-400 to-yellow-500 text-white rounded-lg font-medium'>
-                  <FaHeart className='text-sm' />
-                  Favorites
-                </button>
-                
-                <button className='flex items-center gap-2 px-4 py-2 bg-white border border-neutral-200 text-neutral-700 rounded-lg font-medium'>
-                  <FaUser className='text-sm' />
-                  Profile
-                </button>
+                {isAuthenticated ? (
+                  <>
+                    <button 
+                      onClick={() => navigate('/favourites')}
+                      className='flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-400 to-yellow-500 text-white rounded-lg font-medium'
+                    >
+                      <FaHeart className='text-sm' />
+                      Favourites
+                    </button>
+                    
+                    <div className='flex items-center gap-2'>
+                      <Avatar 
+                        src={user?.picture} 
+                        alt={user?.name || 'User'} 
+                        radius="xl" 
+                        size="sm"
+                      />
+                      <button 
+                        onClick={handleLogout}
+                        className='px-4 py-2 bg-white border border-neutral-200 text-neutral-700 rounded-lg font-medium'
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <button 
+                    onClick={handleLogin}
+                    className='flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-400 to-yellow-500 text-white rounded-lg font-medium'
+                  >
+                    <FaUser className='text-sm' />
+                    Login
+                  </button>
+                )}
               </div>
             </div>
           </div>

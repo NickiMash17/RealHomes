@@ -10,10 +10,10 @@ import { checkFavourites, updateFavourites } from "../utils/common";
 const HeartBtn = ({ id }) => {
   const [heartColor, setHeartColor] = useState("white");
   const { validateLogin } = useAuthCheck();
-  const { user } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
 
   const {
-    userDetails: { favourites, token },
+    userDetails: { favourites },
     setUserDetails,
   } = useContext(UserDetailContext);
 
@@ -22,7 +22,10 @@ const HeartBtn = ({ id }) => {
   }, [favourites]);
 
   const { mutate } = useMutation({
-    mutationFn: () => toFav(id, user?.email, token),
+    mutationFn: async () => {
+      const token = await getAccessTokenSilently()
+      return toFav(id, user?.email, token)
+    },
     onSuccess: () => {
       setUserDetails((prev) => ({
         ...prev,

@@ -13,8 +13,9 @@ import Layout from "./components/Layout";
 import Favourites from "./pages/Favourites";
 import Bookings from "./pages/Bookings";
 import Contact from "./pages/Contact";
+import { useAuth0 } from "@auth0/auth0-react";
 
-export default function App() {
+function AppContent() {
   const queryClient = new QueryClient();
   const [userDetails, setUserDetails] = useState({
     favourites: [],
@@ -47,4 +48,18 @@ export default function App() {
       </QueryClientProvider>
     </UserDetailContext.Provider>
   )
+}
+
+export default function App() {
+  const { isLoading, error } = useAuth0();
+
+  if (error) {
+    return <div>Authentication Error: {error.message}</div>;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  return <AppContent />;
 }

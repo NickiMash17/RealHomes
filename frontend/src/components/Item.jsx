@@ -1,16 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { FaHeart, FaMapMarkerAlt, FaStar, FaCrown, FaBed, FaBath, FaRulerCombined } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
+import { useAuth0 } from '@auth0/auth0-react'
+import { toFav } from '../utils/api'
+import { toast } from 'react-toastify'
+import UserDetailContext from '../context/UserDetailContext'
 
 const Item = ({ property }) => {
   const [isLiked, setIsLiked] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
+  const { isAuthenticated, getAccessTokenSilently, user } = useAuth0()
+  const { userDetails } = useContext(UserDetailContext)
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: true
   })
+
+  // Check if property is in favorites
+  useEffect(() => {
+    if (userDetails?.favourites) {
+      setIsLiked(userDetails.favourites.includes(property.id))
+    }
+  }, [userDetails?.favourites, property.id])
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-ZA', {
@@ -21,9 +34,23 @@ const Item = ({ property }) => {
     }).format(price);
   }
 
-  const handleLike = (e) => {
+  const handleLike = async (e) => {
     e.preventDefault()
-    setIsLiked(!isLiked)
+    
+    if (!isAuthenticated) {
+      toast.error("Please login to add favorites")
+      return
+    }
+
+    try {
+      const token = await getAccessTokenSilently()
+      await toFav(property.id, user?.email, token)
+      setIsLiked(!isLiked)
+      toast.success(isLiked ? "Removed from favorites" : "Added to favorites")
+    } catch (error) {
+      toast.error("Something went wrong")
+      console.error(error)
+    }
   }
 
   const containerVariants = {
@@ -167,11 +194,11 @@ const Item = ({ property }) => {
         >
           <div className='flex items-center gap-1'>
             <FaBed className='text-tertiary' />
-            <span>{property.bedrooms || 4} beds</span>
+            <span>{property.facilities?.bedrooms || property.bedrooms || 4} beds</span>
           </div>
           <div className='flex items-center gap-1'>
             <FaBath className='text-tertiary' />
-            <span>{property.bathrooms || 3} baths</span>
+            <span>{property.facilities?.bathrooms || property.bathrooms || 3} baths</span>
           </div>
           <div className='flex items-center gap-1'>
             <FaRulerCombined className='text-tertiary' />
@@ -210,7 +237,7 @@ const Item = ({ property }) => {
             whileTap={{ scale: 0.95 }}
           >
             <Link
-              to={`/property/${property.id}`}
+              to={`/listing/${property.id}`}
               className='btn-secondary rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 hover:shadow-lg'
             >
               View details

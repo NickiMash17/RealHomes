@@ -9,11 +9,11 @@ import Agents from '../components/Agents'
 const Home = () => {
     return (
         <main className="min-h-screen bg-white">
-            <Hero />
-            <About />
-            <Properties />
-            <Blogs />
-            <Agents />
+                <Hero />
+                <About />
+                <Properties />
+                <Blogs />
+                <Agents />
             
             <div className='max-padd-container py-16 overflow-x-hidden'>
                 <img src={bannerImg} alt="Banner" className="w-full" />

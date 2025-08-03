@@ -243,27 +243,27 @@ const Properties = () => {
             animate='visible'
             className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
           >
-            {properties.slice(0, 6).map((property, index) => (
-              <motion.div
+              {properties.slice(0, 6).map((property, index) => (
+                <motion.div
                 key={property.id || `property-${index}`}
-                variants={itemVariants}
-                layout
-                className='relative'
-              >
-                <Item property={property} />
-                {property.featured && (
-                  <motion.div
+                  variants={itemVariants}
+                  layout
+                  className='relative'
+                >
+              <Item property={property} />
+                  {property.featured && (
+                    <motion.div
                     key={`featured-${property.id || index}`}
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.1 }}
-                    className='absolute top-4 left-4 bg-gradient-to-r from-amber-400 to-yellow-500 text-secondary px-3 py-1 rounded-full text-xs font-bold shadow-lg'
-                  >
-                    Featured
-                  </motion.div>
-                )}
-              </motion.div>
-            ))}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                      className='absolute top-4 left-4 bg-gradient-to-r from-amber-400 to-yellow-500 text-secondary px-3 py-1 rounded-full text-xs font-bold shadow-lg'
+                    >
+                      Featured
+                    </motion.div>
+                  )}
+                </motion.div>
+              ))}
           </motion.div>
         )}
       </div>

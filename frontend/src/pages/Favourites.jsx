@@ -1,14 +1,37 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useNavigate } from "react-router-dom";
 import Searchbar from "../components/Searchbar";
-import useProperties from "../hooks/useProperties";
+import useFavourites from "../hooks/useFavourites";
 import { PuffLoader } from "react-spinners";
 import Item from "../components/Item";
 import UserDetailContext from "../context/UserDetailContext";
 
 const Favourites = () => {
-  const { data, isError, isLoading } = useProperties();
+  const { data, isError, isLoading } = useFavourites();
   const [filter, setFilter] = useState("");
-  const {userDetails: {favourites}} = useContext(UserDetailContext)
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      loginWithRedirect();
+    }
+  }, [isAuthenticated, loginWithRedirect]);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="h-64 flexCenter">
+        <PuffLoader
+          height="80"
+          width="80"
+          radius={1}
+          color="#555"
+          aria-label="puff-loading"
+        />
+      </div>
+    );
+  }
 
   if (isError) {
     return (
@@ -32,7 +55,6 @@ const Favourites = () => {
     );
   }
 
-  // console.log(data);
   return (
     <main className="max-padd-container my-[99px]">
       <div className="max-padd-container py-10 xl:py-22 bg-primary rounded-3xl">
@@ -41,20 +63,21 @@ const Favourites = () => {
           {/* container */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-10">
             {
-              // data.map((property, i) => ( <Item key={i} property={property} /> ))
-              data.filter((property)=> 
-                favourites.includes(property.id))
-                .filter((property) => 
-                  property.title.toLowerCase().includes(filter.toLowerCase()) ||
-                  property.city.toLowerCase().includes(filter.toLowerCase()) ||
-                  property.country.toLowerCase().includes(filter.toLowerCase())
-                )
-                .map((property, i) => (
-                  <Item key={i} property={property} />
-                )
+              data?.filter((property) => 
+                property.title.toLowerCase().includes(filter.toLowerCase()) ||
+                property.city.toLowerCase().includes(filter.toLowerCase()) ||
+                property.country.toLowerCase().includes(filter.toLowerCase())
               )
+              .map((property, i) => (
+                <Item key={i} property={property} />
+              ))
             }
           </div>
+          {data?.length === 0 && (
+            <div className="text-center py-10">
+              <p className="text-lg text-gray-600">No favorites found. Start adding properties to your favorites!</p>
+            </div>
+          )}
         </div>
       </div>
     </main>

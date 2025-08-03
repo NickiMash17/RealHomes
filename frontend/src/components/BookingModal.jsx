@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { Modal, Button } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useMutation } from "react-query";
+import { useAuth0 } from "@auth0/auth0-react";
 import UserDetailContext from "../context/UserDetailContext";
 import { bookVisit } from "../utils/api";
 import { toast } from "react-toastify";
@@ -9,8 +10,8 @@ import dayjs from "dayjs";
 
 const BookingModal = ({ opened, setOpened, email, propertyId }) => {
   const [value, setValue] = useState(null);
+  const { getAccessTokenSilently } = useAuth0();
   const {
-    userDetails: { token },
     setUserDetails,
   } = useContext(UserDetailContext);
 
@@ -31,12 +32,15 @@ const BookingModal = ({ opened, setOpened, email, propertyId }) => {
   };
 
   const { mutate, isLoading } = useMutation({
-    mutationFn: () => bookVisit(value, propertyId, email, token),
+    mutationFn: async () => {
+      const token = await getAccessTokenSilently()
+      return bookVisit(value, propertyId, email, token)
+    },
     onSuccess: () => handleBookingSuccess(),
     onError: ({ response }) => toast.error(response.data.message),
     onSettled: () => setOpened(false),
   });
-  // console.log(token)
+
   return (
     <Modal
       opened={opened}
