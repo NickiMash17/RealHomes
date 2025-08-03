@@ -1,72 +1,231 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { FaCrown, FaBars, FaTimes, FaSearch, FaUser, FaHeart, FaMapMarkerAlt } from 'react-icons/fa'
+import { motion, AnimatePresence } from 'framer-motion'
 import Navbar from './Navbar'
-import { MdClose, MdMenu } from 'react-icons/md'
-import userIcon from "../assets/user.svg"
-import { Link } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
-import ProfileMenu from './ProfileMenu';
+import ProfileMenu from './ProfileMenu'
 
 const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
 
-    const [active, setActive] = useState(false);
-    const [menuOpened, setMenuOpened] = useState(false);
-    const toggleMenu = () => setMenuOpened(!menuOpened);
-    const { loginWithRedirect, isAuthenticated, user, logout } = useAuth0();
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
+  const headerVariants = {
+    initial: { y: -100, opacity: 0 },
+    animate: { 
+      y: 0, 
+      opacity: 1,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  }
 
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 0) {
-                // Close the menu if open when scrolling occurs
-                if (menuOpened) {
-                    setMenuOpened(false);
-                }
-            }
-            // detect scroll
-            setActive(window.scrollY > 40);
-        };
-        window.addEventListener("scroll", handleScroll);
-        // clean up the event listener when component unmounts
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
-    }, [menuOpened]); // Dependency array ensures that the effect runs when menuOpened changes
+  const menuVariants = {
+    closed: { 
+      opacity: 0,
+      x: '100%',
+      transition: { duration: 0.3 }
+    },
+    open: { 
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.3, ease: "easeOut" }
+    }
+  }
 
-    return (
-        <header className='max-padd-container fixed top-1 w-full  left-0 right-0 z-50'>
-            {/* container */}
-            <div className={`${active ? "py-0 " : " py-1"} max-padd-container bg-white transition-all duration-200 rounded-full px-5 ring-1 ring-slate-900/5`}>
-                <div className='flexBetween py-3 '>
-                    {/* logo */}
-                    <Link to={'/'} className='flex items-center gap-x-2'>
-                        <span className='font-[600] bold-24  text-secondary'>Real<span className=' text-tertiary'>Homes</span><span className='text-sm text-gray-500 ml-1'>SA</span></span>
-                    </Link>
-                    {/* Navbar */}
-                    <div className='flexCenter gap-x-4'>
-                        {/* Desktop Navbar */}
-                        <Navbar containerStyles={"hidden xl:flex gap-x-5 xl:gap-x-10 capitalize medium-15 ring-1 ring-slate-900/10 rounded-full p-2 bg-primary"} />
-
-                        {/* Mobile Navbar */}
-                        <Navbar containerStyles={`${menuOpened ? "flex items-start flex-col gap-y-8 capitalize fixed top-20 right-8 p-12 bg-white rounded-3xl shadow-md w-64 medium-16 ring-1 ring-slate-900/5 transition-all duration-300 z-50" : "flex items-start flex-col gap-y-8 fixed top-20 p-12 bg-white rounded-3xl shadow-md w-64 medium-16 ring-1 ring-slate-900/5 transition-all duration-300 -right-[100%]"}`} />
-                    </div>
-                    {/* buttons */}
-                    <div className='flexBetween gap-x-3 sm:gap-x-5 bold-16'>
-                        {!menuOpened ? (
-                            <MdMenu className='xl:hidden cursor-pointer text-3xl hover:text-secondary' onClick={toggleMenu} />
-                        ) : (
-                            <MdClose className='xl:hidden cursor-pointer text-3xl hover:text-secondary' onClick={toggleMenu} />
-                        )}
-                       {!isAuthenticated ? (<button onClick={loginWithRedirect} className={'btn-secondary flexCenter gap-x-2 medium-16 rounded-full'}>
-                            <img src={userIcon} alt="" height={22} width={22}/>
-                            <span>Login</span>
-                        </button>) : (
-                            <ProfileMenu user={user} logout={logout} />
-                        )}
-                    </div> 
-                </div>
+  return (
+    <motion.header
+      variants={headerVariants}
+      initial="initial"
+      animate="animate"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-neutral-200/50' 
+          : 'bg-transparent'
+      }`}
+    >
+      <div className='max-padd-container'>
+        <div className='flexBetween py-4'>
+          {/* Logo */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className='flex items-center gap-2'
+          >
+            <div className='w-10 h-10 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full flex items-center justify-center shadow-lg'>
+              <FaCrown className='text-white text-lg' />
             </div>
-        </header >
-    )
+            <div className='flex flex-col'>
+              <span className='text-xl font-bold text-secondary'>RealHomes</span>
+              <span className='text-xs text-amber-600 font-medium'>SA</span>
+            </div>
+          </motion.div>
+
+          {/* Desktop Navigation */}
+          <div className='hidden lg:flex items-center gap-8'>
+            <Navbar />
+            
+            {/* Search Bar */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className='relative'
+            >
+              <input
+                type='text'
+                placeholder='Search properties...'
+                className='w-64 px-4 py-2 pl-10 bg-white/80 backdrop-blur-sm rounded-full border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all duration-300'
+              />
+              <FaSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400' />
+            </motion.div>
+
+            {/* Action Buttons */}
+            <div className='flex items-center gap-4'>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className='p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-amber-50 border border-neutral-200 transition-all duration-300'
+              >
+                <FaHeart className='text-neutral-600 hover:text-red-500 transition-colors' />
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className='p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-amber-50 border border-neutral-200 transition-all duration-300 relative'
+              >
+                <FaUser className='text-neutral-600' />
+                {isProfileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className='absolute top-full right-0 mt-2'
+                  >
+                    <ProfileMenu />
+                  </motion.div>
+                )}
+              </motion.button>
+            </div>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className='lg:hidden p-2 rounded-full bg-white/80 backdrop-blur-sm border border-neutral-200'
+          >
+            <AnimatePresence mode='wait'>
+              {isMenuOpen ? (
+                <motion.div
+                  key='close'
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <FaTimes className='text-neutral-600 text-lg' />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key='menu'
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <FaBars className='text-neutral-600 text-lg' />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              variants={menuVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
+              className='lg:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md border-t border-neutral-200 shadow-lg'
+            >
+              <div className='p-6 space-y-6'>
+                {/* Mobile Search */}
+                <div className='relative'>
+                  <input
+                    type='text'
+                    placeholder='Search properties...'
+                    className='w-full px-4 py-3 pl-10 bg-white/80 backdrop-blur-sm rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-amber-500'
+                  />
+                  <FaSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400' />
+                </div>
+
+                {/* Mobile Navigation */}
+                <nav className='space-y-4'>
+                  <motion.a
+                    whileHover={{ x: 10 }}
+                    href='/' 
+                    className='block text-lg font-medium text-neutral-700 hover:text-amber-600 transition-colors'
+                  >
+                    Home
+                  </motion.a>
+                  <motion.a
+                    whileHover={{ x: 10 }}
+                    href='/listing' 
+                    className='block text-lg font-medium text-neutral-700 hover:text-amber-600 transition-colors'
+                  >
+                    Properties
+                  </motion.a>
+                  <motion.a
+                    whileHover={{ x: 10 }}
+                    href='/about' 
+                    className='block text-lg font-medium text-neutral-700 hover:text-amber-600 transition-colors'
+                  >
+                    About
+                  </motion.a>
+                  <motion.a
+                    whileHover={{ x: 10 }}
+                    href='/contact' 
+                    className='block text-lg font-medium text-neutral-700 hover:text-amber-600 transition-colors'
+                  >
+                    Contact
+                  </motion.a>
+                </nav>
+
+                {/* Mobile Action Buttons */}
+                <div className='flex items-center gap-4 pt-4 border-t border-neutral-200'>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className='flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-400 to-yellow-500 text-white rounded-lg font-medium'
+                  >
+                    <FaHeart className='text-sm' />
+                    Favorites
+                  </motion.button>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className='flex items-center gap-2 px-4 py-2 bg-white border border-neutral-200 text-neutral-700 rounded-lg font-medium'
+                  >
+                    <FaUser className='text-sm' />
+                    Profile
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.header>
+  )
 }
 
 export default Header
