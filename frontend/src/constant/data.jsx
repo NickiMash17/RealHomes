@@ -17,7 +17,7 @@ import {
   FaYoutube,
 } from "react-icons/fa6";
 
-// South African properties data with Rands currency
+// South African properties data with realistic Rands currency
 export const PROPERTIES = [
   {
     title: "Luxury Villa in Camps Bay",
@@ -27,7 +27,7 @@ export const PROPERTIES = [
     country: "South Africa",
     city: "Cape Town",
     area: 450,
-    price: 8500000,
+    price: 45000000,
     description: "Stunning oceanfront villa with panoramic Atlantic views, modern amenities, and private pool. Perfect for luxury living in one of Cape Town's most prestigious areas.",
     facilities: {
       bedrooms: 4,
@@ -43,7 +43,7 @@ export const PROPERTIES = [
     country: "South Africa",
     city: "Johannesburg",
     area: 180,
-    price: 3200000,
+    price: 18500000,
     description: "Contemporary apartment in the heart of Sandton's business district. Features smart home technology and stunning city skyline views.",
     facilities: {
       bedrooms: 2,
@@ -59,7 +59,7 @@ export const PROPERTIES = [
     country: "South Africa",
     city: "Durban",
     area: 320,
-    price: 2800000,
+    price: 12500000,
     description: "Spacious family home with garden, pool, and mountain views. Located in the sought-after Durban North area with excellent schools nearby.",
     facilities: {
       bedrooms: 3,
@@ -75,7 +75,7 @@ export const PROPERTIES = [
     country: "South Africa",
     city: "Durban",
     area: 280,
-    price: 5200000,
+    price: 28000000,
     description: "Luxurious penthouse with 360-degree ocean and city views. Features high-end finishes, private terrace, and exclusive building amenities.",
     facilities: {
       bedrooms: 3,
@@ -91,7 +91,7 @@ export const PROPERTIES = [
     country: "South Africa",
     city: "Stellenbosch",
     area: 850,
-    price: 12500000,
+    price: 85000000,
     description: "Magnificent wine estate with vineyard, guest house, and mountain views. Perfect for those seeking a lifestyle property in the Cape Winelands.",
     facilities: {
       bedrooms: 5,
@@ -107,7 +107,7 @@ export const PROPERTIES = [
     country: "South Africa",
     city: "Pretoria",
     area: 220,
-    price: 2100000,
+    price: 8500000,
     description: "Modern townhouse in a secure estate with communal facilities. Close to shopping centers and major highways.",
     facilities: {
       bedrooms: 3,
@@ -123,7 +123,7 @@ export const PROPERTIES = [
     country: "South Africa",
     city: "Plettenberg Bay",
     area: 380,
-    price: 6800000,
+    price: 35000000,
     description: "Stunning beachfront property with direct access to pristine beaches. Features open-plan living and spectacular ocean views.",
     facilities: {
       bedrooms: 4,
@@ -139,7 +139,7 @@ export const PROPERTIES = [
     country: "South Africa",
     city: "Cape Town",
     area: 140,
-    price: 3800000,
+    price: 22000000,
     description: "Sleek apartment in the trendy Green Point area. Walking distance to the promenade, restaurants, and shopping.",
     facilities: {
       bedrooms: 2,
@@ -155,7 +155,7 @@ export const PROPERTIES = [
     country: "South Africa",
     city: "Franschhoek",
     area: 1200,
-    price: 18500000,
+    price: 125000000,
     description: "Exclusive country estate with vineyard, guest cottages, and mountain views. Includes wine cellar and entertainment areas.",
     facilities: {
       bedrooms: 6,
@@ -171,7 +171,7 @@ export const PROPERTIES = [
     country: "South Africa",
     city: "Johannesburg",
     area: 420,
-    price: 4500000,
+    price: 25000000,
     description: "Contemporary family home with smart technology, solar panels, and beautiful garden. Located in one of Johannesburg's most prestigious areas.",
     facilities: {
       bedrooms: 4,

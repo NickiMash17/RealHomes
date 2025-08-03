@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace&family=Inter:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -11,52 +11,45 @@
   font-family: "Inter", sans-serif;
 }
 
-.font-ace{
-  font-family: "Bruno Ace", sans-serif;
-}
-
-/* width */
+/* Premium scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
-  background: white;
-  border: 1px solid #8080802f;
+  background: #f8f9fa;
+  border-radius: 4px;
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #e6e6e6;
-  border-radius: 5px;
+  background: linear-gradient(135deg, #1a365d, #dc2626);
+  border-radius: 4px;
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #ccc;
+  background: linear-gradient(135deg, #dc2626, #fbbf24);
 }
 
 @layer base {
   
   .active-link{
-    @apply bg-secondary text-white;
+    @apply bg-secondary text-white shadow-lg;
   }
 
   .h1 {
-    @apply text-[41px] leading-tight md:text-[48px] md:leading-[1.3] mb-4 font-bold;
+    @apply text-[41px] leading-tight md:text-[48px] md:leading-[1.3] mb-4 font-bold font-display;
   }
 
   .h2 {
-    @apply text-[33px] leading-tight md:text-[46px] md:leading-[1.3] mb-4 font-bold;
+    @apply text-[33px] leading-tight md:text-[46px] md:leading-[1.3] mb-4 font-bold font-display;
   }
 
   .h3 {
-    @apply text-[29px] leading-tight md:text-[36px] md:leading-[1.3] mb-4 font-semibold;
+    @apply text-[29px] leading-tight md:text-[36px] md:leading-[1.3] mb-4 font-semibold font-display;
   }
 
   p {
-    @apply leading-[1.3] text-[14px] text-gray-30;
+    @apply leading-[1.6] text-[14px] text-neutral-600;
   }
   
 }
@@ -64,26 +57,27 @@
 @layer utilities {
 
   .btn-white  { 
-    @apply  medium-15 bg-white px-7 py-3 text-tertiary
+    @apply medium-15 bg-white px-7 py-3 text-secondary shadow-lg transition-all hover:shadow-xl
   }
 
   .btn-light  { 
-    @apply  medium-15 bg-primary px-7 py-3 text-tertiary
+    @apply medium-15 bg-primary px-7 py-3 text-secondary shadow-lg transition-all hover:shadow-xl
   }
 
   .btn-secondary { 
-    @apply  ring-1 ring-tertiary medium-15 bg-tertiary px-7 py-[10px] text-white transition-all hover:bg-tertiary/90
+    @apply ring-1 ring-secondary medium-15 bg-secondary px-7 py-[10px] text-white transition-all hover:bg-tertiary hover:ring-tertiary shadow-lg hover:shadow-xl
   }
 
   .btn-secondary-outline { 
-    @apply  ring-1 ring-tertiary medium-15 bg-transparent px-7 py-[10px] text-tertiary transition-all hover:bg-tertiary hover:text-white
+    @apply ring-1 ring-secondary medium-15 bg-transparent px-7 py-[10px] text-secondary transition-all hover:bg-secondary hover:text-white shadow-lg hover:shadow-xl
   }
 
-  .btn-secondary  { 
-    @apply  ring-1 ring-secondary medium-15 bg-secondary px-7 py-[10px] text-white transition-all hover:bg-tertiary hover:ring-tertiary 
+  .btn-luxury { 
+    @apply medium-15 bg-gradient-to-r from-luxury-gold to-luxury-platinum px-8 py-4 text-secondary font-semibold shadow-xl hover:shadow-2xl transition-all duration-300
   }
-  .btn-secondary-outline  { 
-    @apply  ring-1 ring-secondary medium-15 bg-white px-7 py-[10px] text-secondary transition-all hover:bg-tertiary hover:ring-tertiary 
+
+  .btn-premium { 
+    @apply medium-15 bg-premium-gradient px-8 py-4 text-white font-semibold shadow-xl hover:shadow-2xl transition-all duration-300
   }
 
   .max-container {
@@ -112,6 +106,24 @@
 
   .flexEnd {
     @apply flex items-center justify-end;
+  }
+
+  /* Premium card styles */
+  .card-premium {
+    @apply bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-neutral-100;
+  }
+
+  .card-luxury {
+    @apply bg-gradient-to-br from-white to-neutral-50 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-luxury-gold/20;
+  }
+
+  /* Premium text styles */
+  .text-premium {
+    @apply bg-gradient-to-r from-secondary to-tertiary bg-clip-text text-transparent;
+  }
+
+  .text-luxury {
+    @apply bg-gradient-to-r from-luxury-gold to-luxury-platinum bg-clip-text text-transparent;
   }
 
   /* FONTS */
