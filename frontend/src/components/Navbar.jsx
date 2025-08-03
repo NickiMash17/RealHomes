@@ -41,8 +41,12 @@ const Navbar = ({ containerStyles }) => {
         <div>Properties</div>
       </NavLink>
       <NavLink
-        to={"mailto:info@realhomes.co.za"}
-        className="flexCenter gap-x-1 rounded-full px-2 py-1"
+        to={"/contact"}
+        className={({ isActive }) =>
+          isActive
+            ? "active-link flexCenter gap-x-1 rounded-full px-2 py-1"
+            : "flexCenter gap-x-1 rounded-full px-2 py-1"
+        }
       >
         <MdPermContactCalendar />
         <div>Contact</div>

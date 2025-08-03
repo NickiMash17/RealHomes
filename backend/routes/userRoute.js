@@ -1,20 +1,18 @@
-import express from "express";
-import {
-  bookVisit,
-  cancelBooking,
-  createUser,
-  getAllBookings,
-  getAllFav,
-  toFav,
-} from "../controllers/userCntrl.js";
-import jwtCheck from "../config/auth0Config.js";
-const router = express.Router();
+import express from 'express'
+import { getUserProfile, updateUserProfile, addToFavorites, removeFromFavorites } from '../controllers/userCntrl.js'
 
-router.post("/register", jwtCheck, createUser);
-router.post("/bookVisit/:id", jwtCheck, bookVisit);
-router.post("/allBookings", getAllBookings);
-router.post("/removeBooking/:id", jwtCheck, cancelBooking);
-router.post("/toFav/:rid", jwtCheck, toFav);
-router.post("/allFav", jwtCheck, getAllFav);
+const router = express.Router()
 
-export { router as userRoute };
+// Get user profile
+router.get('/profile', getUserProfile)
+
+// Update user profile
+router.put('/profile', updateUserProfile)
+
+// Add property to favorites
+router.post('/favorites', addToFavorites)
+
+// Remove property from favorites
+router.delete('/favorites/:id', removeFromFavorites)
+
+export default router

@@ -6,17 +6,17 @@ import bannerImg from '../assets/banner.png'
 import Blogs from '../components/Blogs'
 import Agents from '../components/Agents'
 
-
 const Home = () => {
     return (
-        <main>
+        <main className="min-h-screen bg-white">
             <Hero />
             <About />
             <Properties />
-            <Blogs/>
+            <Blogs />
             <Agents />
+            
             <div className='max-padd-container py-16 overflow-x-hidden'>
-                <img src={bannerImg} alt="" />
+                <img src={bannerImg} alt="Banner" className="w-full" />
             </div>
         </main>
     )

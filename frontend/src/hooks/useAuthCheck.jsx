@@ -10,9 +10,9 @@ const useAuthCheck = () => {
             return false
         } else return true
     }
-  return (
-    {validateLogin}
-  )
+  return {
+    validateLogin
+  }
 }
 
 export default useAuthCheck

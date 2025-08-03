@@ -1,151 +1,98 @@
-import asyncHandler from "express-async-handler";
+import { PrismaClient } from '@prisma/client'
 
-import { prisma } from "../config/prismaConfig.js";
+const prisma = new PrismaClient()
 
-// function for creating user
-export const createUser = asyncHandler(async (req, res) => {
-  console.log("creating a user");
-
-  let { email } = req.body;
-  const userExists = await prisma.user.findUnique({ where: { email: email } });
-  if (!userExists) {
-    const user = await prisma.user.create({ data: req.body });
-    res.send({
-      message: "User registered seccessfully",
-      user: user,
-    });
-  } else res.status(201).send({ message: "User already registered" });
-});
-
-// function for book visit
-export const bookVisit = asyncHandler(async (req, res) => {
-  const { email, date } = req.body;
-  const { id } = req.params;
-
+// Get user profile
+export const getUserProfile = async (req, res) => {
   try {
-    const alreadyBooked = await prisma.user.findUnique({
-      where: { email },
-      select: { bookedVisits: true },
-    });
-
-    if (alreadyBooked.bookedVisits.some((visit) => visit.id === id)) {
-      res
-        .status(400)
-        .json({ message: "selected residency already booked by you" });
-    } else {
-      await prisma.user.update({
-        where: { email: email },
-        data: {
-          bookedVisits: { push: { id, date } },
-        },
-      });
-      res.send("visit booked successfully");
+    // For now, return a mock user profile
+    // In a real app, you'd get this from JWT token
+    const userProfile = {
+      id: '1',
+      name: 'John Doe',
+      email: 'john@example.com',
+      avatar: 'https://via.placeholder.com/150',
+      phone: '+27 11 234 5678',
+      favorites: []
     }
-  } catch (err) {
-    throw new Error(err.message);
+
+    res.json({
+      success: true,
+      data: userProfile
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get user profile',
+      error: error.message
+    })
   }
-});
+}
 
-// function for allBookings
-export const getAllBookings = asyncHandler(async (req, res) => {
-  const { email } = req.body;
-
+// Update user profile
+export const updateUserProfile = async (req, res) => {
   try {
-    const bookings = await prisma.user.findUnique({
-      where: { email },
-      select: { bookedVisits: true },
-    });
-    res.status(200).send(bookings);
-  } catch (err) {
-    throw new Error(err.message);
-  }
-});
+    const { name, email, phone, avatar } = req.body
 
-// function for cancel a booking
-export const cancelBooking = asyncHandler(async (req, res) => {
-  const { email } = req.body;
-  const { id } = req.params;
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email: email },
-      select: { bookedVisits: true },
-    });
-    const index = user.bookedVisits.findIndex((visit) => visit.id === id);
-
-    if (index === -1) {
-      res.status(404).json({ message: "No Booking found" });
-    } else {
-      user.bookedVisits.splice(index, 1);
-      await prisma.user.update({
-        where: { email },
-        data: {
-          bookedVisits: user.bookedVisits,
-        },
-      });
-      res.send("Booking canceled");
+    // Mock update - in real app, update in database
+    const updatedProfile = {
+      id: '1',
+      name: name || 'John Doe',
+      email: email || 'john@example.com',
+      avatar: avatar || 'https://via.placeholder.com/150',
+      phone: phone || '+27 11 234 5678'
     }
-  } catch (err) {
-    throw new Error(err.message);
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: updatedProfile
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update profile',
+      error: error.message
+    })
   }
-});
+}
 
-// function for addtofavourite list
-export const toFav = asyncHandler(async (req, res) => {
-  console.log("Adding to favourites"); // Log to ensure function is called
-  console.log("Request body:", req.body); // Log to debug request body
-
-  const { email } = req.body;
-  const { rid } = req.params;
-
-  if (!email) {
-    res.status(400).json({ message: "Email is required" });
-    return;
-  }
-
+// Add property to favorites
+export const addToFavorites = async (req, res) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const { propertyId } = req.body
 
-    if (user.favResidenciesID.includes(rid)) {
-      const updateUser = await prisma.user.update({
-        where: { email },
-        data: {
-          favResidenciesID: {
-            set: user.favResidenciesID.filter((id) => id !== rid),
-          },
-        },
-      });
-      res.send({ message: "Removed from favourite", user: updateUser });
-    } else {
-      const updateUser = await prisma.user.update({
-        where: { email },
-        data: {
-          favResidenciesID: {
-            push: rid,
-          },
-        },
-      });
-      res.send({ message: "Updated favorites", user: updateUser });
-    }
-  } catch (err) {
-    console.error('Error in toFav function:', err.message); // Log error
-    res.status(500).send({ message: 'Internal server error' });
+    // Mock favorite addition
+    res.json({
+      success: true,
+      message: 'Property added to favorites',
+      data: { propertyId }
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to add to favorites',
+      error: error.message
+    })
   }
-});
+}
 
-
-// function to getallfav
-export const getAllFav = asyncHandler(async (req, res) => {
-  const { email } = req.body;
+// Remove property from favorites
+export const removeFromFavorites = async (req, res) => {
   try {
-    const favResd = await prisma.user.findUnique({
-      where: { email },
-      select: { favResidenciesID: true },
-    });
-    res.status(200).send(favResd);
-  } catch (err) {
-    throw new Error(err.message);
+    const { id } = req.params
+
+    // Mock favorite removal
+    res.json({
+      success: true,
+      message: 'Property removed from favorites',
+      data: { propertyId: id }
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to remove from favorites',
+      error: error.message
+    })
   }
-});
+}

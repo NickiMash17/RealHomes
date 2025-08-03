@@ -215,15 +215,15 @@ export const getPropertyById = async (req, res) => {
 // Create new property with validation
 export const createProperty = async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      price,
-      address,
+  const {
+    title,
+    description,
+    price,
+    address,
       city,
-      country,
+    country,
       image,
-      facilities,
+    facilities,
       userEmail
     } = req.body
 
