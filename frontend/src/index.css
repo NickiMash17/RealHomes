@@ -11,6 +11,11 @@
   font-family: "Inter", sans-serif;
 }
 
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 /* Premium scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -134,11 +139,11 @@
   }
 
   .padding-container {
-    @apply px-6 lg:px-14 3xl:px-0;
+    @apply px-4 sm:px-6 lg:px-14 3xl:px-0;
   }
 
   .max-padd-container {
-    @apply mx-auto max-w-[1440px] px-6 lg:px-12;
+    @apply mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12;
   }
 
   .flexCenter {

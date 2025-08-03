@@ -221,7 +221,7 @@ const Item = ({ property }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.8 }}
-          className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3'
+          className='flex flex-col gap-3'
         >
           <div className='flex-1'>
             <div className='text-lg sm:text-xl font-bold text-secondary mb-1'>
@@ -233,13 +233,13 @@ const Item = ({ property }) => {
           </div>
           
           <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className='w-full sm:w-auto'
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className='w-full'
           >
             <Link
               to={`/listing/${property.id}`}
-              className='btn-secondary rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-300 hover:shadow-lg w-full sm:w-auto text-center block'
+              className='btn-secondary rounded-lg px-4 py-3 text-sm font-medium transition-all duration-300 hover:shadow-lg w-full text-center block'
             >
               View details
             </Link>
