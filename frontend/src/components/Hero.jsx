@@ -58,19 +58,19 @@ const Hero = () => {
     visible: {
       opacity: 1,
       transition: {
-        duration: 1.2,
-        staggerChildren: 0.4
+        duration: 1,
+        staggerChildren: 0.3
       }
     }
   }
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 60 },
+    hidden: { opacity: 0, y: 40 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 1,
+        duration: 0.8,
         ease: "easeOut"
       }
     }
@@ -95,7 +95,7 @@ const Hero = () => {
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 2, ease: "easeInOut" }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
           />
         </AnimatePresence>
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/40" />
@@ -104,7 +104,7 @@ const Hero = () => {
 
       {/* Content */}
       <motion.div 
-        className="relative z-10 max-w-8xl mx-auto px-8 lg:px-12 text-center text-white"
+        className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8 text-center text-white"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -112,103 +112,103 @@ const Hero = () => {
         
         {/* Premium Badge */}
         <motion.div 
-          className="inline-flex items-center gap-5 bg-white/20 backdrop-blur-xl px-10 py-5 rounded-full text-base font-black mb-16 border-2 border-white/30 shadow-2xl"
+          className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-xl px-6 py-3 rounded-full text-sm font-bold mb-8 border-2 border-white/30 shadow-xl"
           variants={itemVariants}
         >
-          <FaAward className="text-amber-400 animate-pulse text-xl" />
+          <FaAward className="text-amber-400 animate-pulse text-lg" />
           <span className="text-white/95 tracking-wider">SOUTH AFRICA'S PREMIER LUXURY REAL ESTATE</span>
-          <FaCrown className="text-amber-400 text-xl" />
+          <FaCrown className="text-amber-400 text-lg" />
         </motion.div>
         
         {/* Main Heading */}
         <motion.div
           key={currentSlide}
           variants={itemVariants}
-          className="mb-16"
+          className="mb-8"
         >
-          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black mb-12 leading-none tracking-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-none tracking-tight">
             {heroSlides[currentSlide].title.split(' ').map((word, index) => (
               <motion.span 
                 key={index} 
-                className={`inline-block mr-8 ${
+                className={`inline-block mr-4 ${
                   word.toLowerCase().includes('luxury') || word.toLowerCase().includes('exceptional') || word.toLowerCase().includes('perfect') || word.toLowerCase().includes('sanctuary')
                     ? 'text-gradient bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 bg-clip-text text-transparent' 
                     : 'text-white'
                 }`}
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.2 }}
+                transition={{ delay: index * 0.15 }}
               >
                 {word}
               </motion.span>
             ))}
           </h1>
-          <p className="text-2xl sm:text-3xl lg:text-4xl text-white/95 max-w-6xl mx-auto leading-relaxed mb-10 font-light">
+          <p className="text-lg sm:text-xl lg:text-2xl text-white/95 max-w-4xl mx-auto leading-relaxed mb-6 font-light">
             {heroSlides[currentSlide].subtitle}
           </p>
-          <p className="text-xl sm:text-2xl text-white/85 max-w-5xl mx-auto leading-relaxed font-light">
+          <p className="text-base sm:text-lg text-white/85 max-w-3xl mx-auto leading-relaxed font-light">
             {heroSlides[currentSlide].description}
           </p>
         </motion.div>
 
         {/* Stats Section */}
         <motion.div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20 max-w-7xl mx-auto"
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-5xl mx-auto"
           variants={itemVariants}
         >
           {heroSlides[currentSlide].stats.map((stat, index) => (
             <motion.div
               key={stat.label}
-              className="bg-white/15 backdrop-blur-xl p-8 rounded-3xl border-2 border-white/20 shadow-2xl"
-              whileHover={{ scale: 1.08, y: -10 }}
-              initial={{ opacity: 0, y: 40 }}
+              className="bg-white/15 backdrop-blur-xl p-4 rounded-2xl border-2 border-white/20 shadow-xl"
+              whileHover={{ scale: 1.05, y: -5 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 + index * 0.3 }}
+              transition={{ delay: 0.6 + index * 0.2 }}
             >
-              <div className={`text-4xl mb-4 p-4 bg-gradient-to-r ${stat.color} rounded-2xl inline-flex items-center justify-center shadow-xl`}>
+              <div className={`text-2xl mb-3 p-3 bg-gradient-to-r ${stat.color} rounded-xl inline-flex items-center justify-center shadow-lg`}>
                 <stat.icon className="text-white" />
               </div>
-              <div className="text-3xl font-black mb-3 text-amber-400">{stat.value}</div>
-              <div className="text-base text-white/80 font-bold tracking-wide">{stat.label}</div>
+              <div className="text-xl font-black mb-2 text-amber-400">{stat.value}</div>
+              <div className="text-sm text-white/80 font-bold tracking-wide">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>
         
         {/* Primary CTA */}
         <motion.div 
-          className="flex flex-col sm:flex-row gap-8 items-center justify-center mb-20"
+          className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-12"
           variants={itemVariants}
         >
           <motion.div
-            whileHover={{ scale: 1.05, y: -5 }}
+            whileHover={{ scale: 1.05, y: -3 }}
             whileTap={{ scale: 0.95 }}
           >
             <Link 
               to="/listing" 
-              className="inline-flex items-center gap-5 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 text-white px-12 py-6 rounded-3xl font-black text-2xl hover:shadow-2xl hover:shadow-amber-500/40 transition-all duration-700 group shadow-2xl"
+              className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:shadow-xl hover:shadow-amber-500/30 transition-all duration-500 group shadow-lg"
             >
-              <FaSearch className="w-7 h-7" />
+              <FaSearch className="w-5 h-5" />
               Explore Luxury Properties
-              <FaArrowRight className="w-6 h-6 group-hover:translate-x-3 transition-transform duration-500" />
+              <FaArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" />
             </Link>
           </motion.div>
           
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-white/20 backdrop-blur-xl px-10 py-6 rounded-3xl border-2 border-white/30 shadow-2xl"
+            className="bg-white/20 backdrop-blur-xl px-6 py-4 rounded-2xl border-2 border-white/30 shadow-xl"
           >
             <div className="text-center">
-              <h5 className="font-black text-amber-400 mb-3 text-xl tracking-wider">EXCLUSIVE OFFER</h5>
-              <p className="text-white/95 font-bold text-lg">Free Luxury Property Valuation</p>
-              <p className="text-sm text-white/60 mt-3 font-medium">Limited Time Only</p>
+              <h5 className="font-bold text-amber-400 mb-2 text-base tracking-wider">EXCLUSIVE OFFER</h5>
+              <p className="text-white/95 font-semibold text-sm">Free Luxury Property Valuation</p>
+              <p className="text-xs text-white/60 mt-1 font-medium">Limited Time Only</p>
             </div>
           </motion.div>
         </motion.div>
 
         {/* Quick Contact */}
         <motion.div 
-          className="flex flex-wrap gap-6 justify-center mb-16"
+          className="flex flex-wrap gap-3 justify-center mb-8"
           variants={itemVariants}
         >
           {[
@@ -219,14 +219,14 @@ const Hero = () => {
             <motion.a
               key={contact.label}
               href={contact.href}
-              className={`inline-flex items-center gap-4 bg-gradient-to-r ${contact.color} text-white px-8 py-5 rounded-2xl hover:shadow-2xl transition-all duration-500 font-black text-lg shadow-xl`}
-              whileHover={{ scale: 1.05, y: -5 }}
+              className={`inline-flex items-center gap-2 bg-gradient-to-r ${contact.color} text-white px-4 py-3 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold text-sm shadow-md`}
+              whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2 + index * 0.2 }}
+              transition={{ delay: 1 + index * 0.1 }}
             >
-              <contact.icon className="w-6 h-6" />
+              <contact.icon className="w-4 h-4" />
               <span>{contact.label}</span>
             </motion.a>
           ))}
@@ -234,31 +234,31 @@ const Hero = () => {
 
         {/* Video Preview */}
         <motion.div 
-          className="mt-16"
+          className="mt-8"
           variants={itemVariants}
         >
           <motion.button
             onClick={() => setIsVideoPlaying(true)}
-            className="inline-flex items-center gap-4 bg-white/25 backdrop-blur-xl px-8 py-5 rounded-2xl border-2 border-white/30 hover:bg-white/35 transition-all duration-500 text-lg font-bold shadow-xl"
+            className="inline-flex items-center gap-2 bg-white/25 backdrop-blur-xl px-4 py-3 rounded-xl border-2 border-white/30 hover:bg-white/35 transition-all duration-300 text-sm font-semibold shadow-md"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <FaPlay className="w-6 h-6" />
+            <FaPlay className="w-4 h-4" />
             <span>Watch Our Story</span>
           </motion.button>
         </motion.div>
       </motion.div>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex gap-5">
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3">
         {heroSlides.map((_, index) => (
           <motion.button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-5 h-5 rounded-full transition-all duration-500 ${
-              index === currentSlide ? 'bg-amber-400 scale-150 shadow-2xl' : 'bg-white/50 hover:bg-white/75'
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              index === currentSlide ? 'bg-amber-400 scale-125 shadow-lg' : 'bg-white/50 hover:bg-white/75'
             }`}
-            whileHover={{ scale: 1.3 }}
+            whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.9 }}
           />
         ))}
@@ -266,32 +266,32 @@ const Hero = () => {
 
       {/* Floating Elements */}
       <motion.div
-        className="absolute top-40 right-20 hidden xl:block"
-        animate={{ y: [-20, 20, -20] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-20 right-12 hidden lg:block"
+        animate={{ y: [-10, 10, -10] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       >
-        <div className="bg-white/20 backdrop-blur-xl p-8 rounded-3xl border-2 border-white/30 shadow-2xl">
-          <FaMapMarkerAlt className="w-10 h-10 text-amber-400" />
+        <div className="bg-white/20 backdrop-blur-xl p-4 rounded-2xl border-2 border-white/30 shadow-xl">
+          <FaMapMarkerAlt className="w-6 h-6 text-amber-400" />
         </div>
       </motion.div>
 
       <motion.div
-        className="absolute bottom-60 left-20 hidden xl:block"
-        animate={{ y: [20, -20, 20] }}
-        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="bg-white/20 backdrop-blur-xl p-8 rounded-3xl border-2 border-white/30 shadow-2xl">
-          <FaHome className="w-10 h-10 text-amber-400" />
-        </div>
-      </motion.div>
-
-      <motion.div
-        className="absolute top-1/2 left-10 hidden xl:block"
-        animate={{ y: [-15, 15, -15] }}
+        className="absolute bottom-32 left-12 hidden lg:block"
+        animate={{ y: [10, -10, 10] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
       >
-        <div className="bg-white/20 backdrop-blur-xl p-6 rounded-3xl border-2 border-white/30 shadow-2xl">
-          <FaCrown className="w-8 h-8 text-amber-400" />
+        <div className="bg-white/20 backdrop-blur-xl p-4 rounded-2xl border-2 border-white/30 shadow-xl">
+          <FaHome className="w-6 h-6 text-amber-400" />
+        </div>
+      </motion.div>
+
+      <motion.div
+        className="absolute top-1/2 left-8 hidden lg:block"
+        animate={{ y: [-10, 10, -10] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="bg-white/20 backdrop-blur-xl p-3 rounded-2xl border-2 border-white/30 shadow-xl">
+          <FaCrown className="w-5 h-5 text-amber-400" />
         </div>
       </motion.div>
     </section>
