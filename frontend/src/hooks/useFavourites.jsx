@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query'
 import { getProperties } from '../utils/api'
-import { useMockAuth } from '../context/MockAuthContext'
+import { useMockAuth } from '../context/MockAuthContext.jsx'
 
 const useFavourites = () => {
   const { isAuthenticated } = useMockAuth()

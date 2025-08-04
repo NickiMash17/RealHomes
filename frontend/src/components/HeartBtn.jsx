@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useMockAuth } from '../context/MockAuthContext'
+import { useMockAuth } from '../context/MockAuthContext.jsx'
 import { toFav } from '../utils/common'
 import { toast } from 'react-toastify'
 

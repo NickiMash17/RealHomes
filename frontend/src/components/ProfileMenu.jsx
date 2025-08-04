@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useMockAuth } from '../context/MockAuthContext'
+import { useMockAuth } from '../context/MockAuthContext.jsx'
 
 const ProfileMenu = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false)

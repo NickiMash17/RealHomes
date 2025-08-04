@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useMockAuth } from '../context/MockAuthContext'
+import { useMockAuth } from '../context/MockAuthContext.jsx'
 import ProfileMenu from './ProfileMenu'
 import Searchbar from './Searchbar'
 
