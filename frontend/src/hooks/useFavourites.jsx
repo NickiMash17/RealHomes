@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query'
-import { getProperties } from '../utils/api'
+import { getAllProperties } from '../utils/api'
 import { useMockAuth } from '../context/MockAuthContext.jsx'
 
 const useFavourites = () => {
@@ -13,7 +13,7 @@ const useFavourites = () => {
       }
 
       // Get all properties
-      const allProperties = await getProperties()
+      const allProperties = await getAllProperties()
       
       // Get user's favorites from localStorage
       const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
