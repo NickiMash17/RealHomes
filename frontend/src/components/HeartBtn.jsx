@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useMockAuth } from '../context/MockAuthContext.jsx'
-import { toFav } from '../utils/common'
+import { toFav } from '../utils/api'
 import { toast } from 'react-toastify'
 
 const HeartBtn = ({ id }) => {
