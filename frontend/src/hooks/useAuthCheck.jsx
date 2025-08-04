@@ -1,9 +1,11 @@
-import {useAuth0} from "@auth0/auth0-react"
-import { toast } from "react-toastify"
+import { useMockAuth } from "../context/MockAuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const useAuthCheck = () => {
+  const { isAuthenticated } = useMockAuth();
+  const navigate = useNavigate();
 
-    const { isAuthenticated } = useAuth0()
     const validateLogin = () => {
         if(!isAuthenticated){
             toast.error("Please Login first", {position: "bottom-right"})

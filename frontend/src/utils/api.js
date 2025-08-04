@@ -333,6 +333,53 @@ export const getAllBookings = async (email, token) => {
   }
 };
 
+export const getBookings = async (email, token) => {
+  if (!token) return [];
+  try {
+    const res = await api.post(
+      `/user/allBookings`,
+      { email },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return res.data["bookedVisits"] || [];
+  } catch (e) {
+    console.log("Backend not available, using mock bookings");
+    // Return mock bookings data
+    return [
+      {
+        id: "1",
+        propertyId: "1",
+        date: "15/08/2024",
+        property: {
+          id: "1",
+          title: "Luxury Villa in Camps Bay",
+          image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&auto=format&fit=crop&q=60",
+          price: 25000000,
+          address: "Victoria Road, Camps Bay",
+          city: "Cape Town"
+        }
+      },
+      {
+        id: "2",
+        propertyId: "3",
+        date: "20/08/2024",
+        property: {
+          id: "3",
+          title: "Beachfront House in Umhlanga",
+          image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop&q=60",
+          price: 18000000,
+          address: "Beach Road, Umhlanga",
+          city: "Durban"
+        }
+      }
+    ];
+  }
+};
+
 
 
 export const createResidency = async (data, token, userEmail) => {

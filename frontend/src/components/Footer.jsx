@@ -1,118 +1,401 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FOOTER_CONTACT_INFO, FOOTER_LINKS, SOCIALS } from '../constant/data'
-import { FaCrown, FaMapMarkerAlt, FaPhone, FaEnvelope, FaStar } from "react-icons/fa"
+import { motion, AnimatePresence } from 'framer-motion'
+import { 
+  FaFacebook, 
+  FaInstagram, 
+  FaTwitter, 
+  FaLinkedin, 
+  FaYoutube, 
+  FaPhone, 
+  FaEnvelope, 
+  FaMapMarkerAlt, 
+  FaWhatsapp,
+  FaArrowUp,
+  FaShieldAlt,
+  FaAward,
+  FaUsers,
+  FaHome,
+  FaStar,
+  FaCrown,
+  FaCheckCircle,
+  FaClock,
+  FaGlobe
+} from 'react-icons/fa'
 
 const Footer = () => {
-    return (
-        <footer className='max-padd-container mb-4'>
-            <div className='max-padd-container bg-gradient-to-br from-white/95 to-neutral-50/95 backdrop-blur-sm rounded-3xl pt-8 sm:pt-12 xl:pt-20 pb-8 border border-amber-200/10'>
-                <div className='flex flex-col items-center gap-6 sm:gap-8'>
-                    {/* Premium badge */}
-                    <div className='inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-yellow-500 px-3 sm:px-4 py-2 rounded-full text-secondary font-semibold text-xs sm:text-sm mb-4 sm:mb-6'>
-                        <FaStar className='text-tertiary' />
-                        <span>Premium Real Estate</span>
-                    </div>
-                    
-                    <h3 className='text-xl sm:text-2xl lg:text-3xl font-bold text-secondary mb-3 sm:mb-4 text-center'>Ready to find your dream home in South Africa?</h3>
-                    <p className='text-sm sm:text-base text-center max-w-[40rem] text-neutral-600 mb-6 sm:mb-8 px-4'>
-                        Connect with our expert team and discover exceptional properties across South Africa's most prestigious locations.
-                    </p>
-                    
-                    {/* Logo */}
-                    <div className='flex items-center gap-x-2 mb-6 sm:mb-8'>
-                        <FaCrown className='text-amber-500 text-xl sm:text-2xl' />
-                        <span className='text-lg sm:text-xl lg:text-2xl font-bold text-secondary'>
-                            Real<span className='text-amber-500'>Homes</span>
-                            <span className='text-xs sm:text-sm text-neutral-500 ml-1 font-normal'>SA</span>
-                        </span>
-                    </div>
+  const [email, setEmail] = useState('')
+  const [isSubscribed, setIsSubscribed] = useState(false)
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleSubscribe = (e) => {
+    e.preventDefault()
+    if (email) {
+      setIsSubscribed(true)
+      setEmail('')
+      setTimeout(() => setIsSubscribed(false), 3000)
+    }
+  }
+
+  const currentYear = new Date().getFullYear()
+
+  const socialLinks = [
+    { icon: FaFacebook, href: '#', label: 'Facebook' },
+    { icon: FaInstagram, href: '#', label: 'Instagram' },
+    { icon: FaTwitter, href: '#', label: 'Twitter' },
+    { icon: FaLinkedin, href: '#', label: 'LinkedIn' },
+    { icon: FaYoutube, href: '#', label: 'YouTube' }
+  ]
+
+  const quickLinks = [
+    { to: '/', label: 'Home' },
+    { to: '/listing', label: 'Properties' },
+    { to: '/contact', label: 'Contact' },
+    { to: '/favourites', label: 'Favorites' },
+    { to: '/bookings', label: 'Bookings' },
+    { to: '/addproperty', label: 'List Property' }
+  ]
+
+  const popularAreas = [
+    { to: '/listing?city=cape-town', label: 'Cape Town' },
+    { to: '/listing?city=johannesburg', label: 'Johannesburg' },
+    { to: '/listing?city=durban', label: 'Durban' },
+    { to: '/listing?city=stellenbosch', label: 'Stellenbosch' },
+    { to: '/listing?city=pretoria', label: 'Pretoria' },
+    { to: '/listing?city=plettenberg-bay', label: 'Plettenberg Bay' }
+  ]
+
+  const trustIndicators = [
+    { icon: FaShieldAlt, text: 'Licensed & Regulated', color: 'text-amber-400' },
+    { icon: FaAward, text: '15+ Years Experience', color: 'text-amber-400' },
+    { icon: FaUsers, text: '500+ Happy Clients', color: 'text-amber-400' },
+    { icon: FaStar, text: 'Premium Service', color: 'text-amber-400' }
+  ]
+
+  return (
+    <footer className="bg-gradient-to-br from-secondary via-tertiary to-accent text-white relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:20px_20px]"></div>
+      </div>
+
+      {/* Floating Elements */}
+      <motion.div
+        className="absolute top-20 right-20 hidden lg:block"
+        animate={{ y: [-10, 10, -10] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20">
+          <FaCrown className="w-6 h-6 text-amber-400" />
+        </div>
+      </motion.div>
+
+      <motion.div
+        className="absolute bottom-40 left-20 hidden lg:block"
+        animate={{ y: [10, -10, 10] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20">
+          <FaHome className="w-6 h-6 text-amber-400" />
+        </div>
+      </motion.div>
+
+      <div className="relative z-10">
+        {/* Main Footer Content */}
+        <div className="max-padd-container py-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            
+            {/* Company Info */}
+            <div className="lg:col-span-1">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="mb-8"
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-14 h-14 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-2xl">R</span>
+                  </div>
+                  <div>
+                    <span className="text-3xl font-bold">RealHomes</span>
+                    <p className="text-xs text-amber-400 font-medium">Premium Properties</p>
+                  </div>
                 </div>
+                <p className="text-white/90 leading-relaxed mb-8 text-lg">
+                  Premium South African real estate platform connecting discerning buyers with exceptional properties across the country's most coveted locations.
+                </p>
                 
-                <hr className='my-6 sm:my-8 bg-neutral-300 h-[1px]' />
-                
-                {/* container */}
-                <div className='flex flex-col lg:flex-row justify-between gap-8 px-4 sm:px-0'>
-                    <div className='max-w-sm w-full'>
-                        <Link to={'/'} className='flex items-center gap-x-2 mb-4 sm:mb-6'>
-                            <FaCrown className='text-luxury-gold text-xl sm:text-2xl' />
-                            <span className='font-[600] text-lg sm:text-xl lg:text-2xl text-secondary'>
-                                Real<span className='text-luxury-gold'>Homes</span>
-                                <span className='text-xs sm:text-sm text-neutral-500 ml-1 font-normal'>SA</span>
-                            </span>
-                        </Link>
-                        <p className='py-4 text-neutral-600 leading-relaxed text-sm sm:text-base'>
-                            Your trusted partner in South African real estate. We specialize in connecting discerning buyers with exceptional properties across the country's most prestigious locations, from the Atlantic seaboard to the Cape Winelands.
-                        </p>
-                        
-                        {/* Subscribe Section - Mobile Responsive */}
-                        <div className='mt-6'>
-                            <h4 className='text-sm sm:text-base font-semibold text-secondary mb-3'>Subscribe to our newsletter</h4>
-                            <div className='flex flex-col sm:flex-row gap-3'>
-                                <input 
-                                    type="email" 
-                                    placeholder='Enter your email' 
-                                    className='flex-1 px-4 py-3 rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white/80 backdrop-blur-sm text-sm sm:text-base' 
-                                />
-                                <button className='btn-secondary rounded-lg px-6 py-3 text-sm sm:text-base font-medium whitespace-nowrap'>
-                                    Subscribe
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className='flex flex-col sm:flex-row justify-between flex-wrap gap-6 sm:gap-8'>
-                        {FOOTER_LINKS.map((col) => (
-                            <FooterColumn key={col.title} title={col.title}>
-                                <ul className='flex flex-col gap-3 sm:gap-4 text-sm sm:text-base text-neutral-600'>
-                                    {col.links.map((link) => (
-                                        <Link to='/' key={link} className='hover:text-secondary transition-colors'>{link}</Link>
-                                    ))}
-                                </ul>
-                            </FooterColumn>
-                        ))}
-                        <div className='flex flex-col gap-5'>
-                            <FooterColumn title={FOOTER_CONTACT_INFO.title}>
-                                {FOOTER_CONTACT_INFO.links.map((link) => (
-                                    <Link to='/' key={link.label} className='flex gap-3 sm:gap-4 items-start hover:text-secondary transition-colors'>
-                                        {link.label === "Contact Number" ? <FaPhone className='text-tertiary mt-1' /> : <FaEnvelope className='text-tertiary mt-1' />}
-                                        <div>
-                                            <p className='text-neutral-500 text-xs sm:text-sm'>{link.label}:</p>
-                                            <p className='font-semibold text-sm sm:text-base text-secondary'>{link.value}</p>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </FooterColumn>
-                        </div>
-                        <div className='flex'>
-                            <FooterColumn title={SOCIALS.title}>
-                                <ul className='flex gap-3 sm:gap-4'>
-                                    {SOCIALS.links.map((link) => (
-                                        <Link to='/' key={link.id} className='text-lg sm:text-xl hover:text-secondary transition-colors hover:scale-110 transform duration-300'>{link.icon}</Link>
-                                    ))}
-                                </ul>
-                            </FooterColumn>
-                        </div>
-                    </div>
+                {/* Trust Indicators */}
+                <div className="space-y-4">
+                  {trustIndicators.map((indicator, index) => (
+                    <motion.div 
+                      key={indicator.text}
+                      className="flex items-center gap-3 text-white/90"
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <indicator.icon className={`${indicator.color} text-lg`} />
+                      <span className="text-sm font-medium">{indicator.text}</span>
+                    </motion.div>
+                  ))}
                 </div>
+              </motion.div>
             </div>
-            {/* copyrights */}
-            <p className='text-white bg-gradient-to-r from-secondary to-tertiary text-xs sm:text-sm font-medium py-3 px-4 sm:px-8 rounded-b-3xl flex flex-col sm:flex-row justify-between items-center gap-2 shadow-lg'>
-                <span>2024 RealHomes South Africa</span>
-                <span>All rights reserved</span>
-            </p>
-        </footer>
-    )
+
+            {/* Quick Links */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <h3 className="text-xl font-bold mb-8 flex items-center gap-2">
+                <FaGlobe className="text-amber-400" />
+                Quick Links
+              </h3>
+              <ul className="space-y-4">
+                {quickLinks.map((link, index) => (
+                  <motion.li
+                    key={link.to}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + index * 0.05 }}
+                  >
+                    <Link 
+                      to={link.to} 
+                      className="text-white/80 hover:text-amber-400 transition-all duration-300 flex items-center gap-2 group"
+                    >
+                      <FaArrowUp className="w-3 h-3 rotate-45 group-hover:translate-x-1 transition-transform duration-300" />
+                      {link.label}
+                    </Link>
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* Popular Areas */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <h3 className="text-xl font-bold mb-8 flex items-center gap-2">
+                <FaMapMarkerAlt className="text-amber-400" />
+                Popular Areas
+              </h3>
+              <ul className="space-y-4">
+                {popularAreas.map((area, index) => (
+                  <motion.li
+                    key={area.to}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + index * 0.05 }}
+                  >
+                    <Link 
+                      to={area.to} 
+                      className="text-white/80 hover:text-amber-400 transition-all duration-300 flex items-center gap-2 group"
+                    >
+                      <FaMapMarkerAlt className="w-3 h-3 group-hover:scale-110 transition-transform duration-300" />
+                      {area.label}
+                    </Link>
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* Contact Info */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <h3 className="text-xl font-bold mb-8 flex items-center gap-2">
+                <FaPhone className="text-amber-400" />
+                Contact Us
+              </h3>
+              <div className="space-y-6">
+                <motion.div 
+                  className="flex items-center gap-4 group"
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="w-10 h-10 bg-amber-400/20 rounded-lg flex items-center justify-center group-hover:bg-amber-400 transition-colors duration-300">
+                    <FaPhone className="text-amber-400 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <div>
+                    <p className="text-white/60 text-sm">Phone</p>
+                    <a href="tel:+27112345678" className="text-white hover:text-amber-400 transition-colors font-medium">
+                      +27 11 234 5678
+                    </a>
+                  </div>
+                </motion.div>
+                
+                <motion.div 
+                  className="flex items-center gap-4 group"
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="w-10 h-10 bg-amber-400/20 rounded-lg flex items-center justify-center group-hover:bg-amber-400 transition-colors duration-300">
+                    <FaWhatsapp className="text-amber-400 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <div>
+                    <p className="text-white/60 text-sm">WhatsApp</p>
+                    <a href="https://wa.me/27112345678" className="text-white hover:text-amber-400 transition-colors font-medium">
+                      +27 11 234 5678
+                    </a>
+                  </div>
+                </motion.div>
+                
+                <motion.div 
+                  className="flex items-center gap-4 group"
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="w-10 h-10 bg-amber-400/20 rounded-lg flex items-center justify-center group-hover:bg-amber-400 transition-colors duration-300">
+                    <FaEnvelope className="text-amber-400 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <div>
+                    <p className="text-white/60 text-sm">Email</p>
+                    <a href="mailto:info@realhomes.co.za" className="text-white hover:text-amber-400 transition-colors font-medium">
+                      info@realhomes.co.za
+                    </a>
+                  </div>
+                </motion.div>
+                
+                <motion.div 
+                  className="flex items-center gap-4 group"
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="w-10 h-10 bg-amber-400/20 rounded-lg flex items-center justify-center group-hover:bg-amber-400 transition-colors duration-300">
+                    <FaMapMarkerAlt className="text-amber-400 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <div>
+                    <p className="text-white/60 text-sm">Address</p>
+                    <p className="text-white text-sm font-medium">
+                      123 Sandton Drive<br />
+                      Sandton, Johannesburg<br />
+                      South Africa
+                    </p>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Newsletter Subscription */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-16 pt-12 border-t border-white/20"
+          >
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold mb-4">Stay Updated</h3>
+              <p className="text-white/80 text-lg">Get the latest property updates and exclusive offers</p>
+            </div>
+            
+            <div className="max-w-lg mx-auto">
+              <form onSubmit={handleSubscribe} className="flex gap-3">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="flex-1 px-6 py-4 rounded-xl text-secondary focus:outline-none focus:ring-2 focus:ring-amber-400 text-lg"
+                />
+                <motion.button 
+                  type="submit"
+                  className="px-8 py-4 bg-gradient-to-r from-amber-400 to-yellow-500 text-secondary font-bold rounded-xl hover:shadow-glow transition-all duration-300"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Subscribe
+                </motion.button>
+              </form>
+              
+              <AnimatePresence>
+                {isSubscribed && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mt-4 text-center"
+                  >
+                    <div className="inline-flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg">
+                      <FaCheckCircle />
+                      <span>Successfully subscribed!</span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-white/20">
+          <div className="max-padd-container py-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              
+              {/* Copyright */}
+              <div className="text-white/80 text-sm">
+                © {currentYear} RealHomes South Africa. All rights reserved.
+              </div>
+
+              {/* Social Links */}
+              <div className="flex items-center gap-4">
+                {socialLinks.map((social, index) => (
+                  <motion.a
+                    key={social.label}
+                    href={social.href}
+                    className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-lg flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all duration-300"
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.9 }}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <social.icon className="w-5 h-5" />
+                  </motion.a>
+                ))}
+              </div>
+
+              {/* Legal Links */}
+              <div className="flex items-center gap-6 text-sm">
+                <a href="#" className="text-white/80 hover:text-amber-400 transition-colors">
+                  Privacy Policy
+                </a>
+                <a href="#" className="text-white/80 hover:text-amber-400 transition-colors">
+                  Terms of Service
+                </a>
+                <a href="#" className="text-white/80 hover:text-amber-400 transition-colors">
+                  Cookie Policy
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll to Top Button */}
+      <motion.button
+        onClick={scrollToTop}
+        className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-secondary to-tertiary text-white rounded-2xl shadow-2xl hover:shadow-glow transition-all duration-300 z-50"
+        whileHover={{ scale: 1.1, y: -2 }}
+        whileTap={{ scale: 0.9 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.5 }}
+      >
+        <FaArrowUp className="w-6 h-6 mx-auto" />
+      </motion.button>
+    </footer>
+  )
 }
 
 export default Footer
-
-
-const FooterColumn = ({ title, children }) => {
-    return (
-        <div className='flex flex-col gap-3 sm:gap-5'>
-            <h4 className='font-semibold text-sm sm:text-base lg:text-lg whitespace-nowrap text-secondary'>{title}</h4>
-            {children}
-        </div>
-    )
-}

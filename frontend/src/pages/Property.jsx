@@ -5,7 +5,7 @@ import { PuffLoader } from "react-spinners";
 import Map from "../components/Map";
 import { getProperty, removeBooking } from "../utils/api";
 import useAuthCheck from "../hooks/useAuthCheck";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useMockAuth } from '../context/MockAuthContext'
 import BookingModal from "../components/BookingModal";
 import UserDetailContext from "../context/UserDetailContext";
 import { Button } from "@mantine/core";
@@ -30,7 +30,7 @@ const Property = () => {
   // console.log(data)
   const [modalOpened, setModalOpened] = useState(false);
   const { validateLogin } = useAuthCheck();
-  const { user } = useAuth0();
+  const { user } = useMockAuth();
 
   const {
     userDetails: { token, bookings },

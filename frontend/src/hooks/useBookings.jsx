@@ -1,19 +1,19 @@
 import React, { useContext, useEffect, useRef } from "react";
 import UserDetailContext from "../context/UserDetailContext";
 import { useQuery } from "react-query";
-import { useAuth0 } from "@auth0/auth0-react";
-import { getAllBookings, getAllProperties } from "../utils/api";
+import { getBookings, getAllProperties } from "../utils/api";
+import { useMockAuth } from "../context/MockAuthContext";
 
 const useBookings = () => {
   const { userDetails, setUserDetails } = useContext(UserDetailContext);
   const queryRef = useRef();
-  const { user, getAccessTokenSilently } = useAuth0();
+  const { user, getAccessTokenSilently } = useMockAuth();
 
   const { data: bookingIds, isLoading: bookingLoading, isError: bookingError, refetch: bookingRefetch } = useQuery({
     queryKey: "allBookings",
     queryFn: async () => {
       const token = await getAccessTokenSilently()
-      return getAllBookings(user?.email, token)
+      return getBookings(user?.email, token)
     },
     onSuccess: (data) =>
       setUserDetails((prev) => ({ ...prev, bookings: data })),

@@ -1,4 +1,7 @@
-import { useAuth0 } from "@auth0/auth0-react";
+import { useMockAuth } from "../context/MockAuthContext";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { FaBed, FaBath, FaRulerCombined, FaCar, FaWifi, FaSwimmingPool, FaUtensils, FaSnowflake, FaDumbbell, FaShieldAlt } from "react-icons/fa";
 import { Box, Button, Group, NumberInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import React, { useContext } from "react";
@@ -41,7 +44,7 @@ const Facilities = ({
   };
 
   //   Upload
-  const { user } = useAuth0();
+  const { user } = useMockAuth();
   const {
     userDetails: { token },
   } = useContext(UserDetailContext);

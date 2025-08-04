@@ -20,6 +20,7 @@ import {
 // South African properties data with realistic Rands currency
 export const PROPERTIES = [
   {
+    id: "1",
     title: "Luxury Villa in Camps Bay",
     image: img1,
     category: "Villa",
@@ -36,6 +37,7 @@ export const PROPERTIES = [
     }
   },
   {
+    id: "2",
     title: "Modern Apartment in Sandton",
     image: img2,
     category: "Apartment",
@@ -52,6 +54,7 @@ export const PROPERTIES = [
     }
   },
   {
+    id: "3",
     title: "Family Home in Durban North",
     image: img3,
     category: "House",
@@ -68,6 +71,7 @@ export const PROPERTIES = [
     }
   },
   {
+    id: "4",
     title: "Penthouse in Umhlanga",
     image: img4,
     category: "Penthouse",
@@ -84,6 +88,7 @@ export const PROPERTIES = [
     }
   },
   {
+    id: "5",
     title: "Wine Estate in Stellenbosch",
     image: img5,
     category: "Estate",
@@ -100,6 +105,7 @@ export const PROPERTIES = [
     }
   },
   {
+    id: "6",
     title: "Townhouse in Pretoria East",
     image: img1,
     category: "Townhouse",
@@ -116,6 +122,7 @@ export const PROPERTIES = [
     }
   },
   {
+    id: "7",
     title: "Beach House in Plettenberg Bay",
     image: img2,
     category: "Beach House",
@@ -132,6 +139,7 @@ export const PROPERTIES = [
     }
   },
   {
+    id: "8",
     title: "Luxury Apartment in Green Point",
     image: img3,
     category: "Apartment",
@@ -148,6 +156,7 @@ export const PROPERTIES = [
     }
   },
   {
+    id: "9",
     title: "Country Estate in Franschhoek",
     image: img4,
     category: "Estate",
@@ -164,6 +173,7 @@ export const PROPERTIES = [
     }
   },
   {
+    id: "10",
     title: "Modern House in Bryanston",
     image: img5,
     category: "House",

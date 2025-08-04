@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { Modal, Button } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useMutation } from "react-query";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useMockAuth } from '../context/MockAuthContext'
 import UserDetailContext from "../context/UserDetailContext";
 import { bookVisit } from "../utils/api";
 import { toast } from "react-toastify";
@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 
 const BookingModal = ({ opened, setOpened, email, propertyId }) => {
   const [value, setValue] = useState(null);
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently } = useMockAuth()
   const {
     setUserDetails,
   } = useContext(UserDetailContext);

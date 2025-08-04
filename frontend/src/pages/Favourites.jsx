@@ -1,6 +1,9 @@
-import React, { useContext, useState, useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useMockAuth } from "../context/MockAuthContext";
+import { motion } from "framer-motion";
+import { FaHeart, FaMapMarkerAlt, FaStar, FaCrown, FaBed, FaBath, FaRulerCombined } from 'react-icons/fa';
+import { Link, useNavigate } from "react-router-dom";
+import { PROPERTIES } from "../constant/data";
 import Searchbar from "../components/Searchbar";
 import useFavourites from "../hooks/useFavourites";
 import { PuffLoader } from "react-spinners";
@@ -10,7 +13,7 @@ import UserDetailContext from "../context/UserDetailContext";
 const Favourites = () => {
   const { data, isError, isLoading } = useFavourites();
   const [filter, setFilter] = useState("");
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, loginWithRedirect } = useMockAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
