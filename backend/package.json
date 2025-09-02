@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^5.14.0",
+    "@prisma/client": "^6.15.0",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -25,7 +25,9 @@
     "helmet": "^8.1.0",
     "morgan": "^1.10.1",
     "nodemon": "^3.1.0",
-    "prisma": "^5.14.0",
     "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "prisma": "^6.15.0"
   }
 }
