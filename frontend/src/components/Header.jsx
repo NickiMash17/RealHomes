@@ -1,15 +1,31 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMockAuth } from '../context/MockAuthContext.jsx'
+import { useQuery } from 'react-query'
+import { getAllFav } from '../utils/api'
 import ProfileMenu from './ProfileMenu'
 import { FaHeart, FaUser, FaBars, FaTimes, FaPhone, FaWhatsapp, FaEnvelope, FaHome, FaBuilding, FaUser as FaContact, FaFileAlt, FaSearch, FaCrown, FaStar, FaAward, FaMapMarkerAlt } from 'react-icons/fa'
 
 const Header = () => {
+  const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const { isAuthenticated, user, loginWithRedirect, isLoading } = useMockAuth()
   const location = useLocation()
+
+  // Get favorites count
+  const { data: favoritesData } = useQuery(
+    ['favorites', user?.email],
+    () => getAllFav(user?.email, user?.token),
+    {
+      enabled: isAuthenticated && !!user?.email,
+      staleTime: 2 * 60 * 1000,
+    }
+  )
+
+  const favoritesCount = Array.isArray(favoritesData) ? favoritesData.length : 0
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,6 +46,14 @@ const Header = () => {
   const handleProfileClick = () => {
     if (!isAuthenticated) {
       loginWithRedirect()
+    }
+  }
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/listing?search=${encodeURIComponent(searchQuery.trim())}`)
+      setIsMenuOpen(false)
     }
   }
 
@@ -114,16 +138,18 @@ const Header = () => {
           </nav>
 
           {/* Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-lg mx-6">
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-lg mx-6">
             <div className="relative w-full">
               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
                 placeholder="Search luxury properties..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm font-medium bg-white/90 backdrop-blur-sm shadow-md"
               />
             </div>
-          </div>
+          </form>
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
@@ -167,9 +193,11 @@ const Header = () => {
               whileTap={{ scale: 0.95 }}
             >
               <FaHeart className="w-4 h-4 group-hover:animate-pulse" />
-              <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold shadow-md">
-                5
-              </span>
+              {favoritesCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1">
+                  {favoritesCount > 99 ? '99+' : favoritesCount}
+                </span>
+              )}
             </motion.button>
 
             {/* Profile/Login Button */}
@@ -225,16 +253,18 @@ const Header = () => {
               <div className="max-h-[70vh] overflow-y-auto">
                 
                 {/* Mobile Search */}
-                <div className="mb-6">
+                <form onSubmit={handleSearch} className="mb-6">
                   <div className="relative w-full">
                     <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                       type="text"
                       placeholder="Search luxury properties..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm font-medium bg-white/90 backdrop-blur-sm shadow-md"
                     />
                   </div>
-                </div>
+                </form>
 
                 {/* Mobile Navigation */}
                 <nav className="flex flex-col gap-2 mb-6">
@@ -296,7 +326,7 @@ const Header = () => {
                     whileTap={{ scale: 0.98 }}
                   >
                     <FaHeart className="w-4 h-4" />
-                    Favorites (5)
+                    Favorites {favoritesCount > 0 && `(${favoritesCount})`}
                   </motion.button>
 
                   {isAuthenticated ? (
