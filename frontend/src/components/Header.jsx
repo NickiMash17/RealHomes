@@ -89,7 +89,7 @@ const Header = () => {
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="flex-shrink-0"
+            className="flex-shrink-0 mr-8"
           >
             <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
               <div className="w-10 h-10 bg-gradient-to-br from-amber-600 via-yellow-500 to-amber-400 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300">
@@ -105,7 +105,7 @@ const Header = () => {
           </motion.div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          <nav className="hidden lg:flex items-center space-x-2">
             {navItems.map((item, index) => (
               <motion.div
                 key={item.path}
