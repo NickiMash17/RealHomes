@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background circle with gradient -->
+  <defs>
+    <linearGradient id="houseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="url(#houseGradient)" stroke="#92400e" stroke-width="2"/>
+  
+  <!-- House base -->
+  <rect x="30" y="45" width="40" height="35" fill="#ffffff" rx="2"/>
+  
+  <!-- House roof (triangle) -->
+  <path d="M 25 45 L 50 25 L 75 45 Z" fill="#ffffff" stroke="#92400e" stroke-width="1.5"/>
+  
+  <!-- Door -->
+  <rect x="42" y="60" width="16" height="20" fill="#f59e0b" rx="1"/>
+  <circle cx="50" cy="70" r="1.5" fill="#92400e"/>
+  
+  <!-- Windows -->
+  <rect x="35" y="50" width="8" height="8" fill="#60a5fa" rx="1"/>
+  <rect x="57" y="50" width="8" height="8" fill="#60a5fa" rx="1"/>
+  
+  <!-- Window cross lines -->
+  <line x1="39" y1="50" x2="39" y2="58" stroke="#1e40af" stroke-width="0.8"/>
+  <line x1="35" y1="54" x2="43" y2="54" stroke="#1e40af" stroke-width="0.8"/>
+  <line x1="61" y1="50" x2="61" y2="58" stroke="#1e40af" stroke-width="0.8"/>
+  <line x1="57" y1="54" x2="65" y2="54" stroke="#1e40af" stroke-width="0.8"/>
+  
+  <!-- Small decorative elements -->
+  <circle cx="50" cy="20" r="2" fill="#fbbf24"/>
+</svg>
+
