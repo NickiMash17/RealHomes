@@ -24,8 +24,23 @@ const Property = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const id = pathname.split("/").slice(-1)[0];
-  const { data, isLoading, isError, error } = useQuery(["resd", id], () =>
-    getProperty(id)
+  
+  // Validate ID before making query
+  const isValidId = id && id !== 'listing' && id !== '';
+  
+  const { data, isLoading, isError, error } = useQuery(
+    ["resd", id], 
+    () => getProperty(id),
+    {
+      enabled: isValidId, // Only run query if ID is valid
+      retry: 2,
+      retryDelay: 1000,
+      onError: (err) => {
+        if (import.meta.env.DEV) {
+          console.error('Property fetch error:', err);
+        }
+      }
+    }
   );
   const [modalOpened, setModalOpened] = useState(false);
   const { validateLogin } = useAuthCheck();
@@ -37,13 +52,24 @@ const Property = () => {
   } = useContext(UserDetailContext);
 
   const { mutate: cancelBooking, isLoading: cancelling } = useMutation({
-    mutationFn: () => removeBooking(id, user?.email, token),
+    mutationFn: () => {
+      if (!id || !user?.email || !token) {
+        throw new Error('Missing required information to cancel booking');
+      }
+      return removeBooking(id, user.email, token);
+    },
     onSuccess: () => {
       setUserDetails((prev) => ({
         ...prev,
-        bookings: prev.bookings.filter((booking) => booking?.id !== id),
+        bookings: prev.bookings?.filter((booking) => {
+          const bookingId = booking?.id || booking?.propertyId || booking?._id;
+          return bookingId !== id && String(bookingId) !== String(id);
+        }) || [],
       }));
       toast.success("Booking cancelled", { position: "bottom-right" });
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Failed to cancel booking. Please try again.", { position: "bottom-right" });
     },
   });
 
@@ -57,22 +83,46 @@ const Property = () => {
   }
 
   const handleShare = async () => {
-    if (navigator.share) {
-      try {
+    try {
+      if (navigator.share) {
         await navigator.share({
-          title: data?.title,
-          text: `Check out this property: ${data?.title}`,
+          title: propertyTitle,
+          text: `Check out this property: ${propertyTitle}`,
           url: window.location.href,
         });
-      } catch (err) {
-        // User cancelled or error occurred
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Link copied to clipboard!", { position: "bottom-right" });
       }
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Link copied to clipboard!", { position: "bottom-right" });
+    } catch (err) {
+      // User cancelled or error occurred - silently fail
+      if (import.meta.env.DEV) {
+        console.warn('Share error:', err);
+      }
     }
   };
+
+  // Handle invalid ID
+  if (!isValidId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="text-6xl mb-4">🔍</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Invalid Property ID</h2>
+          <p className="text-gray-600 mb-6">
+            The property ID is missing or invalid. Please select a property from the listings.
+          </p>
+          <button
+            onClick={() => navigate('/listing')}
+            className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
+          >
+            Back to Listings
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -98,39 +148,79 @@ const Property = () => {
           <div className="text-6xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Property Not Found</h2>
           <p className="text-gray-600 mb-6">
-            {error?.message || "The property you're looking for doesn't exist or has been removed."}
+            {error?.message || error?.response?.data?.message || "The property you're looking for doesn't exist or has been removed."}
           </p>
-          <button
-            onClick={() => navigate('/listing')}
-            className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
-          >
-            Back to Listings
-          </button>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => navigate('/listing')}
+              className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
+            >
+              Back to Listings
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-semibold transition-all"
+            >
+              Retry
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (!data) {
+  // Safely check if data exists and has required fields
+  if (!data || (!data.id && !data._id)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
         <div className="text-center max-w-md mx-auto px-4">
           <div className="text-6xl mb-4">🏠</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">No Property Data</h2>
-          <p className="text-gray-600 mb-6">Unable to load property information.</p>
-          <button
-            onClick={() => navigate('/listing')}
-            className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
-          >
-            Back to Listings
-          </button>
+          <p className="text-gray-600 mb-6">
+            Unable to load property information. The property may not exist or the data is incomplete.
+          </p>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => navigate('/listing')}
+              className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
+            >
+              Back to Listings
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-semibold transition-all"
+            >
+              Retry
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  const isBooked = bookings?.some((booking) => booking.id === id);
-  const bookingDate = bookings?.find((booking) => booking?.id === id)?.date;
+  // Safely check bookings
+  const isBooked = bookings?.some((booking) => {
+    const bookingId = booking?.id || booking?.propertyId || booking?._id;
+    return bookingId === id || String(bookingId) === String(id);
+  });
+  const bookingDate = bookings?.find((booking) => {
+    const bookingId = booking?.id || booking?.propertyId || booking?._id;
+    return bookingId === id || String(bookingId) === String(id);
+  })?.date;
+
+  // Safely access data with fallbacks
+  const propertyData = data || {};
+  const propertyId = propertyData.id || propertyData._id || id;
+  const propertyTitle = propertyData.title || 'Property';
+  const propertyPrice = propertyData.price || 0;
+  const propertyImage = propertyData.image || "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&auto=format&fit=crop&q=80";
+  const propertyDescription = propertyData.description || 'No description available for this property.';
+  const propertyCity = propertyData.city || 'Unknown';
+  const propertyCountry = propertyData.country || 'South Africa';
+  const propertyAddress = propertyData.address || 'Address not specified';
+  const propertyRating = propertyData.rating || null;
+  const propertyFacilities = propertyData.facilities || {};
+  const isFeatured = propertyData.featured || false;
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
@@ -153,8 +243,8 @@ const Property = () => {
           className="mb-6 sm:mb-8 relative rounded-xl overflow-hidden shadow-xl"
         >
           <img
-            src={data?.image || "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&auto=format&fit=crop&q=80"}
-            alt={data?.title || "Property"}
+            src={propertyImage}
+            alt={propertyTitle}
             className="w-full h-64 sm:h-80 lg:h-[500px] object-cover"
             loading="eager"
             onError={(e) => {
@@ -175,7 +265,7 @@ const Property = () => {
             </div>
           </div>
           {/* Featured Badge */}
-          {data?.featured && (
+          {isFeatured && (
             <div className="absolute top-4 left-4">
               <span className="px-4 py-2 bg-amber-500 text-white rounded-full text-sm font-semibold shadow-lg">
                 ⭐ Featured
@@ -197,22 +287,22 @@ const Property = () => {
               {/* Location */}
               <div className="flex items-center gap-2 text-gray-600 text-sm mb-4">
                 <FaMapMarkerAlt className="text-amber-500" />
-                <span>{data?.city || 'Unknown'}, {data?.country || 'South Africa'}</span>
+                <span>{propertyCity}, {propertyCountry}</span>
               </div>
 
               {/* Title and Price */}
               <div className="mb-6">
                 <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-                  {data?.title || 'Property'}
+                  {propertyTitle}
                 </h1>
                 <div className="flex items-center gap-4">
                   <div className="text-3xl sm:text-4xl font-bold text-amber-600">
-                    {formatPrice(data?.price || 0)}
+                    {formatPrice(propertyPrice)}
                   </div>
-                  {data?.rating && (
+                  {propertyRating && (
                     <div className="flex items-center gap-1 px-3 py-1 bg-amber-50 rounded-full">
                       <FaStar className="w-4 h-4 text-amber-500" />
-                      <span className="text-sm font-semibold text-gray-900">{data.rating}</span>
+                      <span className="text-sm font-semibold text-gray-900">{propertyRating}</span>
                     </div>
                   )}
                 </div>
@@ -225,7 +315,7 @@ const Property = () => {
                     <MdOutlineBed className="w-6 h-6 text-amber-600" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">{data?.facilities?.bedrooms || 0}</div>
+                    <div className="text-2xl font-bold text-gray-900">{propertyFacilities.bedrooms || 0}</div>
                     <div className="text-xs text-gray-600">Bedrooms</div>
                   </div>
                 </div>
@@ -234,7 +324,7 @@ const Property = () => {
                     <MdOutlineBathtub className="w-6 h-6 text-amber-600" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">{data?.facilities?.bathrooms || 0}</div>
+                    <div className="text-2xl font-bold text-gray-900">{propertyFacilities.bathrooms || 0}</div>
                     <div className="text-xs text-gray-600">Bathrooms</div>
                   </div>
                 </div>
@@ -243,7 +333,7 @@ const Property = () => {
                     <MdOutlineGarage className="w-6 h-6 text-amber-600" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">{data?.facilities?.parkings || 0}</div>
+                    <div className="text-2xl font-bold text-gray-900">{propertyFacilities.parkings || 0}</div>
                     <div className="text-xs text-gray-600">Parking</div>
                   </div>
                 </div>
@@ -252,7 +342,7 @@ const Property = () => {
                     <CgRuler className="w-6 h-6 text-amber-600" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">{data?.facilities?.area || 'N/A'}</div>
+                    <div className="text-2xl font-bold text-gray-900">{propertyFacilities.area || 'N/A'}</div>
                     <div className="text-xs text-gray-600">Area (m²)</div>
                   </div>
                 </div>
@@ -262,7 +352,7 @@ const Property = () => {
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Description</h2>
                 <p className="text-gray-600 leading-relaxed text-base">
-                  {data?.description || 'No description available for this property.'}
+                  {propertyDescription}
                 </p>
               </div>
 
@@ -272,7 +362,7 @@ const Property = () => {
                 <div className="flex items-start gap-3 text-gray-600 bg-gray-50 p-4 rounded-lg">
                   <FaMapMarkerAlt className="text-amber-500 mt-1 flex-shrink-0" />
                   <p className="text-base">
-                    {data?.address || 'Address not specified'}, {data?.city || ''}, {data?.country || 'South Africa'}
+                    {propertyAddress}, {propertyCity}, {propertyCountry}
                   </p>
                 </div>
               </div>
@@ -329,9 +419,9 @@ const Property = () => {
               className="bg-white rounded-xl shadow-lg overflow-hidden sticky top-24"
             >
               <Map
-                address={data?.address}
-                city={data?.city}
-                country={data?.country}
+                address={propertyAddress}
+                city={propertyCity}
+                country={propertyCountry}
               />
             </motion.div>
           </div>

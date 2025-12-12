@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { toast } from 'react-toastify'
 import { FaHeart, FaShare, FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt, FaStar, FaCrown, FaGem, FaEye, FaArrowRight } from 'react-icons/fa'
 
 const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
@@ -34,12 +35,31 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
       e.stopPropagation()
     }
     
-    if (onClick) {
-      onClick()
-    } else if (propertyId) {
-      navigate(`/listing/${propertyId}`)
-    } else {
-      console.warn('No property ID or onClick handler provided')
+    try {
+      if (onClick) {
+        onClick()
+      } else if (propertyId) {
+        // Ensure ID is a string and valid
+        const validId = String(propertyId).trim()
+        if (validId && validId !== 'undefined' && validId !== 'null') {
+          navigate(`/listing/${validId}`)
+        } else {
+          if (import.meta.env.DEV) {
+            console.warn('Invalid property ID:', propertyId)
+          }
+          toast.error('Invalid property. Please try another property.')
+        }
+      } else {
+        if (import.meta.env.DEV) {
+          console.warn('No property ID or onClick handler provided', property)
+        }
+        toast.error('Property information is missing. Please try another property.')
+      }
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('Navigation error:', error)
+      }
+      toast.error('Unable to load property. Please try again.')
     }
   }
   
