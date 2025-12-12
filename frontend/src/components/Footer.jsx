@@ -76,7 +76,7 @@ const Footer = () => {
   ]
 
   return (
-    <footer className="bg-gradient-to-br from-secondary via-tertiary to-accent text-white relative overflow-hidden">
+    <footer className="bg-gradient-to-br from-amber-900 via-amber-800 to-amber-900 text-white relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:20px_20px]"></div>
@@ -385,7 +385,7 @@ const Footer = () => {
       {/* Scroll to Top Button */}
       <motion.button
         onClick={scrollToTop}
-        className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-secondary to-tertiary text-white rounded-2xl shadow-2xl hover:shadow-glow transition-all duration-300 z-50"
+        className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-amber-600 to-yellow-500 text-white rounded-2xl shadow-2xl hover:shadow-glow transition-all duration-300 z-50"
         whileHover={{ scale: 1.1, y: -2 }}
         whileTap={{ scale: 0.9 }}
         initial={{ opacity: 0, y: 20 }}
