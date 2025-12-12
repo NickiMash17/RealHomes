@@ -18,26 +18,34 @@ const UploadImage = ({
   }
 
   useEffect(() => {
-    cloudinaryRef.current = window.cloudinary;
-    widgetRef.current = cloudinaryRef.current.createUploadWidget(
-      {
-        cloudName: "dgw3dfacb",
-        uploadPreset: "v6x2jdei",
-        maxFiles: 1,
-      },
-      (err, result) => {
-        if (result.event === "success") {
-          setImageURL(result.info.secure_url);
+    if (typeof window !== 'undefined' && window.cloudinary) {
+      cloudinaryRef.current = window.cloudinary;
+      widgetRef.current = cloudinaryRef.current.createUploadWidget(
+        {
+          cloudName: "dgw3dfacb",
+          uploadPreset: "v6x2jdei",
+          maxFiles: 1,
+        },
+        (err, result) => {
+          if (result && result.event === "success") {
+            setImageURL(result.info.secure_url);
+          }
         }
-      }
-    );
+      );
+    }
   }, []);
 
   return (
     <div className="mt-12 flex-col flexCenter">
       {!imageURL ? (
         <div
-          onClick={() => widgetRef.current?.open()}
+          onClick={() => {
+            if (widgetRef.current) {
+              widgetRef.current.open();
+            } else {
+              alert('Cloudinary widget not loaded. Please refresh the page.');
+            }
+          }}
           className="flexCenter flex-col w-3/4 h-[21rem] border-dashed border-2 cursor-pointer"
         >
           <MdOutlineCloudUpload size={44} color="grey" />
@@ -45,7 +53,13 @@ const UploadImage = ({
         </div>
       ) : (
         <div
-          onClick={() => widgetRef.current?.open()}
+          onClick={() => {
+            if (widgetRef.current) {
+              widgetRef.current.open();
+            } else {
+              alert('Cloudinary widget not loaded. Please refresh the page.');
+            }
+          }}
           className="w-3/4 h-[22rem] rounded-xl cursor-pointer overflow-hidden"
         >
           <img src={imageURL} alt="" className="h-full w-full object-cover" />

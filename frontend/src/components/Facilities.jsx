@@ -46,9 +46,8 @@ const Facilities = ({
 
   //   Upload
   const { user } = useMockAuth();
-  const {
-    userDetails: { token },
-  } = useContext(UserDetailContext);
+  const userDetailContext = useContext(UserDetailContext);
+  const token = userDetailContext?.userDetails?.token || null;
   const { refetch: refetchProperties } = useProperties();
 
   const { mutate, isLoading } = useMutation({

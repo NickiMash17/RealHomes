@@ -185,8 +185,58 @@ const PropertyMarker = ({ property, isSelected, onClick }) => {
   )
 }
 
+// Simple map component for single location
+const SimpleMap = ({ address, city, country }) => {
+  // Default to South Africa center if no location provided
+  const defaultCenter = [-30.5595, 22.9375]
+  const defaultZoom = 6
+  
+  // Try to geocode the address (simplified - in production, use a geocoding service)
+  const getCoordinates = () => {
+    // For now, use default center
+    // In production, you'd use a geocoding API like OpenCage, Google Maps, etc.
+    return defaultCenter
+  }
+
+  const [center] = useState(getCoordinates())
+  const [zoom] = useState(address && city ? 13 : defaultZoom)
+
+  return (
+    <div className='w-full h-[400px] rounded-lg overflow-hidden' style={{ minHeight: '400px' }}>
+      <MapContainer
+        center={center}
+        zoom={zoom}
+        className='w-full h-full'
+        zoomControl={true}
+        style={{ height: '100%', width: '100%' }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        {address && city && (
+          <Marker position={center} icon={createCustomIcon('#f59e0b')}>
+            <Popup>
+              <div className='p-2'>
+                <p className='font-semibold text-sm'>{address}</p>
+                <p className='text-xs text-gray-600'>{city}, {country || 'South Africa'}</p>
+              </div>
+            </Popup>
+          </Marker>
+        )}
+      </MapContainer>
+    </div>
+  )
+}
+
 // Map component with advanced features
-const Map = ({ properties = [], onPropertySelect }) => {
+const Map = ({ properties = [], onPropertySelect, address, city, country }) => {
+  // If address/city/country are provided, use simple map mode
+  if (address || city || country) {
+    return <SimpleMap address={address} city={city} country={country} />
+  }
+
+  // Otherwise, use the full interactive map
   const [selectedProperty, setSelectedProperty] = useState(null)
   const [filter, setFilter] = useState('all')
   const [ref, inView] = useInView({
@@ -195,8 +245,8 @@ const Map = ({ properties = [], onPropertySelect }) => {
   })
 
   // South Africa center coordinates
-  const center = [-30.5595, 22.9375]
-  const zoom = 6
+  const mapCenter = [-30.5595, 22.9375]
+  const mapZoom = 6
 
   const filteredProperties = filter === 'all' 
     ? properties 
@@ -247,8 +297,8 @@ const Map = ({ properties = [], onPropertySelect }) => {
       >
         <div className='h-[600px] relative'>
           <MapContainer
-            center={center}
-            zoom={zoom}
+            center={mapCenter}
+            zoom={mapZoom}
             className='w-full h-full'
             zoomControl={false}
           >
