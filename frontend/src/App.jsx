@@ -96,6 +96,7 @@ function AppContent() {
                   <Route path=":propertyId" element={<Property />} />
                 </Route>
                 <Route path="/addproperty" element={<AddProperty />} />
+                <Route path="/add-property" element={<AddProperty />} />
                 <Route path="/bookings" element={<Bookings />} />
                 <Route path="/favourites" element={<Favourites />} />
                 <Route path="/contact" element={<Contact />} />

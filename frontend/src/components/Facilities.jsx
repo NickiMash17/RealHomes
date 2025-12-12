@@ -17,6 +17,7 @@ const Facilities = ({
   setPropertyDetails,
   setOpened,
   setActiveStep,
+  onSuccess,
 }) => {
   const form = useForm({
     initialValues: {
@@ -79,8 +80,9 @@ const Facilities = ({
         },
         userEmail: user?.email, // Ensure userEmail is included in propertyDetails
       });
-      setOpened(false);
-      setActiveStep(0);
+      if (setOpened) setOpened(false);
+      if (setActiveStep) setActiveStep(4); // Move to completed step
+      if (onSuccess) onSuccess();
       refetchProperties();
     },
   });
