@@ -109,7 +109,19 @@ app.use('/api/residency', residencyRoute)
 
 // Advanced error handling middleware
 app.use((err, req, res, next) => {
-  console.error('Error:', err)
+  // Log error (always log errors in production for monitoring)
+  const isDevelopment = process.env.NODE_ENV === 'development'
+  if (isDevelopment) {
+    console.error('Error:', err)
+  } else {
+    // In production, log structured errors for monitoring tools
+    console.error(JSON.stringify({
+      error: err.message,
+      path: req.path,
+      method: req.method,
+      timestamp: new Date().toISOString()
+    }))
+  }
   
   const errorResponse = {
     message: err.message || 'Internal Server Error',
@@ -117,7 +129,7 @@ app.use((err, req, res, next) => {
     timestamp: new Date().toISOString(),
     path: req.path,
     method: req.method,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    ...(isDevelopment && { stack: err.stack })
   }
 
   res.status(errorResponse.status).json(errorResponse)
@@ -135,29 +147,39 @@ app.use('*', (req, res) => {
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Client connected:', socket.id)
+  }
 
   // Handle property view events
   socket.on('property_view', (data) => {
-    console.log('Property viewed:', data)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Property viewed:', data)
+    }
     // Broadcast to other clients for real-time analytics
     socket.broadcast.emit('property_viewed', data)
   })
 
   // Handle search events
   socket.on('property_search', (data) => {
-    console.log('Property search:', data)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Property search:', data)
+    }
     // Could be used for analytics or recommendations
   })
 
   // Handle favorite events
   socket.on('property_favorite', (data) => {
-    console.log('Property favorited:', data)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Property favorited:', data)
+    }
     socket.broadcast.emit('property_favorited', data)
   })
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Client disconnected:', socket.id)
+    }
   })
 })
 

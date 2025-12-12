@@ -9,17 +9,23 @@ export const api = axios.create({
 export const getAllProperties = async () => {
   try {
     const response = await api.get("/residency", {
-      timeout: 10 * 1000,
+      timeout: 15 * 1000, // Increased timeout for Render free tier
     });
     if (response.status === 400 || response.status === 500) {
       throw response.data;
     }
     // Handle both response formats: {data: [...]} or direct array
-    return response.data?.data || response.data || [];
+    const properties = response.data?.data || response.data || [];
+    return Array.isArray(properties) ? properties : [];
   } catch (error) {
-    // Return mock data if backend fails
-    if (process.env.NODE_ENV === 'development') {
-      console.warn("Backend not available, using mock data");
+    // Log error in development only
+    if (import.meta.env.DEV) {
+      console.warn("Backend not available, using mock data", error.message);
+    }
+    
+    // In production, show user-friendly message if backend is down
+    if (!import.meta.env.DEV && error.code === 'ECONNABORTED') {
+      toast.error("Connection timeout. Please try again.");
     }
     return [
       {
@@ -113,7 +119,7 @@ export const getAllProperties = async () => {
 export const getProperty = async (id) => {
   try {
     const response = await api.get(`/residency/${id}`, {
-      timeout: 10 * 1000,
+      timeout: 15 * 1000, // Increased timeout for Render free tier
     });
     if (response.status === 400 || response.status === 500) {
       throw response.data;
@@ -121,8 +127,13 @@ export const getProperty = async (id) => {
     // Handle both response formats: {data: {...}} or direct object
     return response.data?.data || response.data;
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.warn("Backend not available, using mock data for property:", id);
+    }
+    
+    // In production, show user-friendly message
+    if (!import.meta.env.DEV && error.code === 'ECONNABORTED') {
+      toast.error("Connection timeout. Please try again.");
     }
     
     // Mock data for individual properties
@@ -310,7 +321,6 @@ export const getAllFav = async (email, token) => {
       }
     );
 
-    // console.log(res)
     return res.data["favResidenciesID"];
   } catch (e) {
     toast.error("Something went wrong while fetching favs");
@@ -331,7 +341,6 @@ export const getAllBookings = async (email, token) => {
       }
     );
 
-    // console.log("res", res)
     return res.data["bookedVisits"];
   } catch (e) {
     toast.error("Something went wrong while fetching bookings");
@@ -353,7 +362,7 @@ export const getBookings = async (email, token) => {
     );
     return res.data["bookedVisits"] || [];
   } catch (e) {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.warn("Backend not available, using mock bookings");
     }
     // Return mock bookings data

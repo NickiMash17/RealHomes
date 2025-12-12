@@ -14,9 +14,9 @@ const Listing = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Debug logging
+  // Debug logging (development only)
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('Listing Page - Data:', data);
       console.log('Listing Page - isLoading:', isLoading);
       console.log('Listing Page - isError:', isError);
@@ -27,7 +27,7 @@ const Listing = () => {
   const uniqueProperties = useMemo(() => {
     try {
       if (!data) {
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.log('No data available');
         }
         return [];
@@ -44,7 +44,7 @@ const Listing = () => {
         }
       }
       
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.log('Processed data array length:', dataArray.length);
       }
       
@@ -60,7 +60,9 @@ const Listing = () => {
       
       return processed;
     } catch (err) {
-      console.error('Error processing properties:', err);
+      if (import.meta.env.DEV) {
+        console.error('Error processing properties:', err);
+      }
       return [];
     }
   }, [data]);

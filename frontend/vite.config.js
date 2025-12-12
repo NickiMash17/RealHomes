@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'dist',
-    sourcemap: false,
+    sourcemap: false, // Disable sourcemaps in production for security
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -17,6 +18,10 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 1000,
+  },
+  define: {
+    // Ensure environment variables are properly replaced
+    'import.meta.env.DEV': JSON.stringify(process.env.NODE_ENV !== 'production'),
   },
   server: {
     port: 5173,
