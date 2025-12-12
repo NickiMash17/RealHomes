@@ -79,13 +79,31 @@ app.use((req, res, next) => {
 })
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
-  })
+app.get('/health', async (req, res) => {
+  try {
+    // Check database connection
+    await prisma.$queryRaw`SELECT 1`
+    const dbStatus = 'connected'
+    
+    res.status(200).json({
+      status: 'OK',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || 'development',
+      database: dbStatus,
+      version: '1.0.0'
+    })
+  } catch (error) {
+    res.status(503).json({
+      status: 'degraded',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || 'development',
+      database: 'disconnected',
+      error: error.message,
+      version: '1.0.0'
+    })
+  }
 })
 
 // API versioning and documentation
@@ -188,9 +206,29 @@ const PORT = process.env.PORT || 8000
 
 async function startServer() {
   try {
-    // Test database connection
-    await prisma.$connect()
-    console.log('✅ Database connected successfully')
+    // Test database connection with retry logic
+    let retries = 5
+    let connected = false
+    
+    while (retries > 0 && !connected) {
+      try {
+        await prisma.$connect()
+        console.log('✅ Database connected successfully')
+        connected = true
+      } catch (dbError) {
+        retries--
+        if (retries === 0) {
+          console.error('❌ Failed to connect to database after 5 attempts')
+          console.error('Database error:', dbError.message)
+          if (!process.env.DATABASE_URL) {
+            console.error('⚠️  DATABASE_URL environment variable is not set!')
+          }
+          throw dbError
+        }
+        console.log(`⏳ Database connection failed, retrying... (${retries} attempts left)`)
+        await new Promise(resolve => setTimeout(resolve, 2000)) // Wait 2 seconds before retry
+      }
+    }
 
     // Start server
     server.listen(PORT, () => {
@@ -198,9 +236,17 @@ async function startServer() {
       console.log(`📊 Health check: http://localhost:${PORT}/health`)
       console.log(`🔗 API documentation: http://localhost:${PORT}/api`)
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`)
+      if (process.env.DATABASE_URL) {
+        const dbUrl = process.env.DATABASE_URL
+        const dbName = dbUrl.split('/').pop()?.split('?')[0] || 'unknown'
+        console.log(`💾 Database: ${dbName}`)
+      }
     })
   } catch (error) {
-    console.error('❌ Failed to start server:', error)
+    console.error('❌ Failed to start server:', error.message)
+    if (error.message.includes('P1001') || error.message.includes('connect')) {
+      console.error('💡 Tip: Check your DATABASE_URL and ensure MongoDB is accessible')
+    }
     process.exit(1)
   }
 }
