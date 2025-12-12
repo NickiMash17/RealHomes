@@ -51,15 +51,14 @@ const ErrorComponent = ({ error }) => (
 );
 
 function AppContent() {
-  console.log("AppContent is rendering"); // Debug log
-  
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
         staleTime: 5 * 60 * 1000, // 5 minutes
         cacheTime: 10 * 60 * 1000, // 10 minutes
-        retry: 3,
+        retry: 2,
         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+        refetchOnWindowFocus: false,
       },
     },
   });
@@ -69,19 +68,6 @@ function AppContent() {
     bookings: [],
     token: null
   })
-
-  // Clear cache on app load
-  useEffect(() => {
-    console.log("AppContent useEffect running"); // Debug log
-    // Clear any cached data
-    if ('caches' in window) {
-      caches.keys().then(names => {
-        names.forEach(name => {
-          caches.delete(name);
-        });
-      });
-    }
-  }, []);
   
   return (
     <UserDetailContext.Provider value={{ userDetails, setUserDetails }} >
@@ -124,21 +110,15 @@ function AppContent() {
 }
 
 export default function App() {
-  console.log("App component is rendering"); // Debug log
-  
   const { isLoading, error } = useMockAuth();
 
   if (error) {
-    console.log("Auth error:", error); // Debug log
     return <ErrorComponent error={error} />;
   }
 
   if (isLoading) {
-    console.log("Auth is loading"); // Debug log
     return <PremiumLoader />;
   }
-
-  console.log("App rendering normally"); // Debug log
 
   return (
     <AnimatePresence mode="wait">

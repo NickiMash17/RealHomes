@@ -28,14 +28,15 @@ const Properties = () => {
     }
   )
 
-  // Deduplicate properties by ID
+  // Deduplicate properties by ID - Optimized
   const properties = useMemo(() => {
     if (!propertiesData) return []
     const dataArray = Array.isArray(propertiesData) ? propertiesData : []
     const seen = new Set()
     return dataArray.filter(property => {
-      const id = property.id || property._id || JSON.stringify(property)
-      if (seen.has(id)) return false
+      // Use a more efficient ID generation
+      const id = property.id || property._id || `${property.title}-${property.address}`
+      if (!id || seen.has(id)) return false
       seen.add(id)
       return true
     })

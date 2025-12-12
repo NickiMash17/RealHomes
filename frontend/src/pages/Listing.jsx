@@ -10,13 +10,14 @@ const Listing = () => {
   const { data, isError, isLoading } = useProperties();
   const [filter, setFilter] = useState("");
 
-  // Deduplicate properties by ID
+  // Deduplicate properties by ID - Optimized
   const uniqueProperties = useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
     const seen = new Set();
     return data.filter(property => {
-      const id = property.id || property._id || JSON.stringify(property);
-      if (seen.has(id)) return false;
+      // Use a more efficient ID generation
+      const id = property.id || property._id || `${property.title}-${property.address}`;
+      if (!id || seen.has(id)) return false;
       seen.add(id);
       return true;
     });

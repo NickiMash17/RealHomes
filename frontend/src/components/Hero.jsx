@@ -88,14 +88,23 @@ const Hero = () => {
         <AnimatePresence mode="wait">
           <motion.div 
             key={currentSlide}
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${heroSlides[currentSlide].bgImage})` }}
+            className="absolute inset-0"
             variants={slideVariants}
             initial="enter"
             animate="center"
             exit="exit"
             transition={{ duration: 1.5, ease: "easeInOut" }}
-          />
+          >
+            <img 
+              src={heroSlides[currentSlide].bgImage} 
+              alt={heroSlides[currentSlide].title}
+              className="w-full h-full object-cover"
+              loading="eager"
+              onError={(e) => {
+                e.target.src = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1400&auto=format&fit=crop&q=80"
+              }}
+            />
+          </motion.div>
         </AnimatePresence>
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent" />

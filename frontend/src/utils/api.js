@@ -18,7 +18,9 @@ export const getAllProperties = async () => {
     return response.data?.data || response.data || [];
   } catch (error) {
     // Return mock data if backend fails
-    console.log("Backend not available, using mock data");
+    if (process.env.NODE_ENV === 'development') {
+      console.warn("Backend not available, using mock data");
+    }
     return [
       {
         id: "1",
@@ -119,7 +121,9 @@ export const getProperty = async (id) => {
     // Handle both response formats: {data: {...}} or direct object
     return response.data?.data || response.data;
   } catch (error) {
-    console.log("Backend not available, using mock data for property:", id);
+    if (process.env.NODE_ENV === 'development') {
+      console.warn("Backend not available, using mock data for property:", id);
+    }
     
     // Mock data for individual properties
     const mockProperties = {
@@ -349,7 +353,9 @@ export const getBookings = async (email, token) => {
     );
     return res.data["bookedVisits"] || [];
   } catch (e) {
-    console.log("Backend not available, using mock bookings");
+    if (process.env.NODE_ENV === 'development') {
+      console.warn("Backend not available, using mock bookings");
+    }
     // Return mock bookings data
     return [
       {
@@ -387,7 +393,6 @@ export const getBookings = async (email, token) => {
 export const createResidency = async (data, token, userEmail) => {
   // Ensure userEmail is included in the data object
   const requestData = { ...data, userEmail };
-  console.log(requestData); // Log the updated data object
   try {
     const res = await api.post(
       `/residency/create`,

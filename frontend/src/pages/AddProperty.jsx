@@ -28,13 +28,15 @@ const AddProperty = () => {
     userEmail: user?.email,
   })
 
-  // Redirect to login if not authenticated
+  // Update userEmail when user changes
   useEffect(() => {
-    if (!isAuthenticated) {
-      // You might want to show a message or redirect to login
-      // For now, we'll just show the form but it will require auth to submit
+    if (user?.email) {
+      setPropertyDetails(prev => ({
+        ...prev,
+        userEmail: user.email
+      }))
     }
-  }, [isAuthenticated])
+  }, [user?.email])
 
   const nextStep = () => {
     setActive((current) => (current < 4 ? current + 1 : current))
@@ -42,6 +44,26 @@ const AddProperty = () => {
   
   const prevStep = () => {
     setActive((current) => (current > 0 ? current - 1 : current))
+  }
+
+  // Show loading or error state
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white pt-24 pb-16 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
+          <p className="text-gray-600 mb-6">
+            Please log in to list your property
+          </p>
+          <button
+            onClick={() => navigate('/')}
+            className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition-all"
+          >
+            Go to Home
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -71,7 +93,7 @@ const AddProperty = () => {
               size="sm"
             >
               <Stepper.Step label="Location" description="Address">
-                <div className="py-6">
+                <div className="py-6 min-h-[400px]">
                   <AddLocation
                     nextStep={nextStep}
                     propertyDetails={propertyDetails}
@@ -81,7 +103,7 @@ const AddProperty = () => {
               </Stepper.Step>
               
               <Stepper.Step label="Images" description="Upload">
-                <div className="py-6">
+                <div className="py-6 min-h-[400px]">
                   <UploadImage
                     prevStep={prevStep}
                     nextStep={nextStep}
@@ -92,7 +114,7 @@ const AddProperty = () => {
               </Stepper.Step>
               
               <Stepper.Step label="Basics" description="Details">
-                <div className="py-6">
+                <div className="py-6 min-h-[400px]">
                   <BasicDetails
                     prevStep={prevStep}
                     nextStep={nextStep}
@@ -103,7 +125,7 @@ const AddProperty = () => {
               </Stepper.Step>
               
               <Stepper.Step label="Facilities" description="Amenities">
-                <div className="py-6">
+                <div className="py-6 min-h-[400px]">
                   <Facilities
                     prevStep={prevStep}
                     propertyDetails={propertyDetails}
@@ -116,7 +138,7 @@ const AddProperty = () => {
               </Stepper.Step>
               
               <Stepper.Completed>
-                <div className="py-12 text-center">
+                <div className="py-12 text-center min-h-[400px] flex flex-col items-center justify-center">
                   <div className="text-6xl mb-4">✅</div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">
                     Property Added Successfully!

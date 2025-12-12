@@ -36,10 +36,10 @@ const AddLocation = ({ propertyDetails, setPropertyDetails, nextStep }) => {
         handleSubmit();
       }}
     >
-      <div className="flexCenter">
+      <div className="flex flex-col md:flex-row gap-6">
         {/* left */}
-        <div className="flexCenter flex-1">
-          <div>
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="space-y-4">
             <Select
               w={"100%"}
               withAsterisk
@@ -64,7 +64,7 @@ const AddLocation = ({ propertyDetails, setPropertyDetails, nextStep }) => {
           </div>
         </div>
         {/* right */}
-        <div className="flex-1">
+        <div className="flex-1 min-h-[300px]">
           <Map country={country} city={city} address={address} />
         </div>
       </div>
