@@ -17,6 +17,11 @@ import { useMockAuth } from "./context/MockAuthContext";
 import { motion, AnimatePresence } from 'framer-motion';
 import { PremiumLoader } from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
+import { MantineProvider } from '@mantine/core';
+import { DatesProvider } from '@mantine/dates';
+import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
+import 'dayjs/locale/en';
 
 // Error Component
 const ErrorComponent = ({ error }) => (
@@ -72,44 +77,48 @@ function AppContent() {
   
   return (
     <ErrorBoundary>
-      <UserDetailContext.Provider value={{ userDetails, setUserDetails }} >
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <Suspense fallback={<PremiumLoader />}>
-              <ErrorBoundary>
-                <Routes>
-              <Route element={<Layout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/listing" >
-                  <Route index element={<Listing />} />
-                  <Route path=":propertyId" element={<Property />} />
-                </Route>
-                <Route path="/addproperty" element={<AddProperty />} />
-                <Route path="/add-property" element={<AddProperty />} />
-                <Route path="/bookings" element={<Bookings />} />
-                <Route path="/favourites" element={<Favourites />} />
-                <Route path="/contact" element={<Contact />} />
-              </Route>
-                </Routes>
-              </ErrorBoundary>
-            </Suspense>
-          </BrowserRouter>
-          <ToastContainer 
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-          toastClassName="rounded-xl shadow-lg"
-        />
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-      </UserDetailContext.Provider>
+      <MantineProvider>
+        <DatesProvider settings={{ firstDayOfWeek: 0 }}>
+          <UserDetailContext.Provider value={{ userDetails, setUserDetails }} >
+            <QueryClientProvider client={queryClient}>
+              <BrowserRouter>
+                <Suspense fallback={<PremiumLoader />}>
+                  <ErrorBoundary>
+                    <Routes>
+                  <Route element={<Layout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/listing" >
+                      <Route index element={<Listing />} />
+                      <Route path=":propertyId" element={<Property />} />
+                    </Route>
+                    <Route path="/addproperty" element={<AddProperty />} />
+                    <Route path="/add-property" element={<AddProperty />} />
+                    <Route path="/bookings" element={<Bookings />} />
+                    <Route path="/favourites" element={<Favourites />} />
+                    <Route path="/contact" element={<Contact />} />
+                  </Route>
+                    </Routes>
+                  </ErrorBoundary>
+                </Suspense>
+              </BrowserRouter>
+              <ToastContainer 
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+              toastClassName="rounded-xl shadow-lg"
+            />
+              <ReactQueryDevtools initialIsOpen={false} />
+            </QueryClientProvider>
+          </UserDetailContext.Provider>
+        </DatesProvider>
+      </MantineProvider>
     </ErrorBoundary>
   )
 }
