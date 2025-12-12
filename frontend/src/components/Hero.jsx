@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { FaSearch, FaWhatsapp, FaArrowRight, FaCrown } from 'react-icons/fa'
+import { FaSearch, FaWhatsapp, FaArrowRight, FaMapMarkerAlt, FaHome, FaCrown } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const Hero = () => {
@@ -216,6 +216,37 @@ const Hero = () => {
           />
         ))}
       </div>
+
+      {/* Floating Elements */}
+      <motion.div
+        className="absolute top-20 right-12 hidden lg:block"
+        animate={{ y: [-10, 10, -10] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="bg-white/20 backdrop-blur-xl p-4 rounded-2xl border-2 border-white/30 shadow-xl">
+          <FaMapMarkerAlt className="w-6 h-6 text-amber-400" />
+        </div>
+      </motion.div>
+
+      <motion.div
+        className="absolute bottom-32 left-12 hidden lg:block"
+        animate={{ y: [10, -10, 10] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="bg-white/20 backdrop-blur-xl p-4 rounded-2xl border-2 border-white/30 shadow-xl">
+          <FaHome className="w-6 h-6 text-amber-400" />
+        </div>
+      </motion.div>
+
+      <motion.div
+        className="absolute top-1/2 left-8 hidden lg:block"
+        animate={{ y: [-10, 10, -10] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="bg-white/20 backdrop-blur-xl p-3 rounded-2xl border-2 border-white/30 shadow-xl">
+          <FaCrown className="w-5 h-5 text-amber-400" />
+        </div>
+      </motion.div>
 
     </section>
   )
