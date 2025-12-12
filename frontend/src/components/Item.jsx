@@ -8,24 +8,6 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
   const [isLiked, setIsLiked] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   
-  // Handle click - use provided onClick or default navigation
-  const handleClick = () => {
-    if (onClick) {
-      onClick()
-    } else if (property?.id || property?._id) {
-      navigate(`/listing/${property.id || property._id}`)
-    }
-  }
-  
-  // Handle card click
-  const handleCardClick = (e) => {
-    // Don't navigate if clicking on buttons
-    if (e.target.closest('button') || e.target.closest('a')) {
-      return
-    }
-    handleClick()
-  }
-
   // Use provided property or fallback to mock data
   const property = prop || {
     id: 1,
@@ -40,6 +22,34 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
     area: 450,
     image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&auto=format&fit=crop&q=80",
     features: ["Ocean View", "Private Pool", "Garden", "Security"]
+  }
+
+  // Get property ID
+  const propertyId = property?.id || property?._id
+
+  // Handle click - use provided onClick or default navigation
+  const handleClick = (e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    
+    if (onClick) {
+      onClick()
+    } else if (propertyId) {
+      navigate(`/listing/${propertyId}`)
+    } else {
+      console.warn('No property ID or onClick handler provided')
+    }
+  }
+  
+  // Handle card click
+  const handleCardClick = (e) => {
+    // Don't navigate if clicking on buttons
+    if (e.target.closest('button') || e.target.closest('a')) {
+      return
+    }
+    handleClick()
   }
 
   // Extract data from property object
@@ -107,7 +117,11 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
             {/* Action Buttons */}
             <div className="absolute top-4 right-4 flex flex-col gap-2">
               <motion.button
-                onClick={() => setIsLiked(!isLiked)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setIsLiked(!isLiked)
+                }}
+                type="button"
                 className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
                   isLiked 
                     ? 'bg-red-500 text-white shadow-lg' 
@@ -119,6 +133,8 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
                 <FaHeart className="w-4 h-4" />
               </motion.button>
               <motion.button
+                onClick={(e) => e.stopPropagation()}
+                type="button"
                 className="p-2 rounded-full bg-white/80 text-gray-600 hover:text-blue-600 backdrop-blur-md transition-all duration-300"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -212,10 +228,8 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
                 {formatPrice(price)}
               </div>
               <motion.button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleClick()
-                }}
+                onClick={handleClick}
+                type="button"
                 className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:shadow-lg transition-all duration-300 group"
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.98 }}
@@ -355,10 +369,8 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
 
         {/* Action Button */}
         <motion.button
-          onClick={(e) => {
-            e.stopPropagation()
-            handleClick()
-          }}
+          onClick={handleClick}
+          type="button"
           className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 text-white py-2.5 rounded-lg font-semibold text-sm hover:shadow-md transition-all duration-300 group"
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
