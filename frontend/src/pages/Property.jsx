@@ -46,10 +46,10 @@ const Property = () => {
   const { validateLogin } = useAuthCheck();
   const { user } = useMockAuth();
 
-  const {
-    userDetails: { token, bookings },
-    setUserDetails,
-  } = useContext(UserDetailContext);
+  const userDetailContext = useContext(UserDetailContext);
+  const token = userDetailContext?.userDetails?.token || null;
+  const bookings = userDetailContext?.userDetails?.bookings || [];
+  const setUserDetails = userDetailContext?.setUserDetails || (() => {});
 
   const { mutate: cancelBooking, isLoading: cancelling } = useMutation({
     mutationFn: () => {
@@ -81,27 +81,6 @@ const Property = () => {
       maximumFractionDigits: 0,
     }).format(price)
   }
-
-  const handleShare = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: propertyTitle,
-          text: `Check out this property: ${propertyTitle}`,
-          url: window.location.href,
-        });
-      } else {
-        // Fallback: copy to clipboard
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success("Link copied to clipboard!", { position: "bottom-right" });
-      }
-    } catch (err) {
-      // User cancelled or error occurred - silently fail
-      if (import.meta.env.DEV) {
-        console.warn('Share error:', err);
-      }
-    }
-  };
 
   // Handle invalid ID
   if (!isValidId) {
@@ -221,6 +200,27 @@ const Property = () => {
   const propertyRating = propertyData.rating || null;
   const propertyFacilities = propertyData.facilities || {};
   const isFeatured = propertyData.featured || false;
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: propertyTitle,
+          text: `Check out this property: ${propertyTitle}`,
+          url: window.location.href,
+        });
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Link copied to clipboard!", { position: "bottom-right" });
+      }
+    } catch (err) {
+      // User cancelled or error occurred - silently fail
+      if (import.meta.env.DEV) {
+        console.warn('Share error:', err);
+      }
+    }
+  };
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
