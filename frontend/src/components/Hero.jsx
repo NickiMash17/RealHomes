@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { FaSearch, FaPhone, FaWhatsapp, FaEnvelope, FaPlay, FaArrowRight, FaMapMarkerAlt, FaHome, FaStar, FaCrown, FaAward, FaGem, FaTrophy, FaShieldAlt, FaCheckCircle } from 'react-icons/fa'
+import { FaSearch, FaWhatsapp, FaArrowRight, FaCrown } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   
   const heroSlides = [
     {
@@ -14,10 +13,10 @@ const Hero = () => {
       description: "Discover the epitome of luxury real estate with our curated collection of exceptional properties. From pristine beaches to prestigious estates, experience the finest addresses in South Africa.",
       bgImage: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1400&auto=format&fit=crop&q=80",
       stats: [
-        { value: "R5.2B+", label: "Properties Sold", icon: FaGem, color: "from-purple-500 to-pink-500" },
-        { value: "25+", label: "Years Experience", icon: FaTrophy, color: "from-amber-500 to-yellow-500" },
-        { value: "12", label: "Major Cities", icon: FaMapMarkerAlt, color: "from-blue-500 to-cyan-500" },
-        { value: "500+", label: "Luxury Properties", icon: FaCrown, color: "from-amber-600 to-yellow-500" }
+        { value: "500+", label: "Properties" },
+        { value: "25+", label: "Years" },
+        { value: "12", label: "Cities" },
+        { value: "99%", label: "Satisfaction" }
       ]
     },
     {
@@ -26,10 +25,10 @@ const Hero = () => {
       description: "Connect with South Africa's most trusted luxury real estate professionals. Our expert team is dedicated to finding your perfect property match in the most prestigious locations.",
       bgImage: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1400&auto=format&fit=crop&q=80",
       stats: [
-        { value: "99%", label: "Client Satisfaction", icon: FaCheckCircle, color: "from-green-500 to-emerald-500" },
-        { value: "24/7", label: "Premium Support", icon: FaShieldAlt, color: "from-blue-600 to-indigo-600" },
-        { value: "75+", label: "Expert Agents", icon: FaAward, color: "from-amber-500 to-orange-500" },
-        { value: "100%", label: "Verified Listings", icon: FaStar, color: "from-yellow-400 to-amber-500" }
+        { value: "99%", label: "Satisfaction" },
+        { value: "24/7", label: "Support" },
+        { value: "75+", label: "Agents" },
+        { value: "100%", label: "Verified" }
       ]
     },
     {
@@ -38,10 +37,10 @@ const Hero = () => {
       description: "Discover South Africa's most prestigious addresses. Our portfolio features the finest properties in the most sought-after locations, offering unparalleled luxury and exclusivity.",
       bgImage: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=1400&auto=format&fit=crop&q=80",
       stats: [
-        { value: "12", label: "Major Cities", icon: FaMapMarkerAlt, color: "from-blue-500 to-cyan-500" },
-        { value: "Free", label: "Property Valuation", icon: FaGem, color: "from-purple-500 to-pink-500" },
-        { value: "Premium", label: "Service Quality", icon: FaCrown, color: "from-amber-600 to-yellow-500" },
-        { value: "R2.5B+", label: "Portfolio Value", icon: FaTrophy, color: "from-amber-500 to-yellow-500" }
+        { value: "12", label: "Cities" },
+        { value: "Free", label: "Valuation" },
+        { value: "Premium", label: "Quality" },
+        { value: "R2.5B+", label: "Portfolio" }
       ]
     }
   ]
@@ -110,14 +109,13 @@ const Hero = () => {
         animate="visible"
       >
         
-        {/* Premium Badge */}
+        {/* Premium Badge - Simplified */}
         <motion.div 
-          className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-xl px-6 py-3 rounded-full text-sm font-bold mb-8 border-2 border-white/30 shadow-xl"
+          className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-4 py-2 rounded-full text-xs font-semibold mb-6 border border-white/20"
           variants={itemVariants}
         >
-          <FaAward className="text-amber-400 animate-pulse text-lg" />
-          <span className="text-white/95 tracking-wider">SOUTH AFRICA'S PREMIER LUXURY REAL ESTATE</span>
-          <FaCrown className="text-amber-400 text-lg" />
+          <FaCrown className="text-amber-400 text-sm" />
+          <span className="text-white/90 tracking-wide">PREMIER LUXURY REAL ESTATE</span>
         </motion.div>
         
         {/* Main Heading */}
@@ -151,101 +149,56 @@ const Hero = () => {
           </p>
         </motion.div>
 
-        {/* Stats Section */}
+        {/* Stats Section - Simplified */}
         <motion.div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-5xl mx-auto"
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8 max-w-4xl mx-auto"
           variants={itemVariants}
         >
           {heroSlides[currentSlide].stats.map((stat, index) => (
             <motion.div
               key={stat.label}
-              className="bg-white/15 backdrop-blur-xl p-4 rounded-2xl border-2 border-white/20 shadow-xl"
-              whileHover={{ scale: 1.05, y: -5 }}
-              initial={{ opacity: 0, y: 30 }}
+              className="bg-white/10 backdrop-blur-md p-3 sm:p-4 rounded-xl border border-white/20"
+              whileHover={{ scale: 1.03 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + index * 0.2 }}
+              transition={{ delay: 0.4 + index * 0.1 }}
             >
-              <div className={`text-2xl mb-3 p-3 bg-gradient-to-r ${stat.color} rounded-xl inline-flex items-center justify-center shadow-lg`}>
-                <stat.icon className="text-white" />
-              </div>
-              <div className="text-xl font-black mb-2 text-amber-400">{stat.value}</div>
-              <div className="text-sm text-white/80 font-bold tracking-wide">{stat.label}</div>
+              <div className="text-lg sm:text-xl font-bold mb-1 text-amber-400">{stat.value}</div>
+              <div className="text-xs sm:text-sm text-white/80 font-medium">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>
         
-        {/* Primary CTA */}
+        {/* Primary CTA - Simplified */}
         <motion.div 
-          className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-12"
+          className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-8"
           variants={itemVariants}
         >
           <motion.div
-            whileHover={{ scale: 1.05, y: -3 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
           >
             <Link 
               to="/listing" 
-              className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:shadow-xl hover:shadow-amber-500/30 transition-all duration-500 group shadow-lg"
+              className="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl"
             >
-              <FaSearch className="w-5 h-5" />
-              Explore Luxury Properties
-              <FaArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" />
+              <FaSearch className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span>Explore Properties</span>
+              <FaArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
           
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-white/20 backdrop-blur-xl px-6 py-4 rounded-2xl border-2 border-white/30 shadow-xl"
+          <motion.a
+            href="https://wa.me/27112345678"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md hover:bg-white/30 text-white px-6 py-3 rounded-xl border border-white/30 transition-all duration-300 font-medium text-sm sm:text-base"
           >
-            <div className="text-center">
-              <h5 className="font-bold text-amber-400 mb-2 text-base tracking-wider">EXCLUSIVE OFFER</h5>
-              <p className="text-white/95 font-semibold text-sm">Free Luxury Property Valuation</p>
-              <p className="text-xs text-white/60 mt-1 font-medium">Limited Time Only</p>
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* Quick Contact */}
-        <motion.div 
-          className="flex flex-wrap gap-3 justify-center mb-8"
-          variants={itemVariants}
-        >
-          {[
-            { icon: FaPhone, href: "tel:+27112345678", label: "Call Now", color: "from-green-600 to-green-500 hover:from-green-700 hover:to-green-600" },
-            { icon: FaWhatsapp, href: "https://wa.me/27112345678", label: "WhatsApp", color: "from-green-500 to-green-400 hover:from-green-600 hover:to-green-500" },
-            { icon: FaEnvelope, href: "mailto:info@realhomes.co.za", label: "Email", color: "from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600" }
-          ].map((contact, index) => (
-            <motion.a
-              key={contact.label}
-              href={contact.href}
-              className={`inline-flex items-center gap-2 bg-gradient-to-r ${contact.color} text-white px-4 py-3 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold text-sm shadow-md`}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 + index * 0.1 }}
-            >
-              <contact.icon className="w-4 h-4" />
-              <span>{contact.label}</span>
-            </motion.a>
-          ))}
-        </motion.div>
-
-        {/* Video Preview */}
-        <motion.div 
-          className="mt-8"
-          variants={itemVariants}
-        >
-          <motion.button
-            onClick={() => setIsVideoPlaying(true)}
-            className="inline-flex items-center gap-2 bg-white/25 backdrop-blur-xl px-4 py-3 rounded-xl border-2 border-white/30 hover:bg-white/35 transition-all duration-300 text-sm font-semibold shadow-md"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FaPlay className="w-4 h-4" />
-            <span>Watch Our Story</span>
-          </motion.button>
+            <FaWhatsapp className="w-4 h-4" />
+            <span>Contact Us</span>
+          </motion.a>
         </motion.div>
       </motion.div>
 
@@ -264,36 +217,6 @@ const Hero = () => {
         ))}
       </div>
 
-      {/* Floating Elements */}
-      <motion.div
-        className="absolute top-20 right-12 hidden lg:block"
-        animate={{ y: [-10, 10, -10] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="bg-white/20 backdrop-blur-xl p-4 rounded-2xl border-2 border-white/30 shadow-xl">
-          <FaMapMarkerAlt className="w-6 h-6 text-amber-400" />
-        </div>
-      </motion.div>
-
-      <motion.div
-        className="absolute bottom-32 left-12 hidden lg:block"
-        animate={{ y: [10, -10, 10] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="bg-white/20 backdrop-blur-xl p-4 rounded-2xl border-2 border-white/30 shadow-xl">
-          <FaHome className="w-6 h-6 text-amber-400" />
-        </div>
-      </motion.div>
-
-      <motion.div
-        className="absolute top-1/2 left-8 hidden lg:block"
-        animate={{ y: [-10, 10, -10] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="bg-white/20 backdrop-blur-xl p-3 rounded-2xl border-2 border-white/30 shadow-xl">
-          <FaCrown className="w-5 h-5 text-amber-400" />
-        </div>
-      </motion.div>
     </section>
   )
 }

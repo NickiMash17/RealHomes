@@ -5,7 +5,7 @@ import { useMockAuth } from '../context/MockAuthContext.jsx'
 import { useQuery } from 'react-query'
 import { getAllFav } from '../utils/api'
 import ProfileMenu from './ProfileMenu'
-import { FaHeart, FaUser, FaBars, FaTimes, FaPhone, FaWhatsapp, FaEnvelope, FaHome, FaBuilding, FaUser as FaContact, FaFileAlt, FaSearch, FaCrown, FaStar, FaAward, FaMapMarkerAlt } from 'react-icons/fa'
+import { FaHeart, FaUser, FaBars, FaTimes, FaWhatsapp, FaHome, FaBuilding, FaUser as FaContact, FaFileAlt, FaSearch, FaCrown } from 'react-icons/fa'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -91,23 +91,15 @@ const Header = () => {
             whileTap={{ scale: 0.98 }}
             className="flex-shrink-0"
           >
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-amber-600 via-yellow-500 to-amber-400 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
-                  <FaCrown className="text-white text-lg" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-amber-400 to-yellow-300 rounded-full flex items-center justify-center shadow-md">
-                  <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                </div>
-                <div className="absolute -bottom-0.5 -left-0.5 w-2.5 h-2.5 bg-gradient-to-r from-yellow-300 to-amber-400 rounded-full flex items-center justify-center">
-                  <FaStar className="text-white text-xs" />
-                </div>
+            <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
+              <div className="w-10 h-10 bg-gradient-to-br from-amber-600 via-yellow-500 to-amber-400 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300">
+                <FaCrown className="text-white text-lg" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-black text-gray-900 group-hover:text-amber-600 transition-colors duration-300 tracking-tight">
+                <span className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-amber-600 transition-colors duration-300 tracking-tight">
                   RealHomes
                 </span>
-                <span className="text-xs text-gray-500 font-semibold tracking-wider uppercase">Luxury Properties</span>
+                <span className="hidden sm:block text-xs text-gray-500 font-medium tracking-wide">Luxury Properties</span>
               </div>
             </Link>
           </motion.div>
@@ -124,10 +116,10 @@ const Header = () => {
               >
                 <Link 
                   to={item.path} 
-                  className={`relative px-4 py-2 rounded-lg font-semibold transition-all duration-300 whitespace-nowrap flex items-center gap-2 text-sm ${
+                  className={`relative px-3 py-2 rounded-lg font-medium transition-all duration-300 whitespace-nowrap flex items-center gap-2 text-sm ${
                     isActiveLink(item.path) 
-                      ? 'text-white bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 shadow-md' 
-                      : 'text-gray-700 hover:text-amber-600 hover:bg-gradient-to-r hover:from-amber-50 hover:to-yellow-50'
+                      ? 'text-white bg-amber-600 shadow-sm' 
+                      : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50'
                   }`}
                 >
                   <item.icon className="w-4 h-4" />
@@ -138,51 +130,33 @@ const Header = () => {
           </nav>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-lg mx-6">
+          <form onSubmit={handleSearch} className="hidden lg:flex flex-1 max-w-md mx-4">
             <div className="relative w-full">
               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                placeholder="Search luxury properties..."
+                placeholder="Search properties..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm font-medium bg-white/90 backdrop-blur-sm shadow-md"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm bg-white"
               />
             </div>
           </form>
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
-            {/* Contact Buttons */}
-            <div className="hidden sm:flex items-center gap-1">
-              <motion.a
-                href="tel:+27112345678"
-                className="p-2.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
-                whileHover={{ scale: 1.05, y: -1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FaPhone className="w-4 h-4" />
-              </motion.a>
-              <motion.a
-                href="https://wa.me/27112345678"
-                className="p-2.5 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
-                whileHover={{ scale: 1.05, y: -1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FaWhatsapp className="w-4 h-4" />
-              </motion.a>
-            </div>
-
-            {/* Premium Badge */}
-            <motion.div
-              className="hidden lg:flex items-center gap-2 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 text-white px-3 py-1.5 rounded-lg shadow-md"
-              whileHover={{ scale: 1.02 }}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
+            {/* WhatsApp Button - Keep only WhatsApp */}
+            <motion.a
+              href="https://wa.me/27112345678"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex p-2.5 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Contact via WhatsApp"
             >
-              <FaAward className="w-3.5 h-3.5" />
-              <span className="text-xs font-bold tracking-wider">PREMIUM</span>
-            </motion.div>
+              <FaWhatsapp className="w-4 h-4" />
+            </motion.a>
 
             {/* Favorites Button */}
             <motion.button
@@ -207,8 +181,8 @@ const Header = () => {
               <motion.button
                 onClick={handleProfileClick}
                 disabled={isLoading}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 text-white rounded-lg hover:shadow-lg transition-all duration-300 font-semibold text-sm shadow-md"
-                whileHover={{ scale: 1.02, y: -1 }}
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-all duration-300 font-medium text-sm shadow-sm hover:shadow-md"
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 {isLoading ? (
@@ -277,10 +251,10 @@ const Header = () => {
                     >
                       <Link 
                         to={item.path} 
-                        className={`block transition-all duration-300 font-semibold py-3 px-4 rounded-lg flex items-center gap-3 text-sm ${
+                        className={`block transition-all duration-300 font-medium py-3 px-4 rounded-lg flex items-center gap-3 text-sm ${
                           isActiveLink(item.path) 
-                            ? 'text-white bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 shadow-md' 
-                            : 'text-gray-700 hover:text-amber-600 hover:bg-gradient-to-r hover:from-amber-50 hover:to-yellow-50'
+                            ? 'text-white bg-amber-600 shadow-sm' 
+                            : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50'
                         }`}
                         onClick={() => setIsMenuOpen(false)}
                       >
@@ -291,25 +265,18 @@ const Header = () => {
                   ))}
                 </nav>
 
-                {/* Mobile Contact Buttons */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                  <motion.a
-                    href="tel:+27112345678"
-                    className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white rounded-lg transition-all duration-300 shadow-md"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <FaPhone className="w-4 h-4" />
-                    <span className="text-sm font-semibold">Call Now</span>
-                  </motion.a>
+                {/* Mobile Contact Button */}
+                <div className="mb-6">
                   <motion.a
                     href="https://wa.me/27112345678"
-                    className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white rounded-lg transition-all duration-300 shadow-md"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white rounded-lg transition-all duration-300 shadow-md"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <FaWhatsapp className="w-4 h-4" />
-                    <span className="text-sm font-semibold">WhatsApp</span>
+                    <span className="text-sm font-semibold">Contact via WhatsApp</span>
                   </motion.a>
                 </div>
 
@@ -321,7 +288,7 @@ const Header = () => {
                       setIsMenuOpen(false)
                     }}
                     disabled={isLoading}
-                    className="flex items-center justify-center gap-3 px-4 py-3 text-gray-700 hover:text-red-500 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 rounded-lg transition-all duration-300 font-semibold shadow-md"
+                    className="flex items-center justify-center gap-3 px-4 py-3 text-gray-700 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-300 font-medium"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -352,7 +319,7 @@ const Header = () => {
                         setIsMenuOpen(false)
                       }}
                       disabled={isLoading}
-                      className="flex items-center justify-center gap-3 px-4 py-3 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 text-white rounded-lg hover:shadow-lg transition-all duration-300 font-semibold shadow-md"
+                      className="flex items-center justify-center gap-3 px-4 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-all duration-300 font-medium shadow-sm hover:shadow-md"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
