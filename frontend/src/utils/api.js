@@ -14,7 +14,8 @@ export const getAllProperties = async () => {
     if (response.status === 400 || response.status === 500) {
       throw response.data;
     }
-    return response.data;
+    // Handle both response formats: {data: [...]} or direct array
+    return response.data?.data || response.data || [];
   } catch (error) {
     // Return mock data if backend fails
     console.log("Backend not available, using mock data");
@@ -115,7 +116,8 @@ export const getProperty = async (id) => {
     if (response.status === 400 || response.status === 500) {
       throw response.data;
     }
-    return response.data;
+    // Handle both response formats: {data: {...}} or direct object
+    return response.data?.data || response.data;
   } catch (error) {
     console.log("Backend not available, using mock data for property:", id);
     
