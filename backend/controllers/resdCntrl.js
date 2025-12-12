@@ -69,10 +69,7 @@ export const getAllProperties = async (req, res) => {
     // Build filter conditions
     const where = {}
     
-    if (category) where.category = category
     if (city) where.city = { contains: city, mode: 'insensitive' }
-    if (bedrooms) where.bedrooms = { gte: parseInt(bedrooms) }
-    if (bathrooms) where.bathrooms = { gte: parseInt(bathrooms) }
     if (minPrice || maxPrice) {
       where.price = {}
       if (minPrice) where.price.gte = parseInt(minPrice)
@@ -82,12 +79,13 @@ export const getAllProperties = async (req, res) => {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
-        { address: { contains: search, mode: 'insensitive' } }
+        { address: { contains: search, mode: 'insensitive' } },
+        { city: { contains: search, mode: 'insensitive' } }
       ]
     }
 
     // Validate sort fields
-    const allowedSortFields = ['createdAt', 'price', 'title', 'rating', 'bedrooms']
+    const allowedSortFields = ['createdAt', 'price', 'title', 'updatedAt']
     const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt'
     const order = sortOrder === 'asc' ? 'asc' : 'desc'
 
@@ -98,33 +96,76 @@ export const getAllProperties = async (req, res) => {
       return res.json(cached.data)
     }
 
-    // Execute query
-    const [properties, total] = await Promise.all([
-      prisma.residency.findMany({
-        where,
-        skip,
-        take: limitNum,
-        orderBy: { [sortField]: order },
-        include: {
-          owner: {
-            select: {
-              name: true,
-              email: true,
-              image: true
-            }
+    // Execute query - get all properties first for filtering
+    const allProperties = await prisma.residency.findMany({
+      where,
+      include: {
+        owner: {
+          select: {
+            name: true,
+            email: true,
+            image: true
           }
         }
-      }),
-      prisma.residency.count({ where })
-    ])
+      },
+      orderBy: { [sortField]: order }
+    })
 
+    // Transform properties to match frontend expectations
+    const transformedProperties = allProperties.map(property => {
+      const facilities = typeof property.facilities === 'string' 
+        ? JSON.parse(property.facilities) 
+        : property.facilities || {}
+      
+      return {
+        id: property.id,
+        title: property.title,
+        description: property.description,
+        price: property.price,
+        address: property.address,
+        city: property.city,
+        country: property.country,
+        image: property.image,
+        facilities: facilities,
+        rating: facilities.rating || 4.5,
+        category: facilities.category || 'Property',
+        featured: facilities.featured || false,
+        bedrooms: facilities.bedrooms || facilities.bed || 0,
+        bathrooms: facilities.bathrooms || facilities.bath || 0,
+        parkings: facilities.parkings || facilities.parking || 0,
+        createdAt: property.createdAt,
+        updatedAt: property.updatedAt
+      }
+    })
+    
+    // Apply client-side filtering for category, bedrooms, bathrooms if needed
+    let filteredProperties = transformedProperties
+    if (category) {
+      filteredProperties = filteredProperties.filter(p => 
+        p.category?.toLowerCase().includes(category.toLowerCase())
+      )
+    }
+    if (bedrooms) {
+      filteredProperties = filteredProperties.filter(p => 
+        p.bedrooms >= parseInt(bedrooms)
+      )
+    }
+    if (bathrooms) {
+      filteredProperties = filteredProperties.filter(p => 
+        p.bathrooms >= parseInt(bathrooms)
+      )
+    }
+
+    // Apply pagination after filtering
+    const total = filteredProperties.length
+    const paginatedProperties = filteredProperties.slice(skip, skip + limitNum)
     const totalPages = Math.ceil(total / limitNum)
     const hasNext = pageNum < totalPages
     const hasPrev = pageNum > 1
 
     const result = {
       success: true,
-      data: properties,
+      data: paginatedProperties,
       pagination: {
         currentPage: pageNum,
         totalPages,
@@ -188,15 +229,36 @@ export const getPropertyById = async (req, res) => {
       })
     }
 
-    // Increment view count
-    await prisma.residency.update({
-      where: { id },
-      data: { views: { increment: 1 } }
-    })
+    // Note: views field doesn't exist in schema, would need to add it or track in facilities
+
+    // Transform property to match frontend expectations
+    const facilities = typeof property.facilities === 'string' 
+      ? JSON.parse(property.facilities) 
+      : property.facilities || {}
+    
+    const transformedProperty = {
+      id: property.id,
+      title: property.title,
+      description: property.description,
+      price: property.price,
+      address: property.address,
+      city: property.city,
+      country: property.country,
+      image: property.image,
+      facilities: facilities,
+      rating: facilities.rating || 4.5,
+      category: facilities.category || 'Property',
+      featured: facilities.featured || false,
+      bedrooms: facilities.bedrooms || facilities.bed || 0,
+      bathrooms: facilities.bathrooms || facilities.bath || 0,
+      parkings: facilities.parkings || facilities.parking || 0,
+      createdAt: property.createdAt,
+      updatedAt: property.updatedAt
+    }
 
     const result = {
       success: true,
-      data: property
+      data: transformedProperty
     }
 
     // Cache the result
@@ -349,10 +411,8 @@ export const getPropertyStats = async (req, res) => {
         _min: { price: true },
         _max: { price: true }
       }),
-      prisma.residency.groupBy({
-        by: ['category'],
-        _count: { category: true }
-      }),
+      // Category stats would need to be calculated from facilities JSON
+      Promise.resolve([]),
       prisma.residency.groupBy({
         by: ['city'],
         _count: { city: true },
@@ -406,15 +466,13 @@ export const searchProperties = async (req, res) => {
       ]
     }
 
-    if (category) where.category = category
     if (city) where.city = { contains: city, mode: 'insensitive' }
     if (minPrice || maxPrice) {
       where.price = {}
       if (minPrice) where.price.gte = parseInt(minPrice)
       if (maxPrice) where.price.lte = parseInt(maxPrice)
     }
-    if (bedrooms) where.bedrooms = { gte: parseInt(bedrooms) }
-    if (bathrooms) where.bathrooms = { gte: parseInt(bathrooms) }
+    // Note: bedrooms and bathrooms are in facilities JSON, filtered client-side
     if (amenities) {
       where.facilities = {
         path: ['amenities'],
@@ -449,26 +507,45 @@ export const searchProperties = async (req, res) => {
 // Get featured properties
 export const getFeaturedProperties = async (req, res) => {
   try {
-    const properties = await prisma.residency.findMany({
-      where: {
-        featured: true
-      },
-      take: 6,
+    // Get all properties and filter by featured in facilities
+    const allProperties = await prisma.residency.findMany({
       include: {
-        user: {
+        owner: {
           select: {
             name: true,
             email: true,
-            avatar: true
+            image: true
           }
         }
       },
       orderBy: { createdAt: 'desc' }
     })
 
+    // Filter by featured property in facilities
+    const featuredProperties = allProperties
+      .filter(property => {
+        const facilities = typeof property.facilities === 'string' 
+          ? JSON.parse(property.facilities) 
+          : property.facilities || {}
+        return facilities.featured === true
+      })
+      .slice(0, 6)
+      .map(property => {
+        const facilities = typeof property.facilities === 'string' 
+          ? JSON.parse(property.facilities) 
+          : property.facilities || {}
+        return {
+          ...property,
+          facilities,
+          rating: facilities.rating || 4.5,
+          category: facilities.category || 'Property',
+          featured: true
+        }
+      })
+
     res.json({
       success: true,
-      data: properties
+      data: featuredProperties
     })
   } catch (error) {
     handleDatabaseError(error, res)
@@ -491,13 +568,16 @@ export const getSimilarProperties = async (req, res) => {
       })
     }
 
+    const currentFacilities = typeof currentProperty.facilities === 'string' 
+      ? JSON.parse(currentProperty.facilities) 
+      : currentProperty.facilities || {}
+    
     const similarProperties = await prisma.residency.findMany({
       where: {
         AND: [
           { id: { not: id } },
           {
             OR: [
-              { category: currentProperty.category },
               { city: currentProperty.city },
               {
                 price: {
@@ -509,22 +589,43 @@ export const getSimilarProperties = async (req, res) => {
           }
         ]
       },
-      take: 4,
+      take: 10, // Get more to filter by category
       include: {
-        user: {
+        owner: {
           select: {
             name: true,
             email: true,
-            avatar: true
+            image: true
           }
         }
       },
       orderBy: { createdAt: 'desc' }
     })
 
+    // Filter by category if available
+    const filteredSimilar = similarProperties
+      .filter(property => {
+        const facilities = typeof property.facilities === 'string' 
+          ? JSON.parse(property.facilities) 
+          : property.facilities || {}
+        return !currentFacilities.category || facilities.category === currentFacilities.category
+      })
+      .slice(0, 4)
+      .map(property => {
+        const facilities = typeof property.facilities === 'string' 
+          ? JSON.parse(property.facilities) 
+          : property.facilities || {}
+        return {
+          ...property,
+          facilities,
+          rating: facilities.rating || 4.5,
+          category: facilities.category || 'Property'
+        }
+      })
+
     res.json({
       success: true,
-      data: similarProperties
+      data: filteredSimilar
     })
   } catch (error) {
     handleDatabaseError(error, res)

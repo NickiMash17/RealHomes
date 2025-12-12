@@ -16,28 +16,29 @@ const router = express.Router()
 // Get all properties with pagination and filtering
 router.get('/', getAllProperties)
 
+// Get property statistics (must be before /:id route)
+router.get('/stats/overview', getPropertyStats)
+
+// Search properties (must be before /:id route)
+router.get('/search/query', searchProperties)
+
+// Get featured properties (must be before /:id route)
+router.get('/featured/list', getFeaturedProperties)
+
+// Create new property - support both /create and / endpoints
+router.post('/create', createProperty)
+router.post('/', createProperty)
+
 // Get property by ID
 router.get('/:id', getPropertyById)
 
-// Create new property
-router.post('/', createProperty)
+// Get similar properties
+router.get('/:id/similar', getSimilarProperties)
 
 // Update property
 router.put('/:id', updateProperty)
 
 // Delete property
 router.delete('/:id', deleteProperty)
-
-// Get property statistics
-router.get('/stats/overview', getPropertyStats)
-
-// Search properties
-router.get('/search/query', searchProperties)
-
-// Get featured properties
-router.get('/featured/list', getFeaturedProperties)
-
-// Get similar properties
-router.get('/:id/similar', getSimilarProperties)
 
 export default router 
