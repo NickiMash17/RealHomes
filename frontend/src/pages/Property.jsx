@@ -71,92 +71,149 @@ const Property = () => {
     );
   }
 
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-ZA', {
+      style: 'currency',
+      currency: 'ZAR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price)
+  }
+
   return (
-    <section className="max-padd-container my-[99px]">
-      <div className="pb-2 relative">
-        <img
-          src={data?.image}
-          alt={data?.title}
-          className="rounded-xl max-h-[27rem] self-center w-full object-cover"
-        />
-        {/* like btn */}
-        <div className="absolute top-8 right-8">
-          <HeartBtn id={id}/>
-        </div>
-      </div>
-      {/* container */}
-      <div className="xl:flexBetween gap-8">
-        {/* left side */}
-        <div className="flex-1 rounded-2xl bg-white p-2">
-          <h5 className="bold-16 my-1 text-secondary">{data?.city}</h5>
-          <div className="flexBetween">
-            <h4 className="medium-18">{data?.title}</h4>
-            <div className="bold-20">${data?.price}.00</div>
-          </div>
-          {/* info */}
-          <div className="flex gap-x-4 py-2">
-            <div className="flexCenter gap-x-2 border-r-2 border-gray-900/80 pr-4 font-[500]">
-              <MdOutlineBed /> {data?.facilities.bedrooms}
-            </div>
-            <div className="flexCenter gap-x-2 border-r-2 border-gray-900/80 pr-4 font-[500]">
-              <MdOutlineBathtub /> {data?.facilities.bathrooms}
-            </div>
-            <div className="flexCenter gap-x-2 border-r-2 border-gray-900/80 pr-4 font-[500]">
-              <MdOutlineGarage /> {data?.facilities.parkings}
-            </div>
-            <div className="flexCenter gap-x-2 border-r-2 border-gray-900/80 pr-4 font-[500]">
-              <CgRuler /> 400
-            </div>
-          </div>
-          <p className="pt-2 mb-4">{data?.description}</p>
-          <div className="flexStart gap-x-2 my-5">
-            <FaLocationDot />
-            <div>
-              {data?.address} {data?.city} {data?.country}
-            </div>
-          </div>
-          <div>
-            {bookings?.map((booking) => booking.id).includes(id) ? (
-              <>
-                <Button
-                  onClick={() => cancelBooking()}
-                  variant="outline"
-                  w={"100%"}
-                  color="red"
-                  disabled={cancelling}
-                >
-                  Cancel booking
-                </Button>
-                <p className="text-red-500 medium-15 mt-3">
-                  You've Already booked visit for{" "}
-                  {bookings?.filter((booking) => booking?.id === id)[0].date}
-                </p>
-              </>
-            ) : (
-              <button
-                onClick={() => {
-                  validateLogin() && setModalOpened(true);
-                }}
-                className="btn-secondary rounded-xl !px-5 !py-[7px] shadow-sm"
-              >
-                Book the visit
-              </button>
-            )}
-            <BookingModal
-              opened={modalOpened}
-              setOpened={setModalOpened}
-              propertyId={id}
-              email={user?.email}
-            />
-          </div>
-        </div>
-        {/* right side */}
-        <div className="flex-1">
-          <Map
-            address={data?.address}
-            city={data?.city}
-            country={data?.country}
+    <section className="min-h-screen bg-gray-50 pt-24 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Image Section */}
+        <div className="mb-6 sm:mb-8 relative rounded-xl overflow-hidden shadow-lg">
+          <img
+            src={data?.image}
+            alt={data?.title}
+            className="w-full h-64 sm:h-80 lg:h-96 object-cover"
+            loading="eager"
           />
+          {/* Like button */}
+          <div className="absolute top-4 right-4">
+            <HeartBtn id={id}/>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Left side - Property Details */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 lg:p-8">
+              {/* Location */}
+              <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
+                <FaLocationDot className="text-amber-500" />
+                <span>{data?.city}, {data?.country}</span>
+              </div>
+
+              {/* Title and Price */}
+              <div className="mb-6">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+                  {data?.title}
+                </h1>
+                <div className="text-3xl sm:text-4xl font-bold text-amber-600">
+                  {formatPrice(data?.price || 0)}
+                </div>
+              </div>
+
+              {/* Property Info */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 border-y border-gray-200 mb-6">
+                <div className="flex items-center gap-2">
+                  <MdOutlineBed className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">{data?.facilities?.bedrooms || 0}</div>
+                    <div className="text-xs text-gray-600">Bedrooms</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MdOutlineBathtub className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">{data?.facilities?.bathrooms || 0}</div>
+                    <div className="text-xs text-gray-600">Bathrooms</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MdOutlineGarage className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">{data?.facilities?.parkings || 0}</div>
+                    <div className="text-xs text-gray-600">Parking</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CgRuler className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">{data?.facilities?.area || 'N/A'}</div>
+                    <div className="text-xs text-gray-600">Area (m²)</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-3">Description</h2>
+                <p className="text-gray-600 leading-relaxed">{data?.description}</p>
+              </div>
+
+              {/* Address */}
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-3">Address</h2>
+                <div className="flex items-start gap-2 text-gray-600">
+                  <FaLocationDot className="text-amber-500 mt-1 flex-shrink-0" />
+                  <p>{data?.address}, {data?.city}, {data?.country}</p>
+                </div>
+              </div>
+
+              {/* Booking Section */}
+              <div className="pt-6 border-t border-gray-200">
+                {bookings?.map((booking) => booking.id).includes(id) ? (
+                  <div>
+                    <Button
+                      onClick={() => cancelBooking()}
+                      variant="outline"
+                      w={"100%"}
+                      color="red"
+                      disabled={cancelling}
+                      size="lg"
+                    >
+                      Cancel booking
+                    </Button>
+                    <p className="text-red-500 text-sm mt-3 text-center">
+                      You've already booked a visit for{" "}
+                      {bookings?.filter((booking) => booking?.id === id)[0].date}
+                    </p>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      validateLogin() && setModalOpened(true);
+                    }}
+                    className="w-full bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
+                  >
+                    Book a Visit
+                  </button>
+                )}
+                <BookingModal
+                  opened={modalOpened}
+                  setOpened={setModalOpened}
+                  propertyId={id}
+                  email={user?.email}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Right side - Map */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-md overflow-hidden sticky top-24">
+              <Map
+                address={data?.address}
+                city={data?.city}
+                country={data?.country}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>

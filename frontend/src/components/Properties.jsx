@@ -1,19 +1,45 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaSearch, FaFilter, FaTimes, FaThLarge, FaList, FaBed, FaBath, FaRulerCombined, FaHome, FaBuilding, FaCrown, FaStar, FaGem, FaTrophy, FaShieldAlt, FaCheckCircle, FaArrowRight, FaArrowLeft } from 'react-icons/fa'
+import { useQuery } from 'react-query'
+import { getAllProperties } from '../utils/api'
 import Item from './Item'
 import LoadingSpinner from './LoadingSpinner'
+import { useNavigate } from 'react-router-dom'
 
 const Properties = () => {
-  const [loading, setLoading] = useState(true)
-  const [properties, setProperties] = useState([])
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
+  const [sortBy, setSortBy] = useState('newest')
+  const [minBedrooms, setMinBedrooms] = useState('any')
+  const [maxPrice, setMaxPrice] = useState(50000000)
   const [viewMode, setViewMode] = useState('grid')
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false)
+
+  // Fetch properties from API
+  const { data: propertiesData, isLoading, isError, error } = useQuery(
+    'allProperties',
+    getAllProperties,
+    {
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    }
+  )
+
+  // Deduplicate properties by ID
+  const properties = useMemo(() => {
+    if (!propertiesData) return []
+    const dataArray = Array.isArray(propertiesData) ? propertiesData : []
+    const seen = new Set()
+    return dataArray.filter(property => {
+      const id = property.id || property._id || JSON.stringify(property)
+      if (seen.has(id)) return false
+      seen.add(id)
+      return true
+    })
+  }, [propertiesData])
 
   // Mock data for demonstration
   const stats = [
@@ -23,13 +49,24 @@ const Properties = () => {
     { value: "25+", label: "Years", icon: FaTrophy, color: "from-amber-500 to-yellow-500" }
   ]
 
+  // Calculate category counts from actual data
+  const categoryCounts = useMemo(() => {
+    const counts = { all: properties.length }
+    properties.forEach(prop => {
+      const category = prop.category?.toLowerCase() || 'other'
+      counts[category] = (counts[category] || 0) + 1
+      counts.all = properties.length
+    })
+    return counts
+  }, [properties])
+
   const categories = [
-    { value: 'all', label: 'All Properties', icon: FaHome, count: 2847 },
-    { value: 'house', label: 'Houses', icon: FaHome, count: 1247 },
-    { value: 'apartment', label: 'Apartments', icon: FaBuilding, count: 892 },
-    { value: 'villa', label: 'Villas', icon: FaCrown, count: 456 },
-    { value: 'penthouse', label: 'Penthouses', icon: FaStar, count: 234 },
-    { value: 'estate', label: 'Estates', icon: FaGem, count: 18 }
+    { value: 'all', label: 'All Properties', icon: FaHome, count: categoryCounts.all || 0 },
+    { value: 'house', label: 'Houses', icon: FaHome, count: categoryCounts.house || 0 },
+    { value: 'apartment', label: 'Apartments', icon: FaBuilding, count: categoryCounts.apartment || 0 },
+    { value: 'villa', label: 'Villas', icon: FaCrown, count: categoryCounts.villa || 0 },
+    { value: 'penthouse', label: 'Penthouses', icon: FaStar, count: categoryCounts.penthouse || 0 },
+    { value: 'estate', label: 'Estates', icon: FaGem, count: categoryCounts.estate || 0 }
   ]
 
   const sortOptions = [
@@ -40,13 +77,64 @@ const Properties = () => {
     { value: 'featured', label: 'Featured' }
   ]
 
-  useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, 2000)
-    return () => clearTimeout(timer)
-  }, [])
+  // Filter and sort properties
+  const filteredAndSortedProperties = useMemo(() => {
+    let filtered = [...properties]
+
+    // Search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase()
+      filtered = filtered.filter(prop =>
+        prop.title?.toLowerCase().includes(searchLower) ||
+        prop.description?.toLowerCase().includes(searchLower) ||
+        prop.address?.toLowerCase().includes(searchLower) ||
+        prop.city?.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // Category filter
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(prop =>
+        prop.category?.toLowerCase().includes(selectedCategory.toLowerCase())
+      )
+    }
+
+    // Bedrooms filter
+    if (minBedrooms !== 'any') {
+      filtered = filtered.filter(prop =>
+        (prop.facilities?.bedrooms || prop.bedrooms || 0) >= parseInt(minBedrooms)
+      )
+    }
+
+    // Price filter
+    filtered = filtered.filter(prop => prop.price <= maxPrice)
+
+    // Sort
+    switch (sortBy) {
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price)
+        break
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price)
+        break
+      case 'featured':
+        filtered.sort((a, b) => {
+          const aFeatured = a.featured || a.facilities?.featured || false
+          const bFeatured = b.featured || b.facilities?.featured || false
+          return bFeatured - aFeatured
+        })
+        break
+      case 'popular':
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        break
+      case 'newest':
+      default:
+        filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+        break
+    }
+
+    return filtered
+  }, [properties, searchTerm, selectedCategory, minBedrooms, maxPrice, sortBy])
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-ZA', {
@@ -60,11 +148,9 @@ const Properties = () => {
   const clearFilters = () => {
     setSearchTerm('')
     setSelectedCategory('all')
-    setCurrentPage(1)
-  }
-
-  const loadMoreProperties = () => {
-    setCurrentPage(prev => prev + 1)
+    setSortBy('newest')
+    setMinBedrooms('any')
+    setMaxPrice(50000000)
   }
 
   const containerVariants = {
@@ -90,7 +176,7 @@ const Properties = () => {
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner />
@@ -98,126 +184,106 @@ const Properties = () => {
     )
   }
 
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Error Loading Properties</h2>
+          <p className="text-gray-600 mb-6">{error?.message || 'Failed to load properties'}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-gradient-to-r from-amber-600 to-yellow-500 text-white rounded-xl font-semibold"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <motion.div 
-      className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50"
+      className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 pt-24 pb-16"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Page Header */}
+        {/* Page Header - Simplified */}
         <motion.div 
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-12"
           variants={itemVariants}
         >
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 text-white px-6 py-3 rounded-full text-sm font-bold mb-6 shadow-lg">
-            <FaGem className="text-lg" />
-            <span className="tracking-wider">PREMIUM PROPERTIES</span>
-            <FaCrown className="text-lg" />
-          </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
             Discover Your
-            <span className="block text-gradient bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 bg-clip-text text-transparent">
               Perfect Home
             </span>
           </h1>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Explore our curated collection of luxury properties across South Africa's most prestigious locations
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+            Explore our curated collection of luxury properties across South Africa
           </p>
         </motion.div>
 
-        {/* Stats Section */}
+        {/* Search and Filter Section - Cleaner */}
         <motion.div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
+          className="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6 mb-6"
           variants={itemVariants}
         >
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-center"
-              whileHover={{ scale: 1.02, y: -2 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + index * 0.1 }}
-            >
-              <div className={`text-2xl mb-3 p-3 bg-gradient-to-r ${stat.color} rounded-xl inline-flex items-center justify-center shadow-md`}>
-                <stat.icon className="text-white" />
-              </div>
-              <div className="text-2xl font-black text-gray-900 mb-1">{stat.value}</div>
-              <div className="text-sm text-gray-600 font-semibold">{stat.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Search and Filter Section */}
-        <motion.div 
-          className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8"
-          variants={itemVariants}
-        >
-          <div className="flex flex-col lg:flex-row gap-4 items-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             
             {/* Search Input */}
             <div className="flex-1 relative">
               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                placeholder="Search properties by location, type, or features..."
+                placeholder="Search properties..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm font-medium"
+                className="w-full pl-10 pr-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm"
               />
             </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
+            {/* View Mode Toggle - Hidden on mobile */}
+            <div className="hidden sm:flex items-center gap-1 bg-gray-100 rounded-lg p-1">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all duration-300 ${
+                className={`p-2 rounded-md transition-all duration-300 ${
                   viewMode === 'grid' 
-                    ? 'bg-white text-amber-600 shadow-md' 
+                    ? 'bg-white text-amber-600 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
+                aria-label="Grid view"
               >
                 <FaThLarge className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all duration-300 ${
+                className={`p-2 rounded-md transition-all duration-300 ${
                   viewMode === 'list' 
-                    ? 'bg-white text-amber-600 shadow-md' 
+                    ? 'bg-white text-amber-600 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
+                aria-label="List view"
               >
                 <FaList className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Advanced Filter Toggle */}
+            {/* Filter Toggle */}
             <motion.button
               onClick={() => setShowAdvancedFilter(!showAdvancedFilter)}
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-300 font-semibold text-sm ${
+              className={`flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium text-sm ${
                 showAdvancedFilter 
-                  ? 'bg-amber-600 text-white shadow-lg' 
+                  ? 'bg-amber-600 text-white shadow-md' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               <FaFilter className="w-4 h-4" />
-              Advanced
-            </motion.button>
-
-            {/* Clear Filters */}
-            <motion.button
-              onClick={clearFilters}
-              className="flex items-center gap-2 px-4 py-3 text-gray-600 hover:text-gray-800 transition-all duration-300 font-medium text-sm"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <FaTimes className="w-4 h-4" />
-              Clear
+              <span className="hidden sm:inline">Filters</span>
             </motion.button>
           </div>
 
@@ -228,15 +294,15 @@ const Properties = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
-                className="mt-6 pt-6 border-t border-gray-200"
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                   
                   {/* Category Filter */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Property Type</label>
-                    <select className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-300 text-sm">
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5">Property Type</label>
+                    <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm">
                       <option value="all">All Types</option>
                       <option value="house">Houses</option>
                       <option value="apartment">Apartments</option>
@@ -247,8 +313,12 @@ const Properties = () => {
 
                   {/* Sort Options */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Sort By</label>
-                    <select className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-300 text-sm">
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5">Sort By</label>
+                    <select 
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm"
+                    >
                       {sortOptions.map(option => (
                         <option key={option.value} value={option.value}>
                           {option.label}
@@ -259,26 +329,35 @@ const Properties = () => {
 
                   {/* Bedrooms */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Bedrooms</label>
-                    <select className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-300 text-sm">
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5">Bedrooms</label>
+                    <select 
+                      value={minBedrooms}
+                      onChange={(e) => setMinBedrooms(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm"
+                    >
                       <option value="any">Any</option>
                       <option value="1">1+</option>
                       <option value="2">2+</option>
                       <option value="3">3+</option>
                       <option value="4">4+</option>
+                      <option value="5">5+</option>
                     </select>
                   </div>
 
                   {/* Price Range */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Max Price</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5">
+                      Max Price: <span className="text-amber-600 font-semibold">{formatPrice(maxPrice)}</span>
+                    </label>
                     <div className="relative">
                       <input
                         type="range"
                         min="0"
                         max="50000000"
                         step="1000000"
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(parseInt(e.target.value))}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                       />
                       <div className="flex justify-between text-xs text-gray-500 mt-1">
                         <span>R0</span>
@@ -289,23 +368,14 @@ const Properties = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
+                <div className="flex justify-end items-center mt-4 sm:mt-6 pt-4 border-t border-gray-200">
                   <motion.button
                     onClick={clearFilters}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 transition-all duration-300 font-medium text-sm"
+                    className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-all duration-300 font-medium text-sm"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <FaTimes className="w-4 h-4" />
-                    Clear All
-                  </motion.button>
-                  
-                  <motion.button
-                    className="px-6 py-2 bg-gradient-to-r from-amber-600 to-yellow-500 text-white rounded-lg transition-all duration-300 font-semibold text-sm shadow-md"
-                    whileHover={{ scale: 1.02, y: -1 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    Apply Filters
+                    Clear Filters
                   </motion.button>
                 </div>
               </motion.div>
@@ -313,83 +383,64 @@ const Properties = () => {
           </AnimatePresence>
         </motion.div>
 
-        {/* Category Pills */}
+        {/* Category Pills - Simplified */}
         <motion.div 
-          className="flex flex-wrap gap-3 mb-8"
+          className="flex flex-wrap gap-2 mb-6 overflow-x-auto pb-2 -mx-2 px-2"
           variants={itemVariants}
         >
-          {categories.map((category, index) => (
-            <motion.button
+          {categories.map((category) => (
+            <button
               key={category.value}
               onClick={() => setSelectedCategory(category.value)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 font-semibold text-sm shadow-md ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-300 font-medium text-xs sm:text-sm whitespace-nowrap ${
                 selectedCategory === category.value
-                  ? 'bg-gradient-to-r from-amber-600 to-yellow-500 text-white shadow-lg'
+                  ? 'bg-amber-600 text-white shadow-sm'
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
               }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + index * 0.1 }}
             >
-              <category.icon className="w-4 h-4" />
-              {category.label}
-              <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs font-bold">
+              <category.icon className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{category.label}</span>
+              <span className={`px-1.5 py-0.5 rounded text-xs font-semibold ${
+                selectedCategory === category.value ? 'bg-white/20' : 'bg-gray-100'
+              }`}>
                 {category.count}
               </span>
-            </motion.button>
+            </button>
           ))}
         </motion.div>
 
-        {/* Results Header */}
-        <motion.div 
-          className="flex justify-between items-center mb-8"
-          variants={itemVariants}
-        >
+        {/* Results Header - Simplified */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Featured Properties</h2>
-            <p className="text-gray-600 text-sm">Showing 12 of 2,847 properties</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              {selectedCategory === 'all' ? 'All Properties' : categories.find(c => c.value === selectedCategory)?.label}
+            </h2>
+            <p className="text-gray-600 text-sm mt-1">
+              {filteredAndSortedProperties.length} {filteredAndSortedProperties.length === 1 ? 'property' : 'properties'} found
+            </p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <FaShieldAlt className="w-4 h-4 text-green-500" />
-            <span className="font-semibold">Verified Listings</span>
-          </div>
-        </motion.div>
+        </div>
 
         {/* Properties Grid */}
-        <motion.div 
-          className={`grid gap-6 ${
-            viewMode === 'grid' 
-              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
-              : 'grid-cols-1'
-          }`}
-          variants={itemVariants}
-        >
-          {Array.from({ length: 6 }).map((_, index) => (
-            <Item key={index} viewMode={viewMode} />
-          ))}
-        </motion.div>
-
-        {/* Load More Button */}
-        <motion.div 
-          className="text-center mt-12"
-          variants={itemVariants}
-        >
-          <motion.button
-            onClick={loadMoreProperties}
-            className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-xl transition-all duration-300 group shadow-lg"
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98 }}
+        {filteredAndSortedProperties.length > 0 ? (
+          <motion.div 
+            className={`grid gap-4 sm:gap-6 ${
+              viewMode === 'grid' 
+                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' 
+                : 'grid-cols-1'
+            }`}
+            variants={itemVariants}
           >
-            <FaArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-            Load More Properties
-            <FaArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300" />
-          </motion.button>
-        </motion.div>
-
-        {/* No Properties Found */}
-        {properties.length === 0 && !loading && (
+            {filteredAndSortedProperties.map((property, index) => (
+              <Item 
+                key={property.id || property._id || index} 
+                property={property}
+                viewMode={viewMode}
+                onClick={() => navigate(`/listing/${property.id || property._id}`)}
+              />
+            ))}
+          </motion.div>
+        ) : (
           <motion.div 
             className="text-center py-16"
             variants={itemVariants}
@@ -410,6 +461,7 @@ const Properties = () => {
             </motion.button>
           </motion.div>
         )}
+
       </div>
     </motion.div>
   )
