@@ -16,7 +16,7 @@ import {
   MdOutlineBathtub,
   MdOutlineGarage,
 } from "react-icons/md";
-import { FaLocationDot, FaArrowLeft, FaShare, FaStar } from "react-icons/fa";
+import { FaMapMarkerAlt, FaArrowLeft, FaShare, FaStar } from "react-icons/fa";
 import { CgRuler } from "react-icons/cg";
 import HeartBtn from "../components/HeartBtn";
 
@@ -196,7 +196,7 @@ const Property = () => {
             >
               {/* Location */}
               <div className="flex items-center gap-2 text-gray-600 text-sm mb-4">
-                <FaLocationDot className="text-amber-500" />
+                <FaMapMarkerAlt className="text-amber-500" />
                 <span>{data?.city || 'Unknown'}, {data?.country || 'South Africa'}</span>
               </div>
 
@@ -270,7 +270,7 @@ const Property = () => {
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Address</h2>
                 <div className="flex items-start gap-3 text-gray-600 bg-gray-50 p-4 rounded-lg">
-                  <FaLocationDot className="text-amber-500 mt-1 flex-shrink-0" />
+                  <FaMapMarkerAlt className="text-amber-500 mt-1 flex-shrink-0" />
                   <p className="text-base">
                     {data?.address || 'Address not specified'}, {data?.city || ''}, {data?.country || 'South Africa'}
                   </p>
