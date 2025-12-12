@@ -202,12 +202,13 @@ const SimpleMap = ({ address, city, country }) => {
   const [zoom] = useState(address && city ? 13 : defaultZoom)
 
   return (
-    <div className='w-full h-full min-h-[300px] rounded-lg overflow-hidden'>
+    <div className='w-full h-[400px] rounded-lg overflow-hidden' style={{ minHeight: '400px' }}>
       <MapContainer
         center={center}
         zoom={zoom}
         className='w-full h-full'
         zoomControl={true}
+        style={{ height: '100%', width: '100%' }}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

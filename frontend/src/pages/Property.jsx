@@ -418,11 +418,14 @@ const Property = () => {
               transition={{ delay: 0.2 }}
               className="bg-white rounded-xl shadow-lg overflow-hidden sticky top-24"
             >
-              <Map
-                address={propertyAddress}
-                city={propertyCity}
-                country={propertyCountry}
-              />
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Location</h3>
+                <Map
+                  address={propertyAddress}
+                  city={propertyCity}
+                  country={propertyCountry}
+                />
+              </div>
             </motion.div>
           </div>
         </div>
