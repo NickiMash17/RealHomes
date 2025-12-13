@@ -259,9 +259,9 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
               <motion.button
                 onClick={handleClick}
                 type="button"
-                className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:shadow-lg transition-all duration-300 group"
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
+                className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg hover:shadow-2xl transition-all duration-300 group glow-amber-hover"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <FaEye className="w-4 h-4" />
                 View Details
@@ -277,9 +277,9 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
   // Grid View
   return (
     <motion.div
-      className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-amber-200"
+      className="bg-white rounded-2xl shadow-lg border-2 border-gray-100 overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-2xl hover:border-amber-300 hover:ring-2 hover:ring-amber-200/50"
       variants={containerVariants}
-      whileHover={{ y: -4, scale: 1.01 }}
+      whileHover={{ y: -8, scale: 1.02 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       onClick={handleCardClick}

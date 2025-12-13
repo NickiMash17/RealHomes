@@ -228,7 +228,7 @@ const Properties = () => {
 
         {/* Search and Filter Section - Cleaner */}
         <motion.div 
-          className="bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6 mb-6"
+          className="bg-white rounded-2xl shadow-lg border-2 border-gray-200 p-4 sm:p-6 mb-8 hover:shadow-xl transition-all duration-300"
           variants={itemVariants}
         >
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -274,13 +274,13 @@ const Properties = () => {
             {/* Filter Toggle */}
             <motion.button
               onClick={() => setShowAdvancedFilter(!showAdvancedFilter)}
-              className={`flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-lg transition-all duration-300 font-medium text-sm ${
+              className={`flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-300 font-medium text-sm ${
                 showAdvancedFilter 
-                  ? 'bg-amber-600 text-white shadow-md' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-amber-600 to-yellow-500 text-white shadow-lg glow-amber-hover' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
               }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95 }}
             >
               <FaFilter className="w-4 h-4" />
               <span className="hidden sm:inline">Filters</span>

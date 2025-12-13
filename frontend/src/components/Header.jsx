@@ -118,8 +118,8 @@ const Header = () => {
                   to={item.path} 
                   className={`relative px-3 py-2 rounded-lg font-medium transition-all duration-300 whitespace-nowrap flex items-center gap-2 text-sm ${
                     isActiveLink(item.path) 
-                      ? 'text-white bg-amber-600 shadow-sm' 
-                      : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50'
+                      ? 'text-white bg-gradient-to-r from-amber-600 to-yellow-500 shadow-lg glow-amber-hover' 
+                      : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50 hover:shadow-md'
                   }`}
                 >
                   <item.icon className="w-4 h-4" />
@@ -138,7 +138,7 @@ const Header = () => {
                 placeholder="Search properties..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm bg-white"
+                className="input-enhanced pl-10 text-sm"
               />
             </div>
           </form>

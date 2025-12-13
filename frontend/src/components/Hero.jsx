@@ -184,12 +184,12 @@ const Hero = () => {
           variants={itemVariants}
         >
           <motion.div
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
           >
             <Link 
               to="/listing" 
-              className="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-700 hover:to-yellow-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-300 shadow-xl hover:shadow-2xl glow-amber-hover"
             >
               <FaSearch className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Explore Properties</span>
@@ -201,9 +201,9 @@ const Hero = () => {
             href="https://wa.me/27112345678"
             target="_blank"
             rel="noopener noreferrer"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md hover:bg-white/30 text-white px-6 py-3 rounded-xl border border-white/30 transition-all duration-300 font-medium text-sm sm:text-base"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md hover:bg-white/30 text-white px-6 py-3 rounded-xl border-2 border-white/30 transition-all duration-300 font-medium text-sm sm:text-base hover:shadow-xl"
           >
             <FaWhatsapp className="w-4 h-4" />
             <span>Contact Us</span>
