@@ -9,12 +9,23 @@ export default defineConfig({
     sourcemap: false, // Disable sourcemaps in production for security
     minify: 'esbuild',
     rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress sourcemap warnings
+        if (warning.code === 'SOURCEMAP_ERROR' || warning.message?.includes('sourcemap')) {
+          return;
+        }
+        warn(warning);
+      },
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'ui-vendor': ['framer-motion', '@mantine/core', '@mantine/hooks'],
           'map-vendor': ['leaflet', 'react-leaflet', 'esri-leaflet-geocoder'],
         },
+        // Add hash to filenames for cache busting
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
     chunkSizeWarningLimit: 1000,

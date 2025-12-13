@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="color-scheme: light only;">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -9,6 +9,7 @@
     <meta name="keywords" content="real estate, properties, South Africa, luxury homes, property management" />
     <meta name="author" content="Nicolette Mashaba" />
     <meta name="theme-color" content="#D97706" />
+    <meta name="color-scheme" content="light only" />
     
     <!-- Resource Hints for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,13 +23,64 @@
     <meta http-equiv="Expires" content="0" />
     
     <!-- Version indicator for cache busting -->
-    <meta name="version" content="1.0.0" />
+    <meta name="version" content="1.0.3-no-dark-mode" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     
     <title>RealHomes - South African Luxury Real Estate</title>
     <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript" defer></script>
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // AGGRESSIVE: Remove any dark mode toggle buttons BEFORE React loads
+      (function() {
+        'use strict';
+        document.documentElement.style.colorScheme = 'light only';
+        document.documentElement.classList.remove('dark');
+        document.body.style.backgroundColor = '#ffffff';
+        
+        // Remove theme toggles immediately
+        function removeToggles() {
+          const selectors = [
+            'button[aria-label*="dark" i]',
+            'button[aria-label*="theme" i]',
+            'button[title*="dark" i]',
+            'button[title*="theme" i]',
+            '[class*="theme-toggle"]',
+            '[class*="dark-toggle"]',
+            '[id*="theme-toggle"]',
+            '[id*="dark-toggle"]'
+          ];
+          selectors.forEach(sel => {
+            try {
+              document.querySelectorAll(sel).forEach(el => {
+                const text = (el.textContent || '').toLowerCase();
+                if (text.includes('dark') || text.includes('theme')) {
+                  el.remove();
+                }
+              });
+            } catch(e) {}
+          });
+        }
+        
+        // Run immediately
+        removeToggles();
+        
+        // Watch for new elements
+        const observer = new MutationObserver(removeToggles);
+        observer.observe(document.documentElement, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['class']
+        });
+        
+        // Also run periodically
+        setInterval(removeToggles, 500);
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

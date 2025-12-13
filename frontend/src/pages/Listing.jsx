@@ -180,11 +180,11 @@ const Listing = () => {
           title="Properties - RealHomes"
           description="Browse our extensive collection of luxury properties across South Africa. Find your dream home today."
         />
-        <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-24 pb-16">
+        <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
-              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-64 mb-4 animate-pulse" />
-              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-lg w-96 animate-pulse" />
+              <div className="h-10 bg-gray-200 rounded-lg w-64 mb-4 animate-pulse" />
+              <div className="h-6 bg-gray-200 rounded-lg w-96 animate-pulse" />
             </div>
             <PropertySkeleton count={6} viewMode="grid" />
           </div>
@@ -207,7 +207,7 @@ const Listing = () => {
         description={seoDescription}
         keywords={`properties, real estate, ${searchQuery}, South Africa, property listings`}
       />
-      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-24 pb-16">
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <motion.div
@@ -215,8 +215,8 @@ const Listing = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Property Listings</h1>
-          <p className="text-gray-600 dark:text-gray-300">Discover your perfect property in South Africa</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Property Listings</h1>
+          <p className="text-gray-600">Discover your perfect property in South Africa</p>
         </motion.div>
 
         {/* Search and Filter Bar */}

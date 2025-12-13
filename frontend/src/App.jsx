@@ -13,7 +13,6 @@ import ErrorBoundary from './components/ErrorBoundary';
 import ScrollToTop from './components/ScrollToTop';
 import { MantineProvider } from '@mantine/core';
 import { DatesProvider } from '@mantine/dates';
-import { ThemeProvider } from './context/ThemeContext';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import 'dayjs/locale/en';
@@ -81,10 +80,9 @@ function AppContent() {
   
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-        <MantineProvider>
-          <DatesProvider settings={{ firstDayOfWeek: 0 }}>
-            <UserDetailContext.Provider value={{ userDetails, setUserDetails }} >
+      <MantineProvider>
+        <DatesProvider settings={{ firstDayOfWeek: 0 }}>
+          <UserDetailContext.Provider value={{ userDetails, setUserDetails }} >
             <QueryClientProvider client={queryClient}>
               <BrowserRouter>
                 <ScrollToTop />
@@ -122,10 +120,9 @@ function AppContent() {
             />
               <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
-            </UserDetailContext.Provider>
-          </DatesProvider>
-        </MantineProvider>
-      </ThemeProvider>
+          </UserDetailContext.Provider>
+        </DatesProvider>
+      </MantineProvider>
     </ErrorBoundary>
   )
 }
