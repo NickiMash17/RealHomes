@@ -5,9 +5,11 @@ import { useMockAuth } from '../context/MockAuthContext.jsx'
 import { useQuery } from 'react-query'
 import { getAllFav } from '../utils/api'
 import { usePropertyComparison } from '../hooks/usePropertyComparison'
+import { usePropertyAlerts } from '../hooks/usePropertyAlerts'
 import ProfileMenu from './ProfileMenu'
 import PropertyComparison from './PropertyComparison'
-import { FaHeart, FaUser, FaBars, FaTimes, FaWhatsapp, FaHome, FaBuilding, FaUser as FaContact, FaFileAlt, FaSearch, FaCrown, FaBalanceScale } from 'react-icons/fa'
+import PropertyAlerts from './PropertyAlerts'
+import { FaHeart, FaUser, FaBars, FaTimes, FaWhatsapp, FaHome, FaBuilding, FaUser as FaContact, FaFileAlt, FaSearch, FaCrown, FaBalanceScale, FaBell } from 'react-icons/fa'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -15,8 +17,10 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [showComparison, setShowComparison] = useState(false)
+  const [showAlerts, setShowAlerts] = useState(false)
   const { isAuthenticated, user, loginWithRedirect, isLoading } = useMockAuth()
   const { comparisonList } = usePropertyComparison()
+  const { getUnreadCount } = usePropertyAlerts()
   const location = useLocation()
   
   // Get favorites count
@@ -174,6 +178,21 @@ const Header = () => {
               {comparisonList.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1">
                   {comparisonList.length}
+                </span>
+              )}
+            </motion.button>
+
+            {/* Alerts Button */}
+            <motion.button
+              onClick={() => setShowAlerts(true)}
+              className="p-2.5 text-gray-600 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg"
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaBell className="w-4 h-4" />
+              {getUnreadCount() > 0 && (
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1 animate-pulse">
+                  {getUnreadCount() > 99 ? '99+' : getUnreadCount()}
                 </span>
               )}
             </motion.button>
@@ -366,6 +385,9 @@ const Header = () => {
       isOpen={showComparison} 
       onClose={() => setShowComparison(false)} 
     />
+
+    {/* Property Alerts Modal */}
+    <PropertyAlerts opened={showAlerts} onClose={() => setShowAlerts(false)} />
     </>
   )
 }

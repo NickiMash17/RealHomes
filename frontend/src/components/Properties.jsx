@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaSearch, FaFilter, FaTimes, FaThLarge, FaList, FaBed, FaBath, FaRulerCombined, FaHome, FaBuilding, FaCrown, FaStar, FaGem, FaTrophy, FaShieldAlt, FaCheckCircle, FaArrowRight, FaArrowLeft, FaBookmark, FaSave } from 'react-icons/fa'
+import { FaSearch, FaFilter, FaTimes, FaThLarge, FaList, FaBed, FaBath, FaRulerCombined, FaHome, FaBuilding, FaCrown, FaStar, FaGem, FaTrophy, FaShieldAlt, FaCheckCircle, FaArrowRight, FaArrowLeft, FaBookmark, FaSave, FaBell } from 'react-icons/fa'
 import { useQuery } from 'react-query'
 import { getAllProperties } from '../utils/api'
 import Item from './Item'
 import LoadingSpinner from './LoadingSpinner'
 import SavedSearches from './SavedSearches'
 import { useSavedSearches } from '../hooks/useSavedSearches'
+import { usePropertyAlerts } from '../hooks/usePropertyAlerts'
+import PropertyAlerts from './PropertyAlerts'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
@@ -20,8 +22,11 @@ const Properties = () => {
   const [viewMode, setViewMode] = useState('grid')
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false)
   const [showSaveSearchModal, setShowSaveSearchModal] = useState(false)
-  const [searchName, setSearchName] = useState('')
+  const [showAlertModal, setShowAlertModal] = useState(false)
+  const [showCreateAlertModal, setShowCreateAlertModal] = useState(false)
+  const [alertName, setAlertName] = useState('')
   const { saveSearch } = useSavedSearches()
+  const { createAlert } = usePropertyAlerts()
 
   // Fetch properties from API
   const { data: propertiesData, isLoading, isError, error } = useQuery(
@@ -162,17 +167,33 @@ const Properties = () => {
   const handleSaveSearch = () => {
     const searchParams = {
       searchTerm,
-      category: selectedCategory,
+      selectedCategory,
       minBedrooms,
       maxPrice,
       sortBy,
       resultCount: filteredAndSortedProperties.length,
     };
     
-    const success = saveSearch(searchParams, searchName);
+    const success = saveSearch(searchName, searchParams);
     if (success) {
       setShowSaveSearchModal(false);
       setSearchName('');
+    }
+  }
+
+  const handleCreateAlert = () => {
+    const alertCriteria = {
+      searchTerm,
+      selectedCategory,
+      minBedrooms,
+      maxPrice,
+      sortBy,
+    };
+    
+    const success = createAlert(alertName, alertCriteria);
+    if (success) {
+      setShowCreateAlertModal(false);
+      setAlertName('');
     }
   }
 
@@ -314,6 +335,28 @@ const Properties = () => {
             >
               <FaBookmark className="w-4 h-4" />
               <span className="hidden sm:inline">Save Search</span>
+            </motion.button>
+
+            {/* Create Alert Button */}
+            <motion.button
+              onClick={() => setShowCreateAlertModal(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-300 font-medium text-sm bg-blue-50 text-blue-700 hover:bg-blue-100 hover:shadow-md"
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaBell className="w-4 h-4" />
+              <span className="hidden sm:inline">Create Alert</span>
+            </motion.button>
+
+            {/* View Alerts Button */}
+            <motion.button
+              onClick={() => setShowAlertModal(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-300 font-medium text-sm bg-purple-50 text-purple-700 hover:bg-purple-100 hover:shadow-md"
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaBell className="w-4 h-4" />
+              <span className="hidden sm:inline">Alerts</span>
             </motion.button>
 
             {/* Filter Toggle */}
@@ -603,6 +646,105 @@ const Properties = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* Create Alert Modal */}
+      <AnimatePresence>
+        {showCreateAlertModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              onClick={() => {
+                setShowCreateAlertModal(false);
+                setAlertName('');
+              }}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed inset-0 flex items-center justify-center z-50 p-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <FaBell className="text-blue-600 w-5 h-5" />
+                    <h3 className="text-xl font-bold text-gray-900">Create Property Alert</h3>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowCreateAlertModal(false);
+                      setAlertName('');
+                    }}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <FaTimes className="w-5 h-5 text-gray-600" />
+                  </button>
+                </div>
+                
+                <p className="text-gray-600 mb-4 text-sm">
+                  Get notified when new properties match your search criteria.
+                </p>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Alert Name
+                  </label>
+                  <input
+                    type="text"
+                    value={alertName}
+                    onChange={(e) => setAlertName(e.target.value)}
+                    placeholder="e.g., Luxury Cape Town Alerts"
+                    className="input-enhanced w-full"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleCreateAlert();
+                      }
+                    }}
+                    autoFocus
+                  />
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-3 mb-4 text-sm">
+                  <p className="text-gray-600 mb-2 font-medium">Alert Criteria:</p>
+                  <ul className="space-y-1 text-gray-600">
+                    {searchTerm && <li>• Search: "{searchTerm}"</li>}
+                    {selectedCategory !== 'all' && <li>• Category: {selectedCategory}</li>}
+                    {minBedrooms !== 'any' && <li>• Bedrooms: {minBedrooms}+</li>}
+                    {maxPrice < 50000000 && <li>• Max Price: {formatPrice(maxPrice)}</li>}
+                  </ul>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowCreateAlertModal(false);
+                      setAlertName('');
+                    }}
+                    className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleCreateAlert}
+                    disabled={!alertName.trim()}
+                    className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                  >
+                    <FaBell className="inline w-4 h-4 mr-2" />
+                    Create Alert
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Property Alerts Modal */}
+      <PropertyAlerts opened={showAlertModal} onClose={() => setShowAlertModal(false)} />
     </motion.div>
   )
 }
