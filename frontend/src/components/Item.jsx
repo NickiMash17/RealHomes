@@ -1,12 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { toast } from 'react-toastify'
 import { FaHeart, FaShare, FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt, FaStar, FaCrown, FaGem, FaEye, FaArrowRight } from 'react-icons/fa'
 import OptimizedImage from './OptimizedImage'
+import { useMockAuth } from '../context/MockAuthContext'
+import { toFav } from '../utils/api'
 
 const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
   const navigate = useNavigate()
+  const { isAuthenticated, user, getAccessTokenSilently } = useMockAuth()
   const [isLiked, setIsLiked] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   
@@ -28,6 +31,63 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
 
   // Get property ID
   const propertyId = property?.id || property?._id
+  
+  // Check if property is in favorites on mount and when propertyId changes
+  useEffect(() => {
+    if (propertyId) {
+      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
+      const idString = String(propertyId)
+      setIsLiked(favorites.includes(idString))
+    }
+  }, [propertyId])
+  
+  // Handle favorite toggle
+  const handleToggleFavorite = async (e) => {
+    e.stopPropagation()
+    
+    if (!isAuthenticated) {
+      toast.error('Please login to add favorites')
+      return
+    }
+    
+    if (!propertyId) {
+      toast.error('Invalid property')
+      return
+    }
+    
+    try {
+      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
+      const idString = String(propertyId)
+      
+      if (isLiked) {
+        // Remove from favorites
+        const newFavorites = favorites.filter(favId => String(favId) !== idString)
+        localStorage.setItem('favorites', JSON.stringify(newFavorites))
+        setIsLiked(false)
+        toast.success('Removed from favorites')
+      } else {
+        // Add to favorites
+        const newFavorites = [...favorites, idString]
+        localStorage.setItem('favorites', JSON.stringify(newFavorites))
+        setIsLiked(true)
+        toast.success('Added to favorites')
+      }
+      
+      // Call API to sync with backend
+      if (user?.email) {
+        try {
+          const token = await (getAccessTokenSilently?.() || Promise.resolve('mock-token'))
+          await toFav(propertyId, user.email, token)
+        } catch (apiError) {
+          // If API call fails, favorites are still saved in localStorage
+          console.warn('Failed to sync favorites with backend:', apiError)
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+      toast.error('Something went wrong')
+    }
+  }
 
   // Handle click - use provided onClick or default navigation
   const handleClick = (e) => {
@@ -146,10 +206,7 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
             {/* Action Buttons */}
             <div className="absolute top-4 right-4 flex flex-col gap-2">
               <motion.button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setIsLiked(!isLiked)
-                }}
+                onClick={handleToggleFavorite}
                 type="button"
                 className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
                   isLiked 
@@ -312,7 +369,7 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
         {/* Action Buttons */}
         <div className="absolute top-3 right-3 flex flex-col gap-2">
           <motion.button
-            onClick={() => setIsLiked(!isLiked)}
+            onClick={handleToggleFavorite}
             className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
               isLiked 
                 ? 'bg-red-500 text-white shadow-lg' 
