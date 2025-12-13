@@ -6,10 +6,12 @@ import { FaHeart, FaShare, FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt, FaSta
 import OptimizedImage from './OptimizedImage'
 import { useMockAuth } from '../context/MockAuthContext'
 import { toFav } from '../utils/api'
+import { usePropertyComparison } from '../hooks/usePropertyComparison'
 
 const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
   const navigate = useNavigate()
   const { isAuthenticated, user, getAccessTokenSilently } = useMockAuth()
+  const { addToComparison, isInComparison, canAddMore } = usePropertyComparison()
   const [isLiked, setIsLiked] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   

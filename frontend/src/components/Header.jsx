@@ -4,17 +4,24 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useMockAuth } from '../context/MockAuthContext.jsx'
 import { useQuery } from 'react-query'
 import { getAllFav } from '../utils/api'
+import { usePropertyComparison } from '../hooks/usePropertyComparison'
 import ProfileMenu from './ProfileMenu'
-import { FaHeart, FaUser, FaBars, FaTimes, FaWhatsapp, FaHome, FaBuilding, FaUser as FaContact, FaFileAlt, FaSearch, FaCrown } from 'react-icons/fa'
+import PropertyComparison from './PropertyComparison'
+import { FaHeart, FaUser, FaBars, FaTimes, FaWhatsapp, FaHome, FaBuilding, FaUser as FaContact, FaFileAlt, FaSearch, FaCrown, FaBalanceScale } from 'react-icons/fa'
 
 const Header = () => {
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showComparison, setShowComparison] = useState(false)
   const { isAuthenticated, user, loginWithRedirect, isLoading } = useMockAuth()
+  const { comparisonList } = usePropertyComparison()
   const location = useLocation()
 
+  const { comparisonList } = usePropertyComparison()
+  const [showComparison, setShowComparison] = useState(false)
+  
   // Get favorites count
   const { data: favoritesData } = useQuery(
     ['favorites', user?.email],
@@ -157,6 +164,21 @@ const Header = () => {
             >
               <FaWhatsapp className="w-4 h-4" />
             </motion.a>
+
+            {/* Comparison Button */}
+            <motion.button
+              onClick={() => setShowComparison(true)}
+              className="p-2.5 text-gray-600 hover:text-amber-600 hover:bg-gradient-to-r hover:from-amber-50 hover:to-yellow-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg"
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaBalanceScale className="w-4 h-4" />
+              {comparisonList.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1">
+                  {comparisonList.length}
+                </span>
+              )}
+            </motion.button>
 
             {/* Favorites Button */}
             <motion.button
