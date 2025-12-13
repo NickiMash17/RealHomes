@@ -23,6 +23,8 @@ import HeartBtn from "../components/HeartBtn";
 import SEO from "../components/SEO";
 import OptimizedImage from "../components/OptimizedImage";
 import MortgageCalculator from "../components/MortgageCalculator";
+import PropertyRecommendations from "../components/PropertyRecommendations";
+import { getAllProperties } from "../utils/api";
 import { shareProperty, shareViaWhatsApp, shareViaEmail, shareViaFacebook, shareViaTwitter, shareViaLinkedIn } from "../utils/shareProperty";
 import { errorHandler } from "../utils/errorHandler";
 
@@ -46,6 +48,16 @@ const Property = () => {
           console.error('Property fetch error:', err);
         }
       }
+    }
+  );
+
+  // Fetch all properties for recommendations
+  const { data: allPropertiesData } = useQuery(
+    'allProperties',
+    getAllProperties,
+    {
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000,
     }
   );
   const [modalOpened, setModalOpened] = useState(false);
@@ -561,6 +573,11 @@ const Property = () => {
         </div>
       </div>
     </section>
+
+    {/* Similar Properties Recommendations */}
+    {data && allPropertiesData && (
+      <PropertyRecommendations properties={allPropertiesData} />
+    )}
 
     {/* Mortgage Calculator Modal */}
     <MortgageCalculator
