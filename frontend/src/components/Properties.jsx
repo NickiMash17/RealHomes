@@ -34,13 +34,15 @@ const Properties = () => {
   const { saveSearch } = useSavedSearches()
   const { createAlert } = usePropertyAlerts()
 
-  // Fetch properties from API
+  // Fetch properties from API with optimized caching
   const { data: propertiesData, isLoading, isError, error } = useQuery(
     'allProperties',
     getAllProperties,
     {
       refetchOnWindowFocus: false,
       staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes - keep in cache
+      refetchOnMount: false, // Don't refetch if data exists in cache
     }
   )
 

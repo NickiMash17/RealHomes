@@ -17,10 +17,22 @@ export default defineConfig({
         warn(warning);
       },
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['framer-motion', '@mantine/core', '@mantine/hooks'],
-          'map-vendor': ['leaflet', 'react-leaflet', 'esri-leaflet-geocoder'],
+        // Optimized manual chunk splitting for better caching
+        manualChunks: (id) => {
+          // Vendor chunks
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'react-vendor';
+            }
+            if (id.includes('framer-motion') || id.includes('@mantine')) {
+              return 'ui-vendor';
+            }
+            if (id.includes('leaflet') || id.includes('react-leaflet')) {
+              return 'map-vendor';
+            }
+            // Other node_modules
+            return 'vendor';
+          }
         },
         // Add hash to filenames for cache busting
         entryFileNames: 'assets/[name]-[hash].js',

@@ -13,9 +13,17 @@
     
     <!-- Resource Hints for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
     <link rel="dns-prefetch" href="https://upload-widget.cloudinary.com" />
     <link rel="dns-prefetch" href="https://realhomes-oajb.onrender.com" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml" />
+    
+    <!-- Prefetch likely next pages -->
+    <link rel="prefetch" href="/listing" as="document" />
+    <link rel="prefetch" href="/contact" as="document" />
     
     <!-- Cache busting -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />

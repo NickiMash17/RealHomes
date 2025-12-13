@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
+import { initPerformanceOptimizations } from './utils/performance'
 import { MockAuthProvider } from './context/MockAuthContext.jsx'
 
 // Force light mode on mount - prevent any dark mode
@@ -58,3 +59,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </MockAuthProvider>
   </React.StrictMode>
 )
+
+// Initialize performance optimizations after render
+if (typeof window !== 'undefined') {
+  // Wait for initial render to complete
+  setTimeout(() => {
+    initPerformanceOptimizations();
+  }, 100);
+}
