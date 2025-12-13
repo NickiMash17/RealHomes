@@ -6,6 +6,7 @@ import Item from "../components/Item";
 import { FaSearch, FaTimes, FaFilter, FaSort, FaHome, FaBuilding, FaCrown, FaStar } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import SEO from "../components/SEO";
+import PropertySkeleton from "../components/PropertySkeleton";
 
 const Listing = () => {
   const navigate = useNavigate();
@@ -179,18 +180,15 @@ const Listing = () => {
           title="Properties - RealHomes"
           description="Browse our extensive collection of luxury properties across South Africa. Find your dream home today."
         />
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
-        <div className="text-center">
-          <PuffLoader
-            height="80"
-            width="80"
-            radius={1}
-            color="#f59e0b"
-            aria-label="puff-loading"
-          />
-          <p className="mt-4 text-gray-600 font-medium">Loading properties...</p>
-        </div>
-      </div>
+        <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-24 pb-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-8">
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-64 mb-4 animate-pulse" />
+              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-lg w-96 animate-pulse" />
+            </div>
+            <PropertySkeleton count={6} viewMode="grid" />
+          </div>
+        </main>
       </>
     );
   }
@@ -209,7 +207,7 @@ const Listing = () => {
         description={seoDescription}
         keywords={`properties, real estate, ${searchQuery}, South Africa, property listings`}
       />
-      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <motion.div
@@ -217,8 +215,8 @@ const Listing = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Property Listings</h1>
-          <p className="text-gray-600">Discover your perfect property in South Africa</p>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Property Listings</h1>
+          <p className="text-gray-600 dark:text-gray-300">Discover your perfect property in South Africa</p>
         </motion.div>
 
         {/* Search and Filter Bar */}
@@ -311,40 +309,24 @@ const Listing = () => {
             </AnimatePresence>
           </motion.div>
         ) : uniqueProperties.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-16"
-          >
-            <div className="text-6xl mb-4">🏠</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Properties Available</h3>
-            <p className="text-gray-600 mb-6">There are currently no properties listed.</p>
-            <button
-              onClick={() => navigate('/addproperty')}
-              className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
-            >
-              List a Property
-            </button>
-          </motion.div>
+          <EmptyState
+            type="properties"
+            title="No Properties Available"
+            description="There are currently no properties listed. Be the first to add a property!"
+            actionLabel="List a Property"
+            onAction={() => navigate('/addproperty')}
+          />
         ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-16"
-          >
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Properties Found</h3>
-            <p className="text-gray-600 mb-6">Try adjusting your search criteria</p>
-            <button
-              onClick={() => {
-                setFilter("");
-                setCategoryFilter("all");
-              }}
-              className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
-            >
-              Clear Filters
-            </button>
-          </motion.div>
+          <EmptyState
+            type="search"
+            title="No Properties Found"
+            description="We couldn't find any properties matching your search criteria. Try adjusting your filters."
+            actionLabel="Clear Filters"
+            onAction={() => {
+              setFilter("");
+              setCategoryFilter("all");
+            }}
+          />
         )}
       </div>
     </main>

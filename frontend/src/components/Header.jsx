@@ -6,6 +6,7 @@ import { useQuery } from 'react-query'
 import { getAllFav } from '../utils/api'
 import ProfileMenu from './ProfileMenu'
 import { FaHeart, FaUser, FaBars, FaTimes, FaWhatsapp, FaHome, FaBuilding, FaUser as FaContact, FaFileAlt, FaSearch, FaCrown } from 'react-icons/fa'
+import ThemeToggle from './ThemeToggle'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -75,8 +76,8 @@ const Header = () => {
     <motion.header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled 
-          ? 'bg-white/99 backdrop-blur-xl shadow-lg border-b border-gray-100/50' 
-          : 'bg-white/98 backdrop-blur-lg'
+          ? 'bg-white/99 dark:bg-gray-900/99 backdrop-blur-xl shadow-lg border-b border-gray-100/50 dark:border-gray-800/50' 
+          : 'bg-white/98 dark:bg-gray-900/98 backdrop-blur-lg'
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -96,10 +97,10 @@ const Header = () => {
                 <FaCrown className="text-white text-lg" />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-amber-600 transition-colors duration-300 tracking-tight">
+                <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors duration-300 tracking-tight">
                   RealHomes
                 </span>
-                <span className="hidden sm:block text-xs text-gray-500 font-medium tracking-wide">Luxury Properties</span>
+                <span className="hidden sm:block text-xs text-gray-500 dark:text-gray-400 font-medium tracking-wide">Luxury Properties</span>
               </div>
             </Link>
           </motion.div>
@@ -118,8 +119,8 @@ const Header = () => {
                   to={item.path} 
                   className={`relative px-3 py-2 rounded-lg font-medium transition-all duration-300 whitespace-nowrap flex items-center gap-2 text-sm ${
                     isActiveLink(item.path) 
-                      ? 'text-white bg-amber-600 shadow-sm' 
-                      : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50'
+                      ? 'text-white bg-amber-600 dark:bg-amber-500 shadow-sm' 
+                      : 'text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
                   }`}
                 >
                   <item.icon className="w-4 h-4" />
@@ -145,6 +146,11 @@ const Header = () => {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
+            {/* Theme Toggle */}
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
+            
             {/* WhatsApp Button - Keep only WhatsApp */}
             <motion.a
               href="https://wa.me/27112345678"
