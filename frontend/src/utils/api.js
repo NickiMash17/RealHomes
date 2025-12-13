@@ -4,7 +4,65 @@ import { toast } from "react-toastify";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
+  timeout: 30000, // 30 seconds timeout
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
+
+// Request interceptor
+api.interceptors.request.use(
+  (config) => {
+    // Add any default headers here if needed
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor for better error handling
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    // Handle common errors
+    if (error.response) {
+      // Server responded with error status
+      const { status, data } = error.response;
+      
+      if (status === 401) {
+        // Unauthorized - could redirect to login
+        if (import.meta.env.DEV) {
+          console.warn('Unauthorized request');
+        }
+      } else if (status === 404) {
+        // Not found
+        if (import.meta.env.DEV) {
+          console.warn('Resource not found:', error.config.url);
+        }
+      } else if (status >= 500) {
+        // Server error
+        if (import.meta.env.DEV) {
+          console.error('Server error:', data);
+        }
+      }
+    } else if (error.request) {
+      // Request made but no response received
+      if (import.meta.env.DEV) {
+        console.warn('No response from server:', error.config.url);
+      }
+    } else {
+      // Error setting up request
+      if (import.meta.env.DEV) {
+        console.error('Request setup error:', error.message);
+      }
+    }
+    
+    return Promise.reject(error);
+  }
+);
 
 export const getAllProperties = async () => {
   try {
