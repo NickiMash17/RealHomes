@@ -3,7 +3,12 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react({
+      // Ensure React is properly handled
+      jsxRuntime: 'automatic',
+    })
+  ],
   build: {
     outDir: 'dist',
     sourcemap: false, // Disable sourcemaps in production for security
@@ -21,12 +26,26 @@ export default defineConfig({
         manualChunks: (id) => {
           // Vendor chunks
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+            // CRITICAL: Keep React and ReactDOM in the same chunk
+            // This prevents "Cannot read properties of undefined" errors
+            // Check for react or react-dom packages (but not react-router, react-query, etc.)
+            if (
+              (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) &&
+              !id.includes('react-router') &&
+              !id.includes('react-query') &&
+              !id.includes('react-leaflet')
+            ) {
               return 'react-vendor';
             }
+            // React Router can be separate
+            if (id.includes('react-router')) {
+              return 'router-vendor';
+            }
+            // UI libraries
             if (id.includes('framer-motion') || id.includes('@mantine')) {
               return 'ui-vendor';
             }
+            // Map libraries
             if (id.includes('leaflet') || id.includes('react-leaflet')) {
               return 'map-vendor';
             }
@@ -41,6 +60,13 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 1000,
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
+  },
+  resolve: {
+    dedupe: ['react', 'react-dom'],
   },
   define: {
     // Ensure environment variables are properly replaced
