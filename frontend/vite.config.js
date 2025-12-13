@@ -9,6 +9,13 @@ export default defineConfig({
     sourcemap: false, // Disable sourcemaps in production for security
     minify: 'esbuild',
     rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress sourcemap warnings
+        if (warning.code === 'SOURCEMAP_ERROR' || warning.message?.includes('sourcemap')) {
+          return;
+        }
+        warn(warning);
+      },
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
