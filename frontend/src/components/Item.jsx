@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { toast } from 'react-toastify'
 import { FaHeart, FaShare, FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt, FaStar, FaCrown, FaGem, FaEye, FaArrowRight } from 'react-icons/fa'
+import OptimizedImage from './OptimizedImage'
 
 const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
   const navigate = useNavigate()
@@ -119,13 +120,21 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
         <div className="flex flex-col lg:flex-row">
           {/* Image Section */}
           <div className="lg:w-1/3 relative overflow-hidden">
-            <motion.img
-              src={image}
-              alt={title}
-              className="w-full h-64 lg:h-full object-cover"
+            <motion.div
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
-            />
+              className="w-full h-64 lg:h-full"
+            >
+              <OptimizedImage
+                src={image}
+                alt={title}
+                className="w-full h-full"
+                width={600}
+                height={400}
+                loading="lazy"
+                objectFit="cover"
+              />
+            </motion.div>
             
             {/* Status Badge */}
             <div className="absolute top-4 left-4">
@@ -277,14 +286,21 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
     >
       {/* Image Section */}
       <div className="relative overflow-hidden bg-gray-100">
-        <motion.img
-          src={image}
-          alt={title}
-          className="w-full h-48 sm:h-56 object-cover"
+        <motion.div
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.3 }}
-          loading="lazy"
-        />
+          className="w-full h-48 sm:h-56"
+        >
+          <OptimizedImage
+            src={image}
+            alt={title}
+            className="w-full h-full"
+            width={600}
+            height={400}
+            loading="lazy"
+            objectFit="cover"
+          />
+        </motion.div>
         
         {/* Status Badge */}
         <div className="absolute top-3 left-3">

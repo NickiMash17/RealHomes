@@ -1,18 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import Listing from "./pages/Listing";
-import AddProperty from "./pages/AddProperty";
 import { QueryClient, QueryClientProvider } from "react-query"
 import { ToastContainer } from "react-toastify";
 import { ReactQueryDevtools } from 'react-query/devtools';
 import "react-toastify/dist/ReactToastify.css"
-import Property from "./pages/Property";
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, lazy } from "react";
 import UserDetailContext from "./context/UserDetailContext";
 import Layout from "./components/Layout";
-import Favourites from "./pages/Favourites";
-import Bookings from "./pages/Bookings";
-import Contact from "./pages/Contact";
 import { useMockAuth } from "./context/MockAuthContext";
 import { motion, AnimatePresence } from 'framer-motion';
 import { PremiumLoader } from './components/LoadingSpinner';
@@ -23,6 +16,15 @@ import { DatesProvider } from '@mantine/dates';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import 'dayjs/locale/en';
+
+// Lazy load routes for code splitting
+const Home = lazy(() => import("./pages/Home"));
+const Listing = lazy(() => import("./pages/Listing"));
+const Property = lazy(() => import("./pages/Property"));
+const AddProperty = lazy(() => import("./pages/AddProperty"));
+const Favourites = lazy(() => import("./pages/Favourites"));
+const Bookings = lazy(() => import("./pages/Bookings"));
+const Contact = lazy(() => import("./pages/Contact"));
 
 // Error Component
 const ErrorComponent = ({ error }) => (

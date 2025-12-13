@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import useProperties from "../hooks/useProperties";
 import { PuffLoader } from "react-spinners";
 import Item from "../components/Item";
 import { FaSearch, FaTimes, FaFilter, FaSort, FaHome, FaBuilding, FaCrown, FaStar } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import SEO from "../components/SEO";
 
 const Listing = () => {
   const navigate = useNavigate();
@@ -127,9 +128,17 @@ const Listing = () => {
     { value: 'penthouse', label: 'Penthouses', icon: FaStar },
   ];
 
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
+
   if (isError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
+      <>
+        <SEO
+          title="Properties - RealHomes"
+          description="Browse our extensive collection of luxury properties across South Africa. Find your dream home today."
+        />
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
         <div className="text-center max-w-md mx-auto px-4">
           <motion.div
             initial={{ scale: 0 }}
@@ -159,12 +168,18 @@ const Listing = () => {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
+      <>
+        <SEO
+          title="Properties - RealHomes"
+          description="Browse our extensive collection of luxury properties across South Africa. Find your dream home today."
+        />
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
         <div className="text-center">
           <PuffLoader
             height="80"
@@ -176,11 +191,25 @@ const Listing = () => {
           <p className="mt-4 text-gray-600 font-medium">Loading properties...</p>
         </div>
       </div>
+      </>
     );
   }
 
+  const seoTitle = searchQuery 
+    ? `Properties matching "${searchQuery}" - RealHomes`
+    : "Properties - RealHomes";
+  const seoDescription = searchQuery
+    ? `Find properties matching "${searchQuery}" in South Africa. Browse our curated selection of luxury homes and apartments.`
+    : "Browse our extensive collection of luxury properties across South Africa. Find your dream home in Cape Town, Johannesburg, Durban, and more.";
+
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
+    <>
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        keywords={`properties, real estate, ${searchQuery}, South Africa, property listings`}
+      />
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <motion.div
@@ -319,6 +348,7 @@ const Listing = () => {
         )}
       </div>
     </main>
+    </>
   );
 };
 
