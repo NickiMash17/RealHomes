@@ -1,7 +1,7 @@
 {
   "name": "realhomes-south-africa",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Premium South African real estate platform with properties across the country",
   "type": "module",
   "scripts": {
