@@ -277,9 +277,9 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
   // Grid View
   return (
     <motion.div
-      className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden group cursor-pointer"
+      className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-amber-200"
       variants={containerVariants}
-      whileHover={{ y: -2 }}
+      whileHover={{ y: -4, scale: 1.01 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       onClick={handleCardClick}
@@ -344,9 +344,9 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
       </div>
 
       {/* Content Section */}
-      <div className="p-4 sm:p-5">
-        <div className="mb-3">
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
+      <div className="p-5 sm:p-6">
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className="bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-2.5 py-1 rounded-md text-xs font-semibold">
               {type}
             </span>
