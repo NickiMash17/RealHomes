@@ -2,6 +2,7 @@ import React from 'react'
 import Hero from '../components/Hero'
 import About from '../components/About'
 import Properties from '../components/Properties'
+import RecentlyViewed from '../components/RecentlyViewed'
 import bannerImg from '../assets/banner.png'
 import Blogs from '../components/Blogs'
 import Agents from '../components/Agents'
@@ -20,6 +21,7 @@ const Home = () => {
                 <Hero />
                 <About />
                 <Properties />
+                <RecentlyViewed />
                 <Blogs />
                 <Agents />
             
