@@ -33,6 +33,54 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // AGGRESSIVE: Remove any dark mode toggle buttons BEFORE React loads
+      (function() {
+        'use strict';
+        document.documentElement.style.colorScheme = 'light only';
+        document.documentElement.classList.remove('dark');
+        document.body.style.backgroundColor = '#ffffff';
+        
+        // Remove theme toggles immediately
+        function removeToggles() {
+          const selectors = [
+            'button[aria-label*="dark" i]',
+            'button[aria-label*="theme" i]',
+            'button[title*="dark" i]',
+            'button[title*="theme" i]',
+            '[class*="theme-toggle"]',
+            '[class*="dark-toggle"]',
+            '[id*="theme-toggle"]',
+            '[id*="dark-toggle"]'
+          ];
+          selectors.forEach(sel => {
+            try {
+              document.querySelectorAll(sel).forEach(el => {
+                const text = (el.textContent || '').toLowerCase();
+                if (text.includes('dark') || text.includes('theme')) {
+                  el.remove();
+                }
+              });
+            } catch(e) {}
+          });
+        }
+        
+        // Run immediately
+        removeToggles();
+        
+        // Watch for new elements
+        const observer = new MutationObserver(removeToggles);
+        observer.observe(document.documentElement, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['class']
+        });
+        
+        // Also run periodically
+        setInterval(removeToggles, 500);
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
