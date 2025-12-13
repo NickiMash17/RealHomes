@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaSearch, FaFilter, FaTimes, FaThLarge, FaList, FaBed, FaBath, FaRulerCombined, FaHome, FaBuilding, FaCrown, FaStar, FaGem, FaTrophy, FaShieldAlt, FaCheckCircle, FaArrowRight, FaArrowLeft } from 'react-icons/fa'
+import { FaSearch, FaFilter, FaTimes, FaThLarge, FaList, FaBed, FaBath, FaRulerCombined, FaHome, FaBuilding, FaCrown, FaStar, FaGem, FaTrophy, FaShieldAlt, FaCheckCircle, FaArrowRight, FaArrowLeft, FaBookmark, FaSave } from 'react-icons/fa'
 import { useQuery } from 'react-query'
 import { getAllProperties } from '../utils/api'
 import Item from './Item'
 import LoadingSpinner from './LoadingSpinner'
+import SavedSearches from './SavedSearches'
+import { useSavedSearches } from '../hooks/useSavedSearches'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 const Properties = () => {
   const navigate = useNavigate()
@@ -16,6 +19,9 @@ const Properties = () => {
   const [maxPrice, setMaxPrice] = useState(50000000)
   const [viewMode, setViewMode] = useState('grid')
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false)
+  const [showSaveSearchModal, setShowSaveSearchModal] = useState(false)
+  const [searchName, setSearchName] = useState('')
+  const { saveSearch } = useSavedSearches()
 
   // Fetch properties from API
   const { data: propertiesData, isLoading, isError, error } = useQuery(
@@ -153,6 +159,34 @@ const Properties = () => {
     setMaxPrice(50000000)
   }
 
+  const handleSaveSearch = () => {
+    const searchParams = {
+      searchTerm,
+      category: selectedCategory,
+      minBedrooms,
+      maxPrice,
+      sortBy,
+      resultCount: filteredAndSortedProperties.length,
+    };
+    
+    const success = saveSearch(searchParams, searchName);
+    if (success) {
+      setShowSaveSearchModal(false);
+      setSearchName('');
+    }
+  }
+
+  // Load search params from URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('q')) setSearchTerm(params.get('q'));
+    if (params.get('category')) setSelectedCategory(params.get('category'));
+    if (params.get('bedrooms')) setMinBedrooms(params.get('bedrooms'));
+    if (params.get('maxPrice')) setMaxPrice(parseInt(params.get('maxPrice')));
+    if (params.get('city')) setSearchTerm(prev => prev || params.get('city'));
+    if (params.get('sort')) setSortBy(params.get('sort'));
+  }, [])
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -270,6 +304,17 @@ const Properties = () => {
                 <FaList className="w-4 h-4" />
               </button>
             </div>
+
+            {/* Save Search Button */}
+            <motion.button
+              onClick={() => setShowSaveSearchModal(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-300 font-medium text-sm bg-amber-50 text-amber-700 hover:bg-amber-100 hover:shadow-md"
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaBookmark className="w-4 h-4" />
+              <span className="hidden sm:inline">Save Search</span>
+            </motion.button>
 
             {/* Filter Toggle */}
             <motion.button
