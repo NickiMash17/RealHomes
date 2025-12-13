@@ -59,33 +59,42 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
       const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
       const idString = String(propertyId)
       
+      // Update localStorage first (optimistic update)
+      let newFavorites
       if (isLiked) {
         // Remove from favorites
-        const newFavorites = favorites.filter(favId => String(favId) !== idString)
+        newFavorites = favorites.filter(favId => String(favId) !== idString)
         localStorage.setItem('favorites', JSON.stringify(newFavorites))
         setIsLiked(false)
         toast.success('Removed from favorites')
       } else {
         // Add to favorites
-        const newFavorites = [...favorites, idString]
+        newFavorites = [...favorites, idString]
         localStorage.setItem('favorites', JSON.stringify(newFavorites))
         setIsLiked(true)
         toast.success('Added to favorites')
       }
       
-      // Call API to sync with backend
+      // Call API to sync with backend (non-blocking)
       if (user?.email) {
-        try {
-          const token = await (getAccessTokenSilently?.() || Promise.resolve('mock-token'))
-          await toFav(propertyId, user.email, token)
-        } catch (apiError) {
-          // If API call fails, favorites are still saved in localStorage
-          console.warn('Failed to sync favorites with backend:', apiError)
-        }
+        // Don't await - let it run in background
+        (async () => {
+          try {
+            const token = getAccessTokenSilently ? await getAccessTokenSilently() : 'mock-token'
+            await toFav(propertyId, user.email, token)
+          } catch (apiError) {
+            // Silently fail - favorites are already saved in localStorage
+            // Only log in development
+            if (import.meta.env.DEV) {
+              console.warn('Failed to sync favorites with backend (favorites still saved locally):', apiError?.response?.data || apiError?.message)
+            }
+          }
+        })()
       }
     } catch (error) {
       console.error('Error toggling favorite:', error)
-      toast.error('Something went wrong')
+      // Only show error if localStorage operation failed
+      toast.error('Failed to save favorite. Please try again.')
     }
   }
 

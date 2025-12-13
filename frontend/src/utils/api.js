@@ -350,7 +350,7 @@ export const removeBooking = async (id, email, token) => {
 
 export const toFav = async (id, email, token) => {
   try {
-    await api.post(
+    const response = await api.post(
       `/user/toFav/${id}`,
       {
         email,
@@ -361,8 +361,15 @@ export const toFav = async (id, email, token) => {
         },
       }
     );
-  } catch (e) {
-    throw e;
+    return response.data;
+  } catch (error) {
+    // Don't show toast here - let the calling component handle it
+    // Only log in development
+    if (import.meta.env.DEV) {
+      console.warn('Failed to sync favorite with backend:', error?.response?.data || error?.message);
+    }
+    // Re-throw so calling code knows it failed, but won't show error to user
+    throw error;
   }
 };
 
