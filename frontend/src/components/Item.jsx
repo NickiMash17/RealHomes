@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { toast } from 'react-toastify'
-import { FaHeart, FaShare, FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt, FaStar, FaCrown, FaGem, FaEye, FaArrowRight } from 'react-icons/fa'
+import { FaHeart, FaShare, FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt, FaStar, FaCrown, FaGem, FaEye, FaArrowRight, FaBalanceScale } from 'react-icons/fa'
 import OptimizedImage from './OptimizedImage'
 import { useMockAuth } from '../context/MockAuthContext'
 import { toFav } from '../utils/api'
@@ -217,7 +217,10 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
             {/* Action Buttons */}
             <div className="absolute top-4 right-4 flex flex-col gap-2">
               <motion.button
-                onClick={handleToggleFavorite}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleFavorite(e);
+                }}
                 type="button"
                 className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
                   isLiked 
@@ -230,13 +233,26 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
                 <FaHeart className="w-4 h-4" />
               </motion.button>
               <motion.button
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (canAddMore) {
+                    addToComparison(property);
+                  }
+                }}
+                disabled={!canAddMore || isInComparison(propertyId)}
                 type="button"
-                className="p-2 rounded-full bg-white/80 text-gray-600 hover:text-blue-600 backdrop-blur-md transition-all duration-300"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
+                  isInComparison(propertyId)
+                    ? 'bg-amber-500 text-white shadow-lg'
+                    : canAddMore
+                    ? 'bg-white/80 text-gray-600 hover:text-amber-600'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+                whileHover={canAddMore && !isInComparison(propertyId) ? { scale: 1.1 } : {}}
+                whileTap={canAddMore && !isInComparison(propertyId) ? { scale: 0.9 } : {}}
+                title={isInComparison(propertyId) ? 'In comparison' : canAddMore ? 'Add to comparison' : 'Comparison full (max 4)'}
               >
-                <FaShare className="w-4 h-4" />
+                <FaBalanceScale className="w-4 h-4" />
               </motion.button>
             </div>
 
@@ -380,7 +396,10 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
         {/* Action Buttons */}
         <div className="absolute top-3 right-3 flex flex-col gap-2">
           <motion.button
-            onClick={handleToggleFavorite}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleToggleFavorite(e);
+            }}
             className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
               isLiked 
                 ? 'bg-red-500 text-white shadow-lg' 
@@ -392,11 +411,25 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
             <FaHeart className="w-4 h-4" />
           </motion.button>
           <motion.button
-            className="p-2 rounded-full bg-white/80 text-gray-600 hover:text-blue-600 backdrop-blur-md transition-all duration-300"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (canAddMore) {
+                addToComparison(property);
+              }
+            }}
+            disabled={!canAddMore || isInComparison(propertyId)}
+            className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
+              isInComparison(propertyId)
+                ? 'bg-amber-500 text-white shadow-lg'
+                : canAddMore
+                ? 'bg-white/80 text-gray-600 hover:text-amber-600'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+            whileHover={canAddMore && !isInComparison(propertyId) ? { scale: 1.1 } : {}}
+            whileTap={canAddMore && !isInComparison(propertyId) ? { scale: 0.9 } : {}}
+            title={isInComparison(propertyId) ? 'In comparison' : canAddMore ? 'Add to comparison' : 'Comparison full (max 4)'}
           >
-            <FaShare className="w-4 h-4" />
+            <FaBalanceScale className="w-4 h-4" />
           </motion.button>
         </div>
 
