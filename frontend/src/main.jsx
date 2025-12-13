@@ -9,83 +9,45 @@ if (typeof document !== 'undefined') {
   // Set color scheme immediately - BEFORE React renders
   document.documentElement.style.colorScheme = 'light only';
   document.documentElement.classList.remove('dark');
-  document.body.style.backgroundColor = '#ffffff';
-  document.body.style.color = '#111827';
+  if (document.body) {
+    document.body.style.backgroundColor = '#ffffff';
+    document.body.style.color = '#111827';
+  }
   
-  // Remove any existing dark mode classes from all elements
-  const removeDarkMode = () => {
-    document.querySelectorAll('[class*="dark"]').forEach(el => {
-      el.classList.remove('dark');
-    });
+  // Simple function to remove dark class only (not classes containing "dark")
+  const removeDarkClass = () => {
     if (document.documentElement.classList.contains('dark')) {
       document.documentElement.classList.remove('dark');
     }
   };
   
-  removeDarkMode();
+  removeDarkClass();
   
-  // Prevent any dark mode class from being added
+  // Lightweight observer - only watch html element for dark class
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-        removeDarkMode();
-      }
-      if (mutation.type === 'childList') {
-        mutation.addedNodes.forEach(node => {
-          if (node.nodeType === 1 && node.classList) {
-            node.classList.remove('dark');
-          }
-        });
+        removeDarkClass();
       }
     });
   });
   
+  // Only observe the html element, not the entire tree
   observer.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ['class'],
-    childList: true,
-    subtree: true
+    attributeFilter: ['class']
   });
   
-  // Also watch for style changes
+  // Ensure color scheme stays light
   const styleObserver = new MutationObserver(() => {
     if (document.documentElement.style.colorScheme !== 'light only') {
       document.documentElement.style.colorScheme = 'light only';
     }
-    removeDarkMode();
   });
   
   styleObserver.observe(document.documentElement, {
     attributes: true,
     attributeFilter: ['style']
-  });
-  
-  // Remove any theme toggle buttons that might be injected
-  const removeThemeToggle = () => {
-    const toggles = document.querySelectorAll('[class*="theme"], [class*="dark"], [aria-label*="theme"], [aria-label*="dark"], button[title*="dark"], button[title*="theme"]');
-    toggles.forEach(toggle => {
-      const text = toggle.textContent?.toLowerCase() || '';
-      const ariaLabel = toggle.getAttribute('aria-label')?.toLowerCase() || '';
-      const title = toggle.getAttribute('title')?.toLowerCase() || '';
-      if (text.includes('dark') || text.includes('theme') || ariaLabel.includes('dark') || ariaLabel.includes('theme') || title.includes('dark') || title.includes('theme')) {
-        toggle.remove();
-      }
-    });
-  };
-  
-  // Run immediately and periodically
-  removeThemeToggle();
-  setInterval(removeThemeToggle, 1000);
-  
-  // Watch for new elements being added
-  const bodyObserver = new MutationObserver(() => {
-    removeThemeToggle();
-    removeDarkMode();
-  });
-  
-  bodyObserver.observe(document.body, {
-    childList: true,
-    subtree: true
   });
 }
 
