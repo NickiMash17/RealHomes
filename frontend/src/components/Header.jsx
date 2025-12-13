@@ -89,9 +89,9 @@ const Header = () => {
           ? 'bg-white/99 backdrop-blur-xl shadow-lg border-b border-gray-100/50' 
           : 'bg-white/98 backdrop-blur-lg'
       }`}
-      initial={{ y: -100 }}
+      initial={{ y: 0 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      transition={{ duration: 0.3 }}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">

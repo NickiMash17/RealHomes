@@ -7,7 +7,7 @@ import { Suspense, useState, lazy } from "react";
 import UserDetailContext from "./context/UserDetailContext";
 import Layout from "./components/Layout";
 import { useMockAuth } from "./context/MockAuthContext";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { PremiumLoader } from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
 import ScrollToTop from './components/ScrollToTop';
@@ -140,16 +140,5 @@ export default function App() {
     return <PremiumLoader />;
   }
 
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <AppContent />
-      </motion.div>
-    </AnimatePresence>
-  );
+  return <AppContent />;
 }
