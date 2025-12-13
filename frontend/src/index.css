@@ -15,6 +15,18 @@ html, body {
   overflow-x: hidden;
   width: 100%;
   scroll-behavior: smooth;
+  color-scheme: light only !important;
+  background-color: #ffffff !important;
+}
+
+/* Force light mode - override any system preferences or browser extensions */
+html {
+  color-scheme: light only !important;
+}
+
+body {
+  background-color: #ffffff !important;
+  color: #111827 !important;
 }
 
 /* Premium scrollbar */
