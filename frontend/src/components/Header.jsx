@@ -172,13 +172,15 @@ const Header = () => {
             {/* Comparison Button */}
             <motion.button
               onClick={() => setShowComparison(true)}
-              className="p-2.5 text-gray-600 hover:text-amber-600 hover:bg-gradient-to-r hover:from-amber-50 hover:to-yellow-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg"
+              className="p-2.5 text-gray-600 hover:text-amber-600 hover:bg-gradient-to-r hover:from-amber-50 hover:to-yellow-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.95 }}
+              aria-label={`Compare properties${comparisonList.length > 0 ? ` (${comparisonList.length} selected)` : ''}`}
+              aria-expanded={showComparison}
             >
               <FaBalanceScale className="w-4 h-4" />
               {comparisonList.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1">
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1" aria-label={`${comparisonList.length} properties in comparison`}>
                   {comparisonList.length}
                 </span>
               )}
@@ -187,13 +189,15 @@ const Header = () => {
             {/* Alerts Button */}
             <motion.button
               onClick={() => setShowAlerts(true)}
-              className="p-2.5 text-gray-600 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg"
+              className="p-2.5 text-gray-600 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.95 }}
+              aria-label={`Property alerts${getUnreadCount() > 0 ? ` (${getUnreadCount()} new)` : ''}`}
+              aria-expanded={showAlerts}
             >
               <FaBell className="w-4 h-4" />
               {getUnreadCount() > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1 animate-pulse">
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1 animate-pulse" aria-label={`${getUnreadCount()} unread alerts`}>
                   {getUnreadCount() > 99 ? '99+' : getUnreadCount()}
                 </span>
               )}
@@ -202,10 +206,11 @@ const Header = () => {
             {/* Mortgage Calculator Button */}
             <motion.button
               onClick={() => setShowMortgageCalculator(true)}
-              className="p-2.5 text-gray-600 hover:text-green-600 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg"
+              className="p-2.5 text-gray-600 hover:text-green-600 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.95 }}
-              title="Mortgage Calculator"
+              aria-label="Open mortgage calculator"
+              aria-expanded={showMortgageCalculator}
             >
               <FaCalculator className="w-4 h-4" />
             </motion.button>
@@ -214,13 +219,15 @@ const Header = () => {
             <motion.button
               onClick={handleFavoritesClick}
               disabled={isLoading}
-              className="p-2.5 text-gray-600 hover:text-red-500 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg"
+              className="p-2.5 text-gray-600 hover:text-red-500 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.95 }}
+              aria-label={`View favorites${favoritesCount > 0 ? ` (${favoritesCount} properties)` : ''}`}
+              aria-disabled={isLoading}
             >
               <FaHeart className="w-4 h-4 group-hover:animate-pulse" />
               {favoritesCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1">
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1" aria-label={`${favoritesCount} favorite properties`}>
                   {favoritesCount > 99 ? '99+' : favoritesCount}
                 </span>
               )}

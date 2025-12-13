@@ -178,15 +178,27 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
     }
   }
 
+  // Handle keyboard navigation
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    }
+  };
+
   if (viewMode === 'list') {
     return (
-      <motion.div
+      <motion.article
         className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden group cursor-pointer"
         variants={containerVariants}
         whileHover={{ y: -2 }}
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
         onClick={handleCardClick}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="article"
+        aria-label={`${title} - ${type} in ${location} - ${formatPrice(price)}`}
       >
         <div className="flex flex-col lg:flex-row">
           {/* Image Section */}
@@ -222,13 +234,15 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
                   handleToggleFavorite(e);
                 }}
                 type="button"
-                className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
+                className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${
                   isLiked 
                     ? 'bg-red-500 text-white shadow-lg' 
                     : 'bg-white/80 text-gray-600 hover:text-red-500'
                 }`}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
+                aria-label={isLiked ? `Remove ${title} from favorites` : `Add ${title} to favorites`}
+                aria-pressed={isLiked}
               >
                 <FaHeart className="w-4 h-4" />
               </motion.button>
@@ -241,7 +255,7 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
                 }}
                 disabled={!canAddMore || isInComparison(propertyId)}
                 type="button"
-                className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
+                className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
                   isInComparison(propertyId)
                     ? 'bg-amber-500 text-white shadow-lg'
                     : canAddMore
@@ -250,7 +264,8 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
                 }`}
                 whileHover={canAddMore && !isInComparison(propertyId) ? { scale: 1.1 } : {}}
                 whileTap={canAddMore && !isInComparison(propertyId) ? { scale: 0.9 } : {}}
-                title={isInComparison(propertyId) ? 'In comparison' : canAddMore ? 'Add to comparison' : 'Comparison full (max 4)'}
+                aria-label={isInComparison(propertyId) ? `${title} is in comparison list` : canAddMore ? `Add ${title} to comparison` : 'Comparison list is full (maximum 4 properties)'}
+                aria-disabled={!canAddMore || isInComparison(propertyId)}
               >
                 <FaBalanceScale className="w-4 h-4" />
               </motion.button>
@@ -343,9 +358,10 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
               <motion.button
                 onClick={handleClick}
                 type="button"
-                className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg hover:shadow-2xl transition-all duration-300 group glow-amber-hover"
+                className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg hover:shadow-2xl transition-all duration-300 group glow-amber-hover focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
+                aria-label={`View details for ${title}`}
               >
                 <FaEye className="w-4 h-4" />
                 View Details
@@ -354,19 +370,23 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
             </div>
           </div>
         </div>
-      </motion.div>
+      </motion.article>
     )
   }
 
   // Grid View
   return (
-    <motion.div
-      className="bg-white rounded-2xl shadow-lg border-2 border-gray-100 overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-2xl hover:border-amber-300 hover:ring-2 hover:ring-amber-200/50"
+    <motion.article
+      className="bg-white rounded-2xl shadow-lg border-2 border-gray-100 overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-2xl hover:border-amber-300 hover:ring-2 hover:ring-amber-200/50 focus-within:ring-2 focus-within:ring-amber-500 focus-within:ring-offset-2"
       variants={containerVariants}
       whileHover={{ y: -8, scale: 1.02 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="article"
+      aria-label={`${title} - ${type} in ${location} - ${formatPrice(price)}`}
     >
       {/* Image Section */}
       <div className="relative overflow-hidden bg-gray-100">
@@ -400,13 +420,16 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
               e.stopPropagation();
               handleToggleFavorite(e);
             }}
-            className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
+            type="button"
+            className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${
               isLiked 
                 ? 'bg-red-500 text-white shadow-lg' 
                 : 'bg-white/80 text-gray-600 hover:text-red-500'
             }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            aria-label={isLiked ? `Remove ${title} from favorites` : `Add ${title} to favorites`}
+            aria-pressed={isLiked}
           >
             <FaHeart className="w-4 h-4" />
           </motion.button>
@@ -418,7 +441,8 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
               }
             }}
             disabled={!canAddMore || isInComparison(propertyId)}
-            className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
+            type="button"
+            className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
               isInComparison(propertyId)
                 ? 'bg-amber-500 text-white shadow-lg'
                 : canAddMore
@@ -514,10 +538,10 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
         >
           <span>View Details</span>
           <FaArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-300" />
-        </motion.button>
-      </div>
-    </motion.div>
-  )
-}
+          </motion.button>
+        </div>
+      </motion.article>
+    )
+  }
 
 export default Item

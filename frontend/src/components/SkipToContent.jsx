@@ -1,14 +1,25 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 
-/**
- * SkipToContent Component
- * Provides keyboard navigation for accessibility
- */
 const SkipToContent = () => {
+  const handleSkip = (e) => {
+    e.preventDefault();
+    const mainContent = document.querySelector('main') || document.querySelector('#main-content');
+    if (mainContent) {
+      mainContent.focus();
+      mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Make it focusable if it isn't already
+      if (!mainContent.hasAttribute('tabindex')) {
+        mainContent.setAttribute('tabindex', '-1');
+      }
+    }
+  };
+
   return (
     <motion.a
       href="#main-content"
-      className="absolute -top-20 left-4 z-[100] px-4 py-2 bg-amber-600 text-white rounded-lg font-semibold shadow-lg outline-none ring-2 ring-amber-500 ring-offset-2 focus:top-4 transition-all duration-200"
+      onClick={handleSkip}
+      className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-amber-600 focus:text-white focus:rounded-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
       initial={{ opacity: 0, y: -20 }}
       whileFocus={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
@@ -20,4 +31,3 @@ const SkipToContent = () => {
 };
 
 export default SkipToContent;
-

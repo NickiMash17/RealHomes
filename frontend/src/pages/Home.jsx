@@ -18,7 +18,7 @@ const Home = () => {
                 description="Discover luxury properties across South Africa. Browse premium homes, apartments, and estates in Cape Town, Johannesburg, Durban, and more. Your dream home awaits."
                 keywords="real estate South Africa, luxury properties, Cape Town homes, Johannesburg apartments, Durban estates, property listings"
             />
-            <main className="min-h-screen bg-white">
+            <main id="main-content" className="min-h-screen bg-white" tabIndex={-1}>
                 <Hero />
                 <About />
                 <Properties />
