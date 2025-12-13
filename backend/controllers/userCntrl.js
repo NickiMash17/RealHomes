@@ -386,9 +386,9 @@ export const removeBooking = async (req, res) => {
       })
     }
 
-    // Remove booking
+    // Remove booking (compare as strings)
     const updatedBookings = (user.bookedVisits || []).filter(
-      booking => booking.id !== id
+      booking => String(booking.id) !== String(id)
     )
 
     await prisma.user.update({
@@ -408,7 +408,7 @@ export const removeBooking = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to remove booking',
-      error: error.message
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     })
   }
 }
@@ -432,23 +432,27 @@ export const allBookings = async (req, res) => {
       }
     })
 
-    if (!user) {
-      return res.json({
-        success: true,
-        bookedVisits: []
-      })
-    }
+    // Return empty array if user doesn't exist
+    const bookings = user?.bookedVisits || []
+    
+    // Ensure bookings is an array and normalize IDs
+    const normalizedBookings = Array.isArray(bookings) 
+      ? bookings.map(booking => ({
+          ...booking,
+          id: String(booking.id || '')
+        }))
+      : []
 
     res.json({
       success: true,
-      bookedVisits: user.bookedVisits || []
+      bookedVisits: normalizedBookings
     })
   } catch (error) {
     console.error('AllBookings error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to get bookings',
-      error: error.message
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     })
   }
 }
