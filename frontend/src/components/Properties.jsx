@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaSearch, FaFilter, FaTimes, FaThLarge, FaList, FaBed, FaBath, FaRulerCombined, FaHome, FaBuilding, FaCrown, FaStar, FaGem, FaTrophy, FaShieldAlt, FaCheckCircle, FaArrowRight, FaArrowLeft, FaBookmark, FaSave, FaBell } from 'react-icons/fa'
+import { FaSearch, FaFilter, FaTimes, FaThLarge, FaList, FaBed, FaBath, FaRulerCombined, FaHome, FaBuilding, FaCrown, FaStar, FaGem, FaTrophy, FaShieldAlt, FaCheckCircle, FaArrowRight, FaArrowLeft, FaBookmark, FaSave, FaBell, FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa'
 import { useQuery } from 'react-query'
 import { getAllProperties } from '../utils/api'
 import Item from './Item'
@@ -18,7 +18,13 @@ const Properties = () => {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
   const [minBedrooms, setMinBedrooms] = useState('any')
+  const [minBathrooms, setMinBathrooms] = useState('any')
+  const [minPrice, setMinPrice] = useState(0)
   const [maxPrice, setMaxPrice] = useState(50000000)
+  const [minArea, setMinArea] = useState(0)
+  const [maxArea, setMaxArea] = useState(10000)
+  const [selectedCity, setSelectedCity] = useState('all')
+  const [featuredOnly, setFeaturedOnly] = useState(false)
   const [viewMode, setViewMode] = useState('grid')
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false)
   const [showSaveSearchModal, setShowSaveSearchModal] = useState(false)
@@ -145,7 +151,7 @@ const Properties = () => {
     }
 
     return filtered
-  }, [properties, searchTerm, selectedCategory, minBedrooms, maxPrice, sortBy])
+  }, [properties, searchTerm, selectedCategory, minBedrooms, minBathrooms, minPrice, maxPrice, minArea, maxArea, selectedCity, featuredOnly, sortBy])
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-ZA', {
@@ -161,8 +167,41 @@ const Properties = () => {
     setSelectedCategory('all')
     setSortBy('newest')
     setMinBedrooms('any')
+    setMinBathrooms('any')
+    setMinPrice(0)
     setMaxPrice(50000000)
+    setMinArea(0)
+    setMaxArea(10000)
+    setSelectedCity('all')
+    setFeaturedOnly(false)
   }
+
+  // Get unique cities from properties
+  const cities = useMemo(() => {
+    const citySet = new Set()
+    properties.forEach(prop => {
+      if (prop.city) {
+        citySet.add(prop.city)
+      }
+    })
+    return Array.from(citySet).sort()
+  }, [properties])
+
+  // Count active filters
+  const activeFilterCount = useMemo(() => {
+    let count = 0
+    if (searchTerm) count++
+    if (selectedCategory !== 'all') count++
+    if (minBedrooms !== 'any') count++
+    if (minBathrooms !== 'any') count++
+    if (minPrice > 0) count++
+    if (maxPrice < 50000000) count++
+    if (minArea > 0) count++
+    if (maxArea < 10000) count++
+    if (selectedCity !== 'all') count++
+    if (featuredOnly) count++
+    return count
+  }, [searchTerm, selectedCategory, minBedrooms, minBathrooms, minPrice, maxPrice, minArea, maxArea, selectedCity, featuredOnly])
 
   const handleSaveSearch = () => {
     const searchParams = {
@@ -362,7 +401,7 @@ const Properties = () => {
             {/* Filter Toggle */}
             <motion.button
               onClick={() => setShowAdvancedFilter(!showAdvancedFilter)}
-              className={`flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-300 font-medium text-sm ${
+              className={`flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-300 font-medium text-sm relative ${
                 showAdvancedFilter 
                   ? 'bg-gradient-to-r from-amber-600 to-yellow-500 text-white shadow-lg glow-amber-hover' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
@@ -372,6 +411,11 @@ const Properties = () => {
             >
               <FaFilter className="w-4 h-4" />
               <span className="hidden sm:inline">Filters</span>
+              {activeFilterCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-5 flex items-center justify-center font-bold px-1">
+                  {activeFilterCount}
+                </span>
+              )}
             </motion.button>
           </div>
 
@@ -389,13 +433,20 @@ const Properties = () => {
                   
                   {/* Category Filter */}
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5">Property Type</label>
-                    <select className="input-enhanced text-sm">
-                      <option value="all">All Types</option>
-                      <option value="house">Houses</option>
-                      <option value="apartment">Apartments</option>
-                      <option value="villa">Villas</option>
-                      <option value="penthouse">Penthouses</option>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
+                      <FaHome className="w-3 h-3" />
+                      Property Type
+                    </label>
+                    <select 
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="input-enhanced text-sm"
+                    >
+                      {categories.map(cat => (
+                        <option key={cat.value} value={cat.value}>
+                          {cat.label} {cat.count > 0 && `(${cat.count})`}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -417,7 +468,10 @@ const Properties = () => {
 
                   {/* Bedrooms */}
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5">Bedrooms</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
+                      <FaBed className="w-3 h-3" />
+                      Bedrooms
+                    </label>
                     <select 
                       value={minBedrooms}
                       onChange={(e) => setMinBedrooms(e.target.value)}
@@ -429,29 +483,155 @@ const Properties = () => {
                       <option value="3">3+</option>
                       <option value="4">4+</option>
                       <option value="5">5+</option>
+                      <option value="6">6+</option>
                     </select>
                   </div>
 
-                  {/* Price Range */}
+                  {/* Bathrooms */}
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5">
-                      Max Price: <span className="text-amber-600 font-semibold">{formatPrice(maxPrice)}</span>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
+                      <FaBath className="w-3 h-3" />
+                      Bathrooms
                     </label>
+                    <select 
+                      value={minBathrooms}
+                      onChange={(e) => setMinBathrooms(e.target.value)}
+                      className="input-enhanced text-sm"
+                    >
+                      <option value="any">Any</option>
+                      <option value="1">1+</option>
+                      <option value="2">2+</option>
+                      <option value="3">3+</option>
+                      <option value="4">4+</option>
+                      <option value="5">5+</option>
+                    </select>
+                  </div>
+
+                  {/* City/Location */}
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
+                      <FaMapMarkerAlt className="w-3 h-3" />
+                      Location
+                    </label>
+                    <select 
+                      value={selectedCity}
+                      onChange={(e) => setSelectedCity(e.target.value)}
+                      className="input-enhanced text-sm"
+                    >
+                      <option value="all">All Cities</option>
+                      {cities.map(city => (
+                        <option key={city} value={city}>{city}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Price Range Section */}
+                <div className="mt-4 sm:mt-6 pt-4 border-t border-gray-200">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Price Range
+                  </label>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-600 mb-1">Min Price</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max={maxPrice}
+                          step="100000"
+                          value={minPrice}
+                          onChange={(e) => setMinPrice(Math.max(0, parseInt(e.target.value) || 0))}
+                          className="input-enhanced text-sm w-full"
+                          placeholder="R0"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-600 mb-1">Max Price</label>
+                        <input
+                          type="number"
+                          min={minPrice}
+                          max="50000000"
+                          step="100000"
+                          value={maxPrice}
+                          onChange={(e) => setMaxPrice(Math.min(50000000, parseInt(e.target.value) || 50000000))}
+                          className="input-enhanced text-sm w-full"
+                          placeholder="R50M"
+                        />
+                      </div>
+                    </div>
                     <div className="relative">
                       <input
                         type="range"
                         min="0"
                         max="50000000"
-                        step="1000000"
+                        step="500000"
                         value={maxPrice}
                         onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-amber-600"
                       />
                       <div className="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>R0</span>
+                        <span>{formatPrice(minPrice)}</span>
+                        <span className="text-amber-600 font-semibold">{formatPrice(maxPrice)}</span>
                         <span>R50M+</span>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                {/* Area Range Section */}
+                <div className="mt-4 sm:mt-6 pt-4 border-t border-gray-200">
+                  <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                    <FaRulerCombined className="w-4 h-4" />
+                    Area (m²)
+                  </label>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-600 mb-1">Min Area</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max={maxArea}
+                          step="10"
+                          value={minArea}
+                          onChange={(e) => setMinArea(Math.max(0, parseInt(e.target.value) || 0))}
+                          className="input-enhanced text-sm w-full"
+                          placeholder="0 m²"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-600 mb-1">Max Area</label>
+                        <input
+                          type="number"
+                          min={minArea}
+                          max="10000"
+                          step="10"
+                          value={maxArea}
+                          onChange={(e) => setMaxArea(Math.min(10000, parseInt(e.target.value) || 10000))}
+                          className="input-enhanced text-sm w-full"
+                          placeholder="10000 m²"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Options */}
+                <div className="mt-4 sm:mt-6 pt-4 border-t border-gray-200">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">Additional Options</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="featuredOnly"
+                      checked={featuredOnly}
+                      onChange={(e) => setFeaturedOnly(e.target.checked)}
+                      className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+                    />
+                    <label htmlFor="featuredOnly" className="text-sm text-gray-700 flex items-center gap-2 cursor-pointer">
+                      <FaStar className="w-4 h-4 text-amber-500" />
+                      Featured Properties Only
+                    </label>
                   </div>
                 </div>
 
