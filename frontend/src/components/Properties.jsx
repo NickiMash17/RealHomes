@@ -308,26 +308,26 @@ const Properties = () => {
         
         {/* Page Header - Simplified */}
         <motion.div 
-          className="text-center mb-8 sm:mb-12"
+          className="text-center mb-6 sm:mb-8 md:mb-12"
           variants={itemVariants}
         >
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight px-2 sm:px-0">
             Discover Your
             <span className="block bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-500 bg-clip-text text-transparent">
               Perfect Home
             </span>
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto px-2 sm:px-0">
             Explore our curated collection of luxury properties across South Africa
           </p>
         </motion.div>
 
         {/* Search and Filter Section - Cleaner */}
         <motion.div 
-          className="bg-white rounded-2xl shadow-lg border-2 border-gray-200 p-4 sm:p-6 mb-8 hover:shadow-xl transition-all duration-300"
+          className="bg-white rounded-xl sm:rounded-2xl shadow-lg border-2 border-gray-200 p-3 sm:p-4 md:p-6 mb-6 sm:mb-8 hover:shadow-xl transition-all duration-300"
           variants={itemVariants}
         >
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 md:gap-4">
             
             {/* Search Input */}
             <div className="flex-1 relative">
@@ -337,7 +337,7 @@ const Properties = () => {
                 placeholder="Search properties..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input-enhanced pl-10 text-sm"
+                className="input-enhanced pl-10 text-sm sm:text-base py-2 sm:py-2.5"
               />
             </div>
 
@@ -367,58 +367,61 @@ const Properties = () => {
               </button>
             </div>
 
-            {/* Save Search Button */}
-            <motion.button
-              onClick={() => setShowSaveSearchModal(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-300 font-medium text-sm bg-amber-50 text-amber-700 hover:bg-amber-100 hover:shadow-md"
-              whileHover={{ scale: 1.05, y: -1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaBookmark className="w-4 h-4" />
-              <span className="hidden sm:inline">Save Search</span>
-            </motion.button>
+            {/* Action Buttons Row - Mobile optimized */}
+            <div className="flex flex-wrap gap-2 sm:gap-2.5">
+              {/* Save Search Button */}
+              <motion.button
+                onClick={() => setShowSaveSearchModal(true)}
+                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-all duration-300 font-medium text-xs sm:text-sm bg-amber-50 text-amber-700 hover:bg-amber-100 hover:shadow-md active:scale-95"
+                whileHover={{ scale: 1.05, y: -1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaBookmark className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Save</span>
+              </motion.button>
 
-            {/* Create Alert Button */}
-            <motion.button
-              onClick={() => setShowCreateAlertModal(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-300 font-medium text-sm bg-blue-50 text-blue-700 hover:bg-blue-100 hover:shadow-md"
-              whileHover={{ scale: 1.05, y: -1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaBell className="w-4 h-4" />
-              <span className="hidden sm:inline">Create Alert</span>
-            </motion.button>
+              {/* Create Alert Button */}
+              <motion.button
+                onClick={() => setShowCreateAlertModal(true)}
+                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-all duration-300 font-medium text-xs sm:text-sm bg-blue-50 text-blue-700 hover:bg-blue-100 hover:shadow-md active:scale-95"
+                whileHover={{ scale: 1.05, y: -1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaBell className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Alert</span>
+              </motion.button>
 
-            {/* View Alerts Button */}
-            <motion.button
-              onClick={() => setShowAlertModal(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-300 font-medium text-sm bg-purple-50 text-purple-700 hover:bg-purple-100 hover:shadow-md"
-              whileHover={{ scale: 1.05, y: -1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaBell className="w-4 h-4" />
-              <span className="hidden sm:inline">Alerts</span>
-            </motion.button>
+              {/* View Alerts Button */}
+              <motion.button
+                onClick={() => setShowAlertModal(true)}
+                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-all duration-300 font-medium text-xs sm:text-sm bg-purple-50 text-purple-700 hover:bg-purple-100 hover:shadow-md active:scale-95"
+                whileHover={{ scale: 1.05, y: -1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaBell className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">View</span>
+              </motion.button>
 
-            {/* Filter Toggle */}
-            <motion.button
-              onClick={() => setShowAdvancedFilter(!showAdvancedFilter)}
-              className={`flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-300 font-medium text-sm relative ${
-                showAdvancedFilter 
-                  ? 'bg-gradient-to-r from-amber-600 to-yellow-500 text-white shadow-lg glow-amber-hover' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
-              }`}
-              whileHover={{ scale: 1.05, y: -1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaFilter className="w-4 h-4" />
-              <span className="hidden sm:inline">Filters</span>
-              {activeFilterCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-5 flex items-center justify-center font-bold px-1">
-                  {activeFilterCount}
-                </span>
-              )}
-            </motion.button>
+              {/* Filter Toggle */}
+              <motion.button
+                onClick={() => setShowAdvancedFilter(!showAdvancedFilter)}
+                className={`flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-all duration-300 font-medium text-xs sm:text-sm relative active:scale-95 ${
+                  showAdvancedFilter 
+                    ? 'bg-gradient-to-r from-amber-600 to-yellow-500 text-white shadow-lg glow-amber-hover' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
+                }`}
+                whileHover={{ scale: 1.05, y: -1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaFilter className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Filters</span>
+                {activeFilterCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[16px] h-4 sm:h-5 flex items-center justify-center font-bold px-1 text-[10px] sm:text-xs">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </motion.button>
+            </div>
           </div>
 
           {/* Advanced Filter Panel */}
@@ -431,7 +434,7 @@ const Properties = () => {
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200"
               >
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                   
                   {/* Category Filter */}
                   <div>
@@ -655,22 +658,23 @@ const Properties = () => {
 
         {/* Category Pills - Simplified */}
         <motion.div 
-          className="flex flex-wrap gap-2 mb-6 overflow-x-auto pb-2 -mx-2 px-2"
+          className="flex flex-wrap gap-2 sm:gap-2.5 mb-4 sm:mb-6 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide"
           variants={itemVariants}
         >
           {categories.map((category) => (
             <button
               key={category.value}
               onClick={() => setSelectedCategory(category.value)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-300 font-medium text-xs sm:text-sm whitespace-nowrap ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-all duration-300 font-medium text-xs sm:text-sm whitespace-nowrap active:scale-95 ${
                 selectedCategory === category.value
                   ? 'bg-amber-600 text-white shadow-sm'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 active:bg-gray-100'
               }`}
             >
-              <category.icon className="w-3.5 h-3.5" />
+              <category.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+              <span className="hidden xs:inline sm:hidden">{category.label.split(' ')[0]}</span>
               <span className="hidden sm:inline">{category.label}</span>
-              <span className={`px-1.5 py-0.5 rounded text-xs font-semibold ${
+              <span className={`px-1.5 py-0.5 rounded text-xs font-semibold flex-shrink-0 ${
                 selectedCategory === category.value ? 'bg-white/20' : 'bg-gray-100'
               }`}>
                 {category.count}
@@ -680,12 +684,12 @@ const Properties = () => {
         </motion.div>
 
         {/* Results Header - Simplified */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-2">
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
               {selectedCategory === 'all' ? 'All Properties' : categories.find(c => c.value === selectedCategory)?.label}
             </h2>
-            <p className="text-gray-600 text-sm mt-1">
+            <p className="text-gray-600 text-xs sm:text-sm mt-0.5 sm:mt-1">
               {filteredAndSortedProperties.length} {filteredAndSortedProperties.length === 1 ? 'property' : 'properties'} found
             </p>
           </div>
@@ -694,9 +698,9 @@ const Properties = () => {
         {/* Properties Grid */}
         {filteredAndSortedProperties.length > 0 ? (
           <motion.div 
-            className={`grid gap-4 sm:gap-6 ${
+            className={`grid gap-4 sm:gap-5 md:gap-6 ${
               viewMode === 'grid' 
-                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' 
+                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
                 : 'grid-cols-1'
             }`}
             variants={itemVariants}

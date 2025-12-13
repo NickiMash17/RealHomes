@@ -93,21 +93,21 @@ const Header = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           
           {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="flex-shrink-0 mr-8"
+            className="flex-shrink-0 mr-2 sm:mr-8"
           >
-            <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-600 via-yellow-500 to-amber-400 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300">
-                <FaCrown className="text-white text-lg" />
+            <Link to="/" className="flex items-center gap-1.5 sm:gap-3 group">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-600 via-yellow-500 to-amber-400 rounded-lg sm:rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300">
+                <FaCrown className="text-white text-sm sm:text-lg" />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-amber-600 transition-colors duration-300 tracking-tight">
+                <span className="text-base sm:text-lg md:text-xl font-bold text-gray-900 group-hover:text-amber-600 transition-colors duration-300 tracking-tight">
                   RealHomes
                 </span>
                 <span className="hidden sm:block text-xs text-gray-500 font-medium tracking-wide">Luxury Properties</span>
@@ -282,25 +282,25 @@ const Header = () => {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
-              <div className="max-h-[70vh] overflow-y-auto">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+              <div className="max-h-[75vh] sm:max-h-[70vh] overflow-y-auto -mx-4 sm:mx-0 px-4 sm:px-0">
                 
                 {/* Mobile Search */}
-                <form onSubmit={handleSearch} className="mb-6">
+                <form onSubmit={handleSearch} className="mb-4 sm:mb-6">
                   <div className="relative w-full">
                     <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                       type="text"
-                      placeholder="Search luxury properties..."
+                      placeholder="Search properties..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm font-medium bg-white/90 backdrop-blur-sm shadow-md"
+                      className="w-full pl-10 pr-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm font-medium bg-white/90 backdrop-blur-sm shadow-md"
                     />
                   </div>
                 </form>
 
                 {/* Mobile Navigation */}
-                <nav className="flex flex-col gap-2 mb-6">
+                <nav className="flex flex-col gap-1.5 sm:gap-2 mb-4 sm:mb-6">
                   {navItems.map((item, index) => (
                     <motion.div
                       key={item.path}
@@ -310,64 +310,64 @@ const Header = () => {
                     >
                       <Link 
                         to={item.path} 
-                        className={`block transition-all duration-300 font-medium py-3 px-4 rounded-lg flex items-center gap-3 text-sm ${
+                        className={`block transition-all duration-300 font-medium py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg flex items-center gap-2.5 sm:gap-3 text-sm sm:text-base ${
                           isActiveLink(item.path) 
                             ? 'text-white bg-amber-600 shadow-sm' 
-                            : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50'
+                            : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50 active:bg-amber-100'
                         }`}
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        <item.icon className="w-4 h-4" />
-                        {item.label}
+                        <item.icon className="w-4 h-4 flex-shrink-0" />
+                        <span>{item.label}</span>
                       </Link>
                     </motion.div>
                   ))}
                 </nav>
 
                 {/* Mobile Contact Button */}
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-6">
                   <motion.a
                     href="https://wa.me/27112345678"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white rounded-lg transition-all duration-300 shadow-md"
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white rounded-lg transition-all duration-300 shadow-md active:scale-95"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <FaWhatsapp className="w-4 h-4" />
-                    <span className="text-sm font-semibold">Contact via WhatsApp</span>
+                    <FaWhatsapp className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="text-sm sm:text-base font-semibold">Contact via WhatsApp</span>
                   </motion.a>
                 </div>
 
                 {/* Mobile Action Buttons */}
-                <div className="flex flex-col gap-3 pt-4 border-t border-gray-200">
+                <div className="flex flex-col gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200">
                   <motion.button
                     onClick={() => {
                       handleFavoritesClick()
                       setIsMenuOpen(false)
                     }}
                     disabled={isLoading}
-                    className="flex items-center justify-center gap-3 px-4 py-3 text-gray-700 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-300 font-medium"
+                    className="flex items-center justify-center gap-2.5 sm:gap-3 px-4 py-2.5 sm:py-3 text-gray-700 hover:text-red-500 hover:bg-red-50 active:bg-red-100 rounded-lg transition-all duration-300 font-medium text-sm sm:text-base"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <FaHeart className="w-4 h-4" />
-                    Favorites {favoritesCount > 0 && `(${favoritesCount})`}
+                    <FaHeart className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span>Favorites {favoritesCount > 0 && `(${favoritesCount})`}</span>
                   </motion.button>
 
                   {isAuthenticated ? (
                     <motion.div 
-                      className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200 shadow-md"
+                      className="flex items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200 shadow-md"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                     >
                       <img 
                         src={user?.picture || '/user.svg'} 
                         alt="Profile" 
-                        className="w-10 h-10 rounded-lg border-2 border-white shadow-md"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg border-2 border-white shadow-md flex-shrink-0"
                       />
-                      <div>
-                        <span className="text-sm font-bold text-gray-700">{user?.name}</span>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-sm sm:text-base font-bold text-gray-700 block truncate">{user?.name}</span>
                         <p className="text-xs text-amber-600 font-semibold">Premium Member</p>
                       </div>
                     </motion.div>
@@ -378,16 +378,16 @@ const Header = () => {
                         setIsMenuOpen(false)
                       }}
                       disabled={isLoading}
-                      className="flex items-center justify-center gap-3 px-4 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-all duration-300 font-medium shadow-sm hover:shadow-md"
+                      className="flex items-center justify-center gap-2.5 sm:gap-3 px-4 py-2.5 sm:py-3 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-lg transition-all duration-300 font-medium text-sm sm:text-base shadow-sm hover:shadow-md active:scale-95"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
                       {isLoading ? (
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                       ) : (
                         <>
-                          <FaUser className="w-4 h-4" />
-                          Login / Register
+                          <FaUser className="w-4 h-4 sm:w-5 sm:h-5" />
+                          <span>Login / Register</span>
                         </>
                       )}
                     </motion.button>

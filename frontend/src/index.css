@@ -21,7 +21,7 @@ html, body {
 
 /* Better spacing for sections */
 section {
-  @apply py-16 md:py-20 lg:py-24;
+  @apply py-12 sm:py-16 md:py-20 lg:py-24;
 }
 
 /* Improved container spacing */
