@@ -17,11 +17,12 @@ import {
   MdOutlineBathtub,
   MdOutlineGarage,
 } from "react-icons/md";
-import { FaMapMarkerAlt, FaArrowLeft, FaShare, FaStar, FaWhatsapp, FaEnvelope, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
+import { FaMapMarkerAlt, FaArrowLeft, FaShare, FaStar, FaWhatsapp, FaEnvelope, FaFacebook, FaTwitter, FaLinkedin, FaCalculator } from "react-icons/fa";
 import { CgRuler } from "react-icons/cg";
 import HeartBtn from "../components/HeartBtn";
 import SEO from "../components/SEO";
 import OptimizedImage from "../components/OptimizedImage";
+import MortgageCalculator from "../components/MortgageCalculator";
 import { shareProperty, shareViaWhatsApp, shareViaEmail, shareViaFacebook, shareViaTwitter, shareViaLinkedIn } from "../utils/shareProperty";
 import { errorHandler } from "../utils/errorHandler";
 
@@ -49,6 +50,7 @@ const Property = () => {
   );
   const [modalOpened, setModalOpened] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [showMortgageCalculator, setShowMortgageCalculator] = useState(false);
   const { validateLogin } = useAuthCheck();
   const { user } = useMockAuth();
   const { addToRecentlyViewed } = useRecentlyViewed();
@@ -485,8 +487,18 @@ const Property = () => {
                 </div>
               </div>
 
-              {/* Booking Section */}
-              <div className="pt-6 border-t border-gray-200">
+              {/* Action Buttons Section */}
+              <div className="pt-6 border-t border-gray-200 space-y-3">
+                {/* Mortgage Calculator Button */}
+                <button
+                  onClick={() => setShowMortgageCalculator(true)}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-4 rounded-xl font-semibold hover:shadow-xl transition-all duration-300 text-lg hover:scale-105 flex items-center justify-center gap-2"
+                >
+                  <FaCalculator className="w-5 h-5" />
+                  Calculate Mortgage
+                </button>
+
+                {/* Booking Section */}
                 {isBooked ? (
                   <div className="space-y-4">
                     <Button
@@ -549,6 +561,13 @@ const Property = () => {
         </div>
       </div>
     </section>
+
+    {/* Mortgage Calculator Modal */}
+    <MortgageCalculator
+      opened={showMortgageCalculator}
+      onClose={() => setShowMortgageCalculator(false)}
+      propertyPrice={propertyPrice}
+    />
     </>
   );
 };

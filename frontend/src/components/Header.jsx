@@ -9,7 +9,8 @@ import { usePropertyAlerts } from '../hooks/usePropertyAlerts'
 import ProfileMenu from './ProfileMenu'
 import PropertyComparison from './PropertyComparison'
 import PropertyAlerts from './PropertyAlerts'
-import { FaHeart, FaUser, FaBars, FaTimes, FaWhatsapp, FaHome, FaBuilding, FaUser as FaContact, FaFileAlt, FaSearch, FaCrown, FaBalanceScale, FaBell } from 'react-icons/fa'
+import MortgageCalculator from './MortgageCalculator'
+import { FaHeart, FaUser, FaBars, FaTimes, FaWhatsapp, FaHome, FaBuilding, FaUser as FaContact, FaFileAlt, FaSearch, FaCrown, FaBalanceScale, FaBell, FaCalculator } from 'react-icons/fa'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -18,6 +19,7 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [showComparison, setShowComparison] = useState(false)
   const [showAlerts, setShowAlerts] = useState(false)
+  const [showMortgageCalculator, setShowMortgageCalculator] = useState(false)
   const { isAuthenticated, user, loginWithRedirect, isLoading } = useMockAuth()
   const { comparisonList } = usePropertyComparison()
   const { getUnreadCount } = usePropertyAlerts()
@@ -195,6 +197,17 @@ const Header = () => {
                   {getUnreadCount() > 99 ? '99+' : getUnreadCount()}
                 </span>
               )}
+            </motion.button>
+
+            {/* Mortgage Calculator Button */}
+            <motion.button
+              onClick={() => setShowMortgageCalculator(true)}
+              className="p-2.5 text-gray-600 hover:text-green-600 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg"
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95 }}
+              title="Mortgage Calculator"
+            >
+              <FaCalculator className="w-4 h-4" />
             </motion.button>
 
             {/* Favorites Button */}
@@ -388,6 +401,9 @@ const Header = () => {
 
     {/* Property Alerts Modal */}
     <PropertyAlerts opened={showAlerts} onClose={() => setShowAlerts(false)} />
+
+    {/* Mortgage Calculator Modal */}
+    <MortgageCalculator opened={showMortgageCalculator} onClose={() => setShowMortgageCalculator(false)} />
     </>
   )
 }
