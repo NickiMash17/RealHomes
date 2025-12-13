@@ -362,6 +362,13 @@ const Header = () => {
         )}
       </AnimatePresence>
     </motion.header>
+
+    {/* Property Comparison Modal */}
+    <PropertyComparison 
+      isOpen={showComparison} 
+      onClose={() => setShowComparison(false)} 
+    />
+    </>
   )
 }
 

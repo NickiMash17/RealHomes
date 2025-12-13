@@ -508,6 +508,101 @@ const Properties = () => {
         )}
 
       </div>
+
+      {/* Save Search Modal */}
+      <AnimatePresence>
+        {showSaveSearchModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              onClick={() => {
+                setShowSaveSearchModal(false);
+                setSearchName('');
+              }}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed inset-0 flex items-center justify-center z-50 p-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-gray-900">Save Search</h3>
+                  <button
+                    onClick={() => {
+                      setShowSaveSearchModal(false);
+                      setSearchName('');
+                    }}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <FaTimes className="w-5 h-5 text-gray-600" />
+                  </button>
+                </div>
+                
+                <p className="text-gray-600 mb-4 text-sm">
+                  Save your current search filters to quickly access them later.
+                </p>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Search Name
+                  </label>
+                  <input
+                    type="text"
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                    placeholder="e.g., Luxury Cape Town Homes"
+                    className="input-enhanced w-full"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSaveSearch();
+                      }
+                    }}
+                    autoFocus
+                  />
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-3 mb-4 text-sm">
+                  <p className="text-gray-600 mb-2 font-medium">Search Criteria:</p>
+                  <ul className="space-y-1 text-gray-600">
+                    {searchTerm && <li>• Search: "{searchTerm}"</li>}
+                    {selectedCategory !== 'all' && <li>• Category: {selectedCategory}</li>}
+                    {minBedrooms !== 'any' && <li>• Bedrooms: {minBedrooms}+</li>}
+                    {maxPrice < 50000000 && <li>• Max Price: {formatPrice(maxPrice)}</li>}
+                    {sortBy !== 'newest' && <li>• Sort: {sortOptions.find(o => o.value === sortBy)?.label}</li>}
+                    <li>• Results: {filteredAndSortedProperties.length} properties</li>
+                  </ul>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowSaveSearchModal(false);
+                      setSearchName('');
+                    }}
+                    className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveSearch}
+                    disabled={!searchName.trim()}
+                    className="flex-1 px-4 py-2 bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-700 hover:to-yellow-600 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                  >
+                    <FaSave className="inline w-4 h-4 mr-2" />
+                    Save
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }
