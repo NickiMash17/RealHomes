@@ -22,37 +22,8 @@ export default defineConfig({
         warn(warning);
       },
       output: {
-        // Optimized manual chunk splitting for better caching
-        manualChunks: (id) => {
-          // Vendor chunks
-          if (id.includes('node_modules')) {
-            // CRITICAL: Keep React and ReactDOM in the same chunk
-            // This prevents "Cannot read properties of undefined" errors
-            // Check for react or react-dom packages (but not react-router, react-query, etc.)
-            if (
-              (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) &&
-              !id.includes('react-router') &&
-              !id.includes('react-query') &&
-              !id.includes('react-leaflet')
-            ) {
-              return 'react-vendor';
-            }
-            // React Router can be separate
-            if (id.includes('react-router')) {
-              return 'router-vendor';
-            }
-            // UI libraries
-            if (id.includes('framer-motion') || id.includes('@mantine')) {
-              return 'ui-vendor';
-            }
-            // Map libraries
-            if (id.includes('leaflet') || id.includes('react-leaflet')) {
-              return 'map-vendor';
-            }
-            // Other node_modules
-            return 'vendor';
-          }
-        },
+        // Let Vite handle automatic chunking to ensure React is available everywhere
+        // This prevents "Cannot read properties of undefined" errors
         // Add hash to filenames for cache busting
         entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
