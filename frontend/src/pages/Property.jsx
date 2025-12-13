@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useMutation, useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { PuffLoader } from "react-spinners";
@@ -6,6 +6,7 @@ import Map from "../components/Map";
 import { getProperty, removeBooking } from "../utils/api";
 import useAuthCheck from "../hooks/useAuthCheck";
 import { useMockAuth } from '../context/MockAuthContext'
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
 import BookingModal from "../components/BookingModal";
 import UserDetailContext from "../context/UserDetailContext";
 import { Button } from "@mantine/core";
@@ -16,11 +17,16 @@ import {
   MdOutlineBathtub,
   MdOutlineGarage,
 } from "react-icons/md";
-import { FaMapMarkerAlt, FaArrowLeft, FaShare, FaStar } from "react-icons/fa";
+import { FaMapMarkerAlt, FaArrowLeft, FaShare, FaStar, FaWhatsapp, FaEnvelope, FaFacebook, FaTwitter, FaLinkedin, FaCalculator } from "react-icons/fa";
 import { CgRuler } from "react-icons/cg";
 import HeartBtn from "../components/HeartBtn";
 import SEO from "../components/SEO";
 import OptimizedImage from "../components/OptimizedImage";
+import MortgageCalculator from "../components/MortgageCalculator";
+import PropertyRecommendations from "../components/PropertyRecommendations";
+import { getAllProperties } from "../utils/api";
+import { shareProperty, shareViaWhatsApp, shareViaEmail, shareViaFacebook, shareViaTwitter, shareViaLinkedIn } from "../utils/shareProperty";
+import { errorHandler } from "../utils/errorHandler";
 
 const Property = () => {
   const { pathname } = useLocation();
@@ -44,9 +50,22 @@ const Property = () => {
       }
     }
   );
+
+  // Fetch all properties for recommendations
+  const { data: allPropertiesData } = useQuery(
+    'allProperties',
+    getAllProperties,
+    {
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000,
+    }
+  );
   const [modalOpened, setModalOpened] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [showMortgageCalculator, setShowMortgageCalculator] = useState(false);
   const { validateLogin } = useAuthCheck();
   const { user } = useMockAuth();
+  const { addToRecentlyViewed } = useRecentlyViewed();
 
   const userDetailContext = useContext(UserDetailContext);
   const token = userDetailContext?.userDetails?.token || null;
@@ -203,23 +222,56 @@ const Property = () => {
   const propertyFacilities = propertyData.facilities || {};
   const isFeatured = propertyData.featured || false;
 
-  const handleShare = async () => {
+  // Track property view
+  useEffect(() => {
+    if (data && propertyId) {
+      addToRecentlyViewed(data);
+      errorHandler.logUserAction('property_view', { propertyId, title: propertyTitle });
+    }
+  }, [data, propertyId, propertyTitle, addToRecentlyViewed]);
+
+  const handleShare = async (method = 'native') => {
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: propertyTitle,
-          text: `Check out this property: ${propertyTitle}`,
-          url: window.location.href,
-        });
-      } else {
-        // Fallback: copy to clipboard
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success("Link copied to clipboard!", { position: "bottom-right" });
+      const property = {
+        id: propertyId,
+        title: propertyTitle,
+        description: propertyDescription,
+        image: propertyImage,
+        address: propertyAddress,
+        city: propertyCity,
+      };
+
+      let result;
+      switch (method) {
+        case 'whatsapp':
+          shareViaWhatsApp(property);
+          toast.success("Opening WhatsApp...", { position: "bottom-right" });
+          break;
+        case 'email':
+          shareViaEmail(property);
+          break;
+        case 'facebook':
+          shareViaFacebook(property);
+          break;
+        case 'twitter':
+          shareViaTwitter(property);
+          break;
+        case 'linkedin':
+          shareViaLinkedIn(property);
+          break;
+        default:
+          result = await shareProperty(property);
+          if (result.success && result.method === 'clipboard') {
+            toast.success(result.message || "Link copied to clipboard!", { position: "bottom-right" });
+          }
       }
+      
+      setShowShareMenu(false);
+      errorHandler.logUserAction('property_share', { propertyId, method });
     } catch (err) {
-      // User cancelled or error occurred - silently fail
-      if (import.meta.env.DEV) {
-        console.warn('Share error:', err);
+      errorHandler.logError(err, { action: 'share_property', propertyId });
+      if (err.name !== 'AbortError') {
+        toast.error("Failed to share property", { position: "bottom-right" });
       }
     }
   };
@@ -271,13 +323,75 @@ const Property = () => {
           />
           {/* Action Buttons */}
           <div className="absolute top-4 right-4 flex gap-2">
-            <button
-              onClick={handleShare}
-              className="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all hover:scale-110"
-              aria-label="Share property"
-            >
-              <FaShare className="w-5 h-5 text-gray-700" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowShareMenu(!showShareMenu)}
+                className="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all hover:scale-110"
+                aria-label="Share property"
+              >
+                <FaShare className="w-5 h-5 text-gray-700" />
+              </button>
+              
+              {/* Share Menu Dropdown */}
+              {showShareMenu && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setShowShareMenu(false)}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="absolute right-0 top-full mt-2 bg-white rounded-xl shadow-2xl p-2 min-w-[200px] z-50 border border-gray-100"
+                  >
+                    <button
+                      onClick={() => handleShare('native')}
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <FaShare className="w-4 h-4 text-gray-600" />
+                      <span className="text-sm font-medium">Share</span>
+                    </button>
+                    <button
+                      onClick={() => handleShare('whatsapp')}
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <FaWhatsapp className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium">WhatsApp</span>
+                    </button>
+                    <button
+                      onClick={() => handleShare('email')}
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <FaEnvelope className="w-4 h-4 text-gray-600" />
+                      <span className="text-sm font-medium">Email</span>
+                    </button>
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button
+                      onClick={() => handleShare('facebook')}
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <FaFacebook className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium">Facebook</span>
+                    </button>
+                    <button
+                      onClick={() => handleShare('twitter')}
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <FaTwitter className="w-4 h-4 text-blue-400" />
+                      <span className="text-sm font-medium">Twitter</span>
+                    </button>
+                    <button
+                      onClick={() => handleShare('linkedin')}
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <FaLinkedin className="w-4 h-4 text-blue-700" />
+                      <span className="text-sm font-medium">LinkedIn</span>
+                    </button>
+                  </motion.div>
+                </>
+              )}
+            </div>
             <div className="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg">
               <HeartBtn id={id} />
             </div>
@@ -385,8 +499,18 @@ const Property = () => {
                 </div>
               </div>
 
-              {/* Booking Section */}
-              <div className="pt-6 border-t border-gray-200">
+              {/* Action Buttons Section */}
+              <div className="pt-6 border-t border-gray-200 space-y-3">
+                {/* Mortgage Calculator Button */}
+                <button
+                  onClick={() => setShowMortgageCalculator(true)}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-4 rounded-xl font-semibold hover:shadow-xl transition-all duration-300 text-lg hover:scale-105 flex items-center justify-center gap-2"
+                >
+                  <FaCalculator className="w-5 h-5" />
+                  Calculate Mortgage
+                </button>
+
+                {/* Booking Section */}
                 {isBooked ? (
                   <div className="space-y-4">
                     <Button
@@ -449,6 +573,18 @@ const Property = () => {
         </div>
       </div>
     </section>
+
+    {/* Similar Properties Recommendations */}
+    {data && allPropertiesData && (
+      <PropertyRecommendations properties={allPropertiesData} />
+    )}
+
+    {/* Mortgage Calculator Modal */}
+    <MortgageCalculator
+      opened={showMortgageCalculator}
+      onClose={() => setShowMortgageCalculator(false)}
+      propertyPrice={propertyPrice}
+    />
     </>
   );
 };

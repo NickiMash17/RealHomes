@@ -57,12 +57,34 @@ app.use('/api/', limiter)
 // Compression middleware
 app.use(compression())
 
-// CORS configuration
+// CORS configuration - support multiple origins
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://realhomes.vercel.app",
+  "https://realhomes-south-africa.vercel.app"
+].filter(Boolean) // Remove undefined values
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true)
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+      callback(null, true)
+    } else {
+      // In production, be more strict
+      if (process.env.NODE_ENV === 'production') {
+        callback(new Error('Not allowed by CORS'))
+      } else {
+        callback(null, true) // Allow in development
+      }
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }))
 
 // Body parsing middleware

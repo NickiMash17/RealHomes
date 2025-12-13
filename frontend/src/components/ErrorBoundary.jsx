@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FaExclamationTriangle, FaHome, FaRedo } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { errorHandler } from '../utils/errorHandler';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -19,9 +20,11 @@ class ErrorBoundary extends React.Component {
       errorInfo
     });
     
-    if (import.meta.env.DEV) {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
-    }
+    // Log error using error handler
+    errorHandler.logError(error, {
+      componentStack: errorInfo.componentStack,
+      errorBoundary: true,
+    });
   }
 
   handleReset = () => {

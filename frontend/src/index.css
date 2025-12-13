@@ -19,6 +19,16 @@ html, body {
   background-color: #ffffff !important;
 }
 
+/* Better spacing for sections */
+section {
+  @apply py-16 md:py-20 lg:py-24;
+}
+
+/* Improved container spacing */
+.container-enhanced {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
 /* Force light mode - override any system preferences or browser extensions */
 html {
   color-scheme: light only !important;
@@ -67,6 +77,55 @@ body {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Enhanced focus styles for better accessibility */
+*:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Enhanced focus styles for interactive elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* Skip to content link styles */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Better text rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 @layer base {
   
   .active-link{
@@ -94,19 +153,89 @@ body {
 @layer utilities {
 
   .btn-white  { 
-    @apply medium-15 bg-white px-7 py-3 text-secondary shadow-lg transition-all hover:shadow-xl
+    @apply medium-15 bg-white px-7 py-3 text-secondary shadow-xl transition-all hover:shadow-2xl hover:scale-[1.05] active:scale-[0.95] hover:-translate-y-1
   }
 
   .btn-light  { 
-    @apply medium-15 bg-primary px-7 py-3 text-secondary shadow-lg transition-all hover:shadow-xl
+    @apply medium-15 bg-primary px-7 py-3 text-secondary shadow-xl transition-all hover:shadow-2xl hover:scale-[1.05] active:scale-[0.95] hover:-translate-y-1
   }
 
   .btn-secondary { 
-    @apply ring-1 ring-secondary medium-15 bg-secondary px-7 py-[10px] text-white transition-all hover:bg-tertiary hover:ring-tertiary shadow-lg hover:shadow-xl
+    @apply ring-1 ring-secondary medium-15 bg-secondary px-7 py-[10px] text-white transition-all hover:bg-tertiary hover:ring-tertiary shadow-xl hover:shadow-2xl hover:scale-[1.05] active:scale-[0.95] hover:-translate-y-1
   }
 
   .btn-secondary-outline { 
-    @apply ring-1 ring-secondary medium-15 bg-transparent px-7 py-[10px] text-secondary transition-all hover:bg-secondary hover:text-white shadow-lg hover:shadow-xl
+    @apply ring-1 ring-secondary medium-15 bg-transparent px-7 py-[10px] text-secondary transition-all hover:bg-secondary hover:text-white shadow-xl hover:shadow-2xl hover:scale-[1.05] active:scale-[0.95] hover:-translate-y-1
+  }
+  
+  /* Enhanced button styles */
+  .btn-enhanced {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300;
+    @apply hover:scale-[1.02] active:scale-[0.98];
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  
+  /* Better form inputs */
+  .input-enhanced {
+    @apply w-full px-4 py-3 rounded-xl border-2 border-gray-200;
+    @apply focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20;
+    @apply transition-all duration-300;
+    @apply placeholder:text-gray-400;
+    @apply hover:border-amber-300;
+    @apply bg-white;
+  }
+  
+  /* Enhanced card styles */
+  .card-enhanced {
+    @apply bg-white rounded-2xl shadow-lg border border-gray-100;
+    @apply transition-all duration-300;
+    @apply hover:shadow-2xl hover:border-amber-300 hover:ring-2 hover:ring-amber-200/50;
+    @apply hover:-translate-y-2;
+  }
+  
+  /* Glow effect for premium elements */
+  .glow-amber {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3),
+                0 0 40px rgba(245, 158, 11, 0.1),
+                0 0 60px rgba(245, 158, 11, 0.05);
+  }
+  
+  .glow-amber-hover:hover {
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.4),
+                0 0 60px rgba(245, 158, 11, 0.2),
+                0 0 90px rgba(245, 158, 11, 0.1);
+  }
+  
+  /* Shimmer effect */
+  @keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+  }
+  
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 3s infinite;
+  }
+  
+  /* Pulse animation */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(245, 158, 11, 0.6),
+                  0 0 60px rgba(245, 158, 11, 0.3);
+    }
+  }
+  
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
   }
 
   /* Enhanced premium animations */
@@ -206,15 +335,15 @@ body {
   }
 
   .card-premium {
-    @apply bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-neutral-100 hover:scale-105 backdrop-blur-sm;
+    @apply bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-neutral-100 hover:scale-[1.02] hover:-translate-y-1 backdrop-blur-sm;
   }
 
   .card-luxury {
-    @apply bg-gradient-to-br from-white to-neutral-50 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-amber-200/20 hover:scale-105 backdrop-blur-sm;
+    @apply bg-gradient-to-br from-white to-neutral-50 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-amber-200/20 hover:scale-[1.02] hover:-translate-y-1 backdrop-blur-sm;
   }
 
   .card-glass {
-    @apply bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300;
+    @apply bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/20 hover:shadow-xl hover:-translate-y-1 transition-all duration-300;
   }
 
   /* Premium text styles */

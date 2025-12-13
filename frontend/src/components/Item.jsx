@@ -1,12 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { toast } from 'react-toastify'
-import { FaHeart, FaShare, FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt, FaStar, FaCrown, FaGem, FaEye, FaArrowRight } from 'react-icons/fa'
+import { FaHeart, FaShare, FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt, FaStar, FaCrown, FaGem, FaEye, FaArrowRight, FaBalanceScale } from 'react-icons/fa'
 import OptimizedImage from './OptimizedImage'
+import { useMockAuth } from '../context/MockAuthContext'
+import { toFav } from '../utils/api'
+import { usePropertyComparison } from '../hooks/usePropertyComparison'
 
 const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
   const navigate = useNavigate()
+  const { isAuthenticated, user, getAccessTokenSilently } = useMockAuth()
+  const { addToComparison, isInComparison, canAddMore } = usePropertyComparison()
   const [isLiked, setIsLiked] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   
@@ -28,6 +33,72 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
 
   // Get property ID
   const propertyId = property?.id || property?._id
+  
+  // Check if property is in favorites on mount and when propertyId changes
+  useEffect(() => {
+    if (propertyId) {
+      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
+      const idString = String(propertyId)
+      setIsLiked(favorites.includes(idString))
+    }
+  }, [propertyId])
+  
+  // Handle favorite toggle
+  const handleToggleFavorite = async (e) => {
+    e.stopPropagation()
+    
+    if (!isAuthenticated) {
+      toast.error('Please login to add favorites')
+      return
+    }
+    
+    if (!propertyId) {
+      toast.error('Invalid property')
+      return
+    }
+    
+    try {
+      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
+      const idString = String(propertyId)
+      
+      // Update localStorage first (optimistic update)
+      let newFavorites
+      if (isLiked) {
+        // Remove from favorites
+        newFavorites = favorites.filter(favId => String(favId) !== idString)
+        localStorage.setItem('favorites', JSON.stringify(newFavorites))
+        setIsLiked(false)
+        toast.success('Removed from favorites')
+      } else {
+        // Add to favorites
+        newFavorites = [...favorites, idString]
+        localStorage.setItem('favorites', JSON.stringify(newFavorites))
+        setIsLiked(true)
+        toast.success('Added to favorites')
+      }
+      
+      // Call API to sync with backend (non-blocking)
+      if (user?.email) {
+        // Don't await - let it run in background
+        (async () => {
+          try {
+            const token = getAccessTokenSilently ? await getAccessTokenSilently() : 'mock-token'
+            await toFav(propertyId, user.email, token)
+          } catch (apiError) {
+            // Silently fail - favorites are already saved in localStorage
+            // Only log in development
+            if (import.meta.env.DEV) {
+              console.warn('Failed to sync favorites with backend (favorites still saved locally):', apiError?.response?.data || apiError?.message)
+            }
+          }
+        })()
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+      // Only show error if localStorage operation failed
+      toast.error('Failed to save favorite. Please try again.')
+    }
+  }
 
   // Handle click - use provided onClick or default navigation
   const handleClick = (e) => {
@@ -107,15 +178,27 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
     }
   }
 
+  // Handle keyboard navigation
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    }
+  };
+
   if (viewMode === 'list') {
     return (
-      <motion.div
+      <motion.article
         className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden group cursor-pointer"
         variants={containerVariants}
         whileHover={{ y: -2 }}
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
         onClick={handleCardClick}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="article"
+        aria-label={`${title} - ${type} in ${location} - ${formatPrice(price)}`}
       >
         <div className="flex flex-col lg:flex-row">
           {/* Image Section */}
@@ -147,28 +230,44 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
             <div className="absolute top-4 right-4 flex flex-col gap-2">
               <motion.button
                 onClick={(e) => {
-                  e.stopPropagation()
-                  setIsLiked(!isLiked)
+                  e.stopPropagation();
+                  handleToggleFavorite(e);
                 }}
                 type="button"
-                className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
+                className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${
                   isLiked 
                     ? 'bg-red-500 text-white shadow-lg' 
                     : 'bg-white/80 text-gray-600 hover:text-red-500'
                 }`}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
+                aria-label={isLiked ? `Remove ${title} from favorites` : `Add ${title} to favorites`}
+                aria-pressed={isLiked}
               >
                 <FaHeart className="w-4 h-4" />
               </motion.button>
               <motion.button
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (canAddMore) {
+                    addToComparison(property);
+                  }
+                }}
+                disabled={!canAddMore || isInComparison(propertyId)}
                 type="button"
-                className="p-2 rounded-full bg-white/80 text-gray-600 hover:text-blue-600 backdrop-blur-md transition-all duration-300"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
+                  isInComparison(propertyId)
+                    ? 'bg-amber-500 text-white shadow-lg'
+                    : canAddMore
+                    ? 'bg-white/80 text-gray-600 hover:text-amber-600'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+                whileHover={canAddMore && !isInComparison(propertyId) ? { scale: 1.1 } : {}}
+                whileTap={canAddMore && !isInComparison(propertyId) ? { scale: 0.9 } : {}}
+                aria-label={isInComparison(propertyId) ? `${title} is in comparison list` : canAddMore ? `Add ${title} to comparison` : 'Comparison list is full (maximum 4 properties)'}
+                aria-disabled={!canAddMore || isInComparison(propertyId)}
               >
-                <FaShare className="w-4 h-4" />
+                <FaBalanceScale className="w-4 h-4" />
               </motion.button>
             </div>
 
@@ -259,9 +358,10 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
               <motion.button
                 onClick={handleClick}
                 type="button"
-                className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:shadow-lg transition-all duration-300 group"
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
+                className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg hover:shadow-2xl transition-all duration-300 group glow-amber-hover focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                aria-label={`View details for ${title}`}
               >
                 <FaEye className="w-4 h-4" />
                 View Details
@@ -270,19 +370,23 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
             </div>
           </div>
         </div>
-      </motion.div>
+      </motion.article>
     )
   }
 
   // Grid View
   return (
-    <motion.div
-      className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden group cursor-pointer"
+    <motion.article
+      className="bg-white rounded-2xl shadow-lg border-2 border-gray-100 overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-2xl hover:border-amber-300 hover:ring-2 hover:ring-amber-200/50 focus-within:ring-2 focus-within:ring-amber-500 focus-within:ring-offset-2"
       variants={containerVariants}
-      whileHover={{ y: -2 }}
+      whileHover={{ y: -8, scale: 1.02 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="article"
+      aria-label={`${title} - ${type} in ${location} - ${formatPrice(price)}`}
     >
       {/* Image Section */}
       <div className="relative overflow-hidden bg-gray-100">
@@ -312,23 +416,44 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
         {/* Action Buttons */}
         <div className="absolute top-3 right-3 flex flex-col gap-2">
           <motion.button
-            onClick={() => setIsLiked(!isLiked)}
-            className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
+            onClick={(e) => {
+              e.stopPropagation();
+              handleToggleFavorite(e);
+            }}
+            type="button"
+            className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${
               isLiked 
                 ? 'bg-red-500 text-white shadow-lg' 
                 : 'bg-white/80 text-gray-600 hover:text-red-500'
             }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            aria-label={isLiked ? `Remove ${title} from favorites` : `Add ${title} to favorites`}
+            aria-pressed={isLiked}
           >
             <FaHeart className="w-4 h-4" />
           </motion.button>
           <motion.button
-            className="p-2 rounded-full bg-white/80 text-gray-600 hover:text-blue-600 backdrop-blur-md transition-all duration-300"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (canAddMore) {
+                addToComparison(property);
+              }
+            }}
+            disabled={!canAddMore || isInComparison(propertyId)}
+            type="button"
+            className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
+              isInComparison(propertyId)
+                ? 'bg-amber-500 text-white shadow-lg'
+                : canAddMore
+                ? 'bg-white/80 text-gray-600 hover:text-amber-600'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+            whileHover={canAddMore && !isInComparison(propertyId) ? { scale: 1.1 } : {}}
+            whileTap={canAddMore && !isInComparison(propertyId) ? { scale: 0.9 } : {}}
+            title={isInComparison(propertyId) ? 'In comparison' : canAddMore ? 'Add to comparison' : 'Comparison full (max 4)'}
           >
-            <FaShare className="w-4 h-4" />
+            <FaBalanceScale className="w-4 h-4" />
           </motion.button>
         </div>
 
@@ -344,9 +469,9 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
       </div>
 
       {/* Content Section */}
-      <div className="p-4 sm:p-5">
-        <div className="mb-3">
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
+      <div className="p-5 sm:p-6">
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className="bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-2.5 py-1 rounded-md text-xs font-semibold">
               {type}
             </span>
@@ -413,10 +538,10 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
         >
           <span>View Details</span>
           <FaArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-300" />
-        </motion.button>
-      </div>
-    </motion.div>
-  )
-}
+          </motion.button>
+        </div>
+      </motion.article>
+    )
+  }
 
 export default Item

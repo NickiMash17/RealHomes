@@ -13,9 +13,17 @@
     
     <!-- Resource Hints for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
     <link rel="dns-prefetch" href="https://upload-widget.cloudinary.com" />
     <link rel="dns-prefetch" href="https://realhomes-oajb.onrender.com" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml" />
+    
+    <!-- Prefetch likely next pages -->
+    <link rel="prefetch" href="/listing" as="document" />
+    <link rel="prefetch" href="/contact" as="document" />
     
     <!-- Cache busting -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -34,51 +42,16 @@
   <body>
     <div id="root"></div>
     <script>
-      // AGGRESSIVE: Remove any dark mode toggle buttons BEFORE React loads
+      // Force light mode before React loads
       (function() {
         'use strict';
-        document.documentElement.style.colorScheme = 'light only';
-        document.documentElement.classList.remove('dark');
-        document.body.style.backgroundColor = '#ffffff';
-        
-        // Remove theme toggles immediately
-        function removeToggles() {
-          const selectors = [
-            'button[aria-label*="dark" i]',
-            'button[aria-label*="theme" i]',
-            'button[title*="dark" i]',
-            'button[title*="theme" i]',
-            '[class*="theme-toggle"]',
-            '[class*="dark-toggle"]',
-            '[id*="theme-toggle"]',
-            '[id*="dark-toggle"]'
-          ];
-          selectors.forEach(sel => {
-            try {
-              document.querySelectorAll(sel).forEach(el => {
-                const text = (el.textContent || '').toLowerCase();
-                if (text.includes('dark') || text.includes('theme')) {
-                  el.remove();
-                }
-              });
-            } catch(e) {}
-          });
+        if (document.documentElement) {
+          document.documentElement.style.colorScheme = 'light only';
+          document.documentElement.classList.remove('dark');
         }
-        
-        // Run immediately
-        removeToggles();
-        
-        // Watch for new elements
-        const observer = new MutationObserver(removeToggles);
-        observer.observe(document.documentElement, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-          attributeFilter: ['class']
-        });
-        
-        // Also run periodically
-        setInterval(removeToggles, 500);
+        if (document.body) {
+          document.body.style.backgroundColor = '#ffffff';
+        }
       })();
     </script>
     <script type="module" src="/src/main.jsx"></script>

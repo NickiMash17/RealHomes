@@ -154,52 +154,72 @@ export const toFav = async (req, res) => {
       })
     }
 
-    // Find user
-    const user = await prisma.user.findUnique({
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Property ID is required'
+      })
+    }
+
+    // Convert ID to string for consistency
+    const propertyId = String(id)
+
+    // Find or create user
+    let user = await prisma.user.findUnique({
       where: { email }
     })
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
+      // Create user if doesn't exist (for mock auth)
+      user = await prisma.user.create({
+        data: {
+          email,
+          name: email.split('@')[0], // Use email prefix as name
+          favResidenciesID: [],
+          bookedVisits: []
+        }
       })
     }
 
-    // Check if already in favorites
-    const isFav = user.favResidenciesID.includes(id)
+    // Ensure favResidenciesID is an array
+    const currentFavorites = Array.isArray(user.favResidenciesID) 
+      ? user.favResidenciesID.map(favId => String(favId))
+      : []
+
+    // Check if already in favorites (compare as strings)
+    const isFav = currentFavorites.includes(propertyId)
 
     if (isFav) {
       // Remove from favorites
+      const updatedFavorites = currentFavorites.filter(favId => favId !== propertyId)
+      
       await prisma.user.update({
         where: { email },
         data: {
-          favResidenciesID: {
-            set: user.favResidenciesID.filter(favId => favId !== id)
-          }
+          favResidenciesID: updatedFavorites
         }
       })
 
       return res.json({
         success: true,
         message: 'Property removed from favorites',
-        favResidenciesID: user.favResidenciesID.filter(favId => favId !== id)
+        favResidenciesID: updatedFavorites
       })
     } else {
       // Add to favorites
+      const updatedFavorites = [...currentFavorites, propertyId]
+      
       await prisma.user.update({
         where: { email },
         data: {
-          favResidenciesID: {
-            push: id
-          }
+          favResidenciesID: updatedFavorites
         }
       })
 
       return res.json({
         success: true,
         message: 'Property added to favorites',
-        favResidenciesID: [...user.favResidenciesID, id]
+        favResidenciesID: updatedFavorites
       })
     }
   } catch (error) {
@@ -207,7 +227,7 @@ export const toFav = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to update favorites',
-      error: error.message
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     })
   }
 }
@@ -231,23 +251,24 @@ export const allFav = async (req, res) => {
       }
     })
 
-    if (!user) {
-      return res.json({
-        success: true,
-        favResidenciesID: []
-      })
-    }
+    // Return empty array if user doesn't exist
+    const favorites = user?.favResidenciesID || []
+    
+    // Ensure all IDs are strings
+    const stringFavorites = Array.isArray(favorites) 
+      ? favorites.map(id => String(id))
+      : []
 
     res.json({
       success: true,
-      favResidenciesID: user.favResidenciesID || []
+      favResidenciesID: stringFavorites
     })
   } catch (error) {
     console.error('AllFav error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to get favorites',
-      error: error.message
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     })
   }
 }
@@ -265,24 +286,52 @@ export const bookVisit = async (req, res) => {
       })
     }
 
-    const user = await prisma.user.findUnique({
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Property ID is required'
+      })
+    }
+
+    // Find or create user
+    let user = await prisma.user.findUnique({
       where: { email }
     })
 
     if (!user) {
-      return res.status(404).json({
+      // Create user if doesn't exist (for mock auth)
+      user = await prisma.user.create({
+        data: {
+          email,
+          name: email.split('@')[0],
+          favResidenciesID: [],
+          bookedVisits: []
+        }
+      })
+    }
+
+    // Ensure bookedVisits is an array
+    const currentBookings = Array.isArray(user.bookedVisits) ? user.bookedVisits : []
+
+    // Check if booking already exists
+    const existingBooking = currentBookings.find(booking => 
+      String(booking.id) === String(id) && booking.date === date
+    )
+
+    if (existingBooking) {
+      return res.status(400).json({
         success: false,
-        message: 'User not found'
+        message: 'This visit is already booked'
       })
     }
 
     // Add booking to user's bookedVisits
     const newBooking = {
-      id,
-      date
+      id: String(id),
+      date: String(date)
     }
 
-    const updatedBookings = [...(user.bookedVisits || []), newBooking]
+    const updatedBookings = [...currentBookings, newBooking]
 
     await prisma.user.update({
       where: { email },
@@ -301,7 +350,7 @@ export const bookVisit = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to book visit',
-      error: error.message
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     })
   }
 }
@@ -319,20 +368,27 @@ export const removeBooking = async (req, res) => {
       })
     }
 
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Booking ID is required'
+      })
+    }
+
     const user = await prisma.user.findUnique({
       where: { email }
     })
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
+      return res.json({
+        success: true,
+        bookedVisits: []
       })
     }
 
-    // Remove booking
+    // Remove booking (compare as strings)
     const updatedBookings = (user.bookedVisits || []).filter(
-      booking => booking.id !== id
+      booking => String(booking.id) !== String(id)
     )
 
     await prisma.user.update({
@@ -352,7 +408,7 @@ export const removeBooking = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to remove booking',
-      error: error.message
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     })
   }
 }
@@ -376,23 +432,27 @@ export const allBookings = async (req, res) => {
       }
     })
 
-    if (!user) {
-      return res.json({
-        success: true,
-        bookedVisits: []
-      })
-    }
+    // Return empty array if user doesn't exist
+    const bookings = user?.bookedVisits || []
+    
+    // Ensure bookings is an array and normalize IDs
+    const normalizedBookings = Array.isArray(bookings) 
+      ? bookings.map(booking => ({
+          ...booking,
+          id: String(booking.id || '')
+        }))
+      : []
 
     res.json({
       success: true,
-      bookedVisits: user.bookedVisits || []
+      bookedVisits: normalizedBookings
     })
   } catch (error) {
     console.error('AllBookings error:', error)
     res.status(500).json({
       success: false,
       message: 'Failed to get bookings',
-      error: error.message
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     })
   }
 }

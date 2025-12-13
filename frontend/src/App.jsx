@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PremiumLoader } from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
 import ScrollToTop from './components/ScrollToTop';
+import SkipToContent from './components/SkipToContent';
 import { MantineProvider } from '@mantine/core';
 import { DatesProvider } from '@mantine/dates';
 import '@mantine/core/styles.css';
@@ -85,6 +86,7 @@ function AppContent() {
           <UserDetailContext.Provider value={{ userDetails, setUserDetails }} >
             <QueryClientProvider client={queryClient}>
               <BrowserRouter>
+                <SkipToContent />
                 <ScrollToTop />
                 <Suspense fallback={<PremiumLoader />}>
                   <ErrorBoundary>

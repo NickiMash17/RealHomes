@@ -2,6 +2,8 @@ import React from 'react'
 import Hero from '../components/Hero'
 import About from '../components/About'
 import Properties from '../components/Properties'
+import RecentlyViewed from '../components/RecentlyViewed'
+import PropertyRecommendations from '../components/PropertyRecommendations'
 import bannerImg from '../assets/banner.png'
 import Blogs from '../components/Blogs'
 import Agents from '../components/Agents'
@@ -16,10 +18,12 @@ const Home = () => {
                 description="Discover luxury properties across South Africa. Browse premium homes, apartments, and estates in Cape Town, Johannesburg, Durban, and more. Your dream home awaits."
                 keywords="real estate South Africa, luxury properties, Cape Town homes, Johannesburg apartments, Durban estates, property listings"
             />
-            <main className="min-h-screen bg-white">
+            <main id="main-content" className="min-h-screen bg-white" tabIndex={-1}>
                 <Hero />
                 <About />
                 <Properties />
+                <PropertyRecommendations />
+                <RecentlyViewed />
                 <Blogs />
                 <Agents />
             

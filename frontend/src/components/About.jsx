@@ -1,4 +1,5 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 import { FaCrown, FaStar, FaUsers, FaHome, FaGlobe, FaTrophy } from 'react-icons/fa'
 
 const About = () => {
@@ -29,21 +30,34 @@ const About = () => {
       {/* Stats Section */}
       <div className='grid grid-cols-2 md:grid-cols-4 gap-8 mb-16'>
         {stats.map((stat, index) => (
-          <div key={stat.label} className='text-center group'>
-            <div className={`${stat.color} mb-4`}>
+          <motion.div 
+            key={stat.label} 
+            className='text-center group bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100 hover:shadow-xl hover:border-amber-200 transition-all duration-300 hover:-translate-y-2'
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            whileHover={{ scale: 1.05 }}
+          >
+            <div className={`${stat.color} mb-4 transform group-hover:scale-110 transition-transform duration-300`}>
               {stat.icon}
             </div>
-            <div className='text-3xl font-bold text-secondary mb-2'>
+            <div className='text-3xl font-bold text-secondary mb-2 group-hover:text-amber-600 transition-colors duration-300'>
               {stat.value}{stat.suffix}
             </div>
             <div className='text-sm text-neutral-600 font-medium'>{stat.label}</div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Testimonial Section */}
       <div className='mt-16 text-center'>
-        <div className='bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl p-8 border border-amber-200/30'>
+        <motion.div 
+          className='bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200/50 shadow-lg hover:shadow-xl transition-all duration-300'
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          whileHover={{ scale: 1.02 }}
+        >
           <div className='flex justify-center mb-6'>
             <div className='w-20 h-20 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full flex items-center justify-center shadow-lg'>
               <FaStar className='text-white text-2xl' />
@@ -59,7 +73,7 @@ const About = () => {
             <div className='font-semibold text-secondary mb-1'>Sarah & Michael Johnson</div>
             <div className='text-sm text-neutral-600'>Cape Town, South Africa</div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   )

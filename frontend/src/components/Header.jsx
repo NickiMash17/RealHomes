@@ -4,17 +4,27 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useMockAuth } from '../context/MockAuthContext.jsx'
 import { useQuery } from 'react-query'
 import { getAllFav } from '../utils/api'
+import { usePropertyComparison } from '../hooks/usePropertyComparison'
+import { usePropertyAlerts } from '../hooks/usePropertyAlerts'
 import ProfileMenu from './ProfileMenu'
-import { FaHeart, FaUser, FaBars, FaTimes, FaWhatsapp, FaHome, FaBuilding, FaUser as FaContact, FaFileAlt, FaSearch, FaCrown } from 'react-icons/fa'
+import PropertyComparison from './PropertyComparison'
+import PropertyAlerts from './PropertyAlerts'
+import MortgageCalculator from './MortgageCalculator'
+import { FaHeart, FaUser, FaBars, FaTimes, FaWhatsapp, FaHome, FaBuilding, FaUser as FaContact, FaFileAlt, FaSearch, FaCrown, FaBalanceScale, FaBell, FaCalculator } from 'react-icons/fa'
 
 const Header = () => {
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showComparison, setShowComparison] = useState(false)
+  const [showAlerts, setShowAlerts] = useState(false)
+  const [showMortgageCalculator, setShowMortgageCalculator] = useState(false)
   const { isAuthenticated, user, loginWithRedirect, isLoading } = useMockAuth()
+  const { comparisonList } = usePropertyComparison()
+  const { getUnreadCount } = usePropertyAlerts()
   const location = useLocation()
-
+  
   // Get favorites count
   const { data: favoritesData } = useQuery(
     ['favorites', user?.email],
@@ -72,6 +82,7 @@ const Header = () => {
   ]
 
   return (
+    <>
     <motion.header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled 
@@ -118,8 +129,8 @@ const Header = () => {
                   to={item.path} 
                   className={`relative px-3 py-2 rounded-lg font-medium transition-all duration-300 whitespace-nowrap flex items-center gap-2 text-sm ${
                     isActiveLink(item.path) 
-                      ? 'text-white bg-amber-600 shadow-sm' 
-                      : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50'
+                      ? 'text-white bg-gradient-to-r from-amber-600 to-yellow-500 shadow-lg glow-amber-hover' 
+                      : 'text-gray-700 hover:text-amber-600 hover:bg-amber-50 hover:shadow-md'
                   }`}
                 >
                   <item.icon className="w-4 h-4" />
@@ -138,7 +149,7 @@ const Header = () => {
                 placeholder="Search properties..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 text-sm bg-white"
+                className="input-enhanced pl-10 text-sm"
               />
             </div>
           </form>
@@ -158,17 +169,65 @@ const Header = () => {
               <FaWhatsapp className="w-4 h-4" />
             </motion.a>
 
+            {/* Comparison Button */}
+            <motion.button
+              onClick={() => setShowComparison(true)}
+              className="p-2.5 text-gray-600 hover:text-amber-600 hover:bg-gradient-to-r hover:from-amber-50 hover:to-yellow-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label={`Compare properties${comparisonList.length > 0 ? ` (${comparisonList.length} selected)` : ''}`}
+              aria-expanded={showComparison}
+            >
+              <FaBalanceScale className="w-4 h-4" />
+              {comparisonList.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1" aria-label={`${comparisonList.length} properties in comparison`}>
+                  {comparisonList.length}
+                </span>
+              )}
+            </motion.button>
+
+            {/* Alerts Button */}
+            <motion.button
+              onClick={() => setShowAlerts(true)}
+              className="p-2.5 text-gray-600 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label={`Property alerts${getUnreadCount() > 0 ? ` (${getUnreadCount()} new)` : ''}`}
+              aria-expanded={showAlerts}
+            >
+              <FaBell className="w-4 h-4" />
+              {getUnreadCount() > 0 && (
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1 animate-pulse" aria-label={`${getUnreadCount()} unread alerts`}>
+                  {getUnreadCount() > 99 ? '99+' : getUnreadCount()}
+                </span>
+              )}
+            </motion.button>
+
+            {/* Mortgage Calculator Button */}
+            <motion.button
+              onClick={() => setShowMortgageCalculator(true)}
+              className="p-2.5 text-gray-600 hover:text-green-600 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Open mortgage calculator"
+              aria-expanded={showMortgageCalculator}
+            >
+              <FaCalculator className="w-4 h-4" />
+            </motion.button>
+
             {/* Favorites Button */}
             <motion.button
               onClick={handleFavoritesClick}
               disabled={isLoading}
-              className="p-2.5 text-gray-600 hover:text-red-500 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg"
+              className="p-2.5 text-gray-600 hover:text-red-500 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 rounded-lg transition-all duration-300 relative group shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.95 }}
+              aria-label={`View favorites${favoritesCount > 0 ? ` (${favoritesCount} properties)` : ''}`}
+              aria-disabled={isLoading}
             >
               <FaHeart className="w-4 h-4 group-hover:animate-pulse" />
               {favoritesCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1">
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md px-1" aria-label={`${favoritesCount} favorite properties`}>
                   {favoritesCount > 99 ? '99+' : favoritesCount}
                 </span>
               )}
@@ -340,6 +399,19 @@ const Header = () => {
         )}
       </AnimatePresence>
     </motion.header>
+
+    {/* Property Comparison Modal */}
+    <PropertyComparison 
+      isOpen={showComparison} 
+      onClose={() => setShowComparison(false)} 
+    />
+
+    {/* Property Alerts Modal */}
+    <PropertyAlerts opened={showAlerts} onClose={() => setShowAlerts(false)} />
+
+    {/* Mortgage Calculator Modal */}
+    <MortgageCalculator opened={showMortgageCalculator} onClose={() => setShowMortgageCalculator(false)} />
+    </>
   )
 }
 
