@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useMutation, useQuery } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { PuffLoader } from "react-spinners";
@@ -6,6 +6,7 @@ import Map from "../components/Map";
 import { getProperty, removeBooking } from "../utils/api";
 import useAuthCheck from "../hooks/useAuthCheck";
 import { useMockAuth } from '../context/MockAuthContext'
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
 import BookingModal from "../components/BookingModal";
 import UserDetailContext from "../context/UserDetailContext";
 import { Button } from "@mantine/core";
@@ -16,11 +17,13 @@ import {
   MdOutlineBathtub,
   MdOutlineGarage,
 } from "react-icons/md";
-import { FaMapMarkerAlt, FaArrowLeft, FaShare, FaStar } from "react-icons/fa";
+import { FaMapMarkerAlt, FaArrowLeft, FaShare, FaStar, FaWhatsapp, FaEnvelope, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import { CgRuler } from "react-icons/cg";
 import HeartBtn from "../components/HeartBtn";
 import SEO from "../components/SEO";
 import OptimizedImage from "../components/OptimizedImage";
+import { shareProperty, shareViaWhatsApp, shareViaEmail, shareViaFacebook, shareViaTwitter, shareViaLinkedIn } from "../utils/shareProperty";
+import { errorHandler } from "../utils/errorHandler";
 
 const Property = () => {
   const { pathname } = useLocation();
@@ -45,8 +48,10 @@ const Property = () => {
     }
   );
   const [modalOpened, setModalOpened] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
   const { validateLogin } = useAuthCheck();
   const { user } = useMockAuth();
+  const { addToRecentlyViewed } = useRecentlyViewed();
 
   const userDetailContext = useContext(UserDetailContext);
   const token = userDetailContext?.userDetails?.token || null;
@@ -203,23 +208,56 @@ const Property = () => {
   const propertyFacilities = propertyData.facilities || {};
   const isFeatured = propertyData.featured || false;
 
-  const handleShare = async () => {
+  // Track property view
+  useEffect(() => {
+    if (data && propertyId) {
+      addToRecentlyViewed(data);
+      errorHandler.logUserAction('property_view', { propertyId, title: propertyTitle });
+    }
+  }, [data, propertyId, propertyTitle, addToRecentlyViewed]);
+
+  const handleShare = async (method = 'native') => {
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: propertyTitle,
-          text: `Check out this property: ${propertyTitle}`,
-          url: window.location.href,
-        });
-      } else {
-        // Fallback: copy to clipboard
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success("Link copied to clipboard!", { position: "bottom-right" });
+      const property = {
+        id: propertyId,
+        title: propertyTitle,
+        description: propertyDescription,
+        image: propertyImage,
+        address: propertyAddress,
+        city: propertyCity,
+      };
+
+      let result;
+      switch (method) {
+        case 'whatsapp':
+          shareViaWhatsApp(property);
+          toast.success("Opening WhatsApp...", { position: "bottom-right" });
+          break;
+        case 'email':
+          shareViaEmail(property);
+          break;
+        case 'facebook':
+          shareViaFacebook(property);
+          break;
+        case 'twitter':
+          shareViaTwitter(property);
+          break;
+        case 'linkedin':
+          shareViaLinkedIn(property);
+          break;
+        default:
+          result = await shareProperty(property);
+          if (result.success && result.method === 'clipboard') {
+            toast.success(result.message || "Link copied to clipboard!", { position: "bottom-right" });
+          }
       }
+      
+      setShowShareMenu(false);
+      errorHandler.logUserAction('property_share', { propertyId, method });
     } catch (err) {
-      // User cancelled or error occurred - silently fail
-      if (import.meta.env.DEV) {
-        console.warn('Share error:', err);
+      errorHandler.logError(err, { action: 'share_property', propertyId });
+      if (err.name !== 'AbortError') {
+        toast.error("Failed to share property", { position: "bottom-right" });
       }
     }
   };
