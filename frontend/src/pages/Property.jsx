@@ -309,13 +309,75 @@ const Property = () => {
           />
           {/* Action Buttons */}
           <div className="absolute top-4 right-4 flex gap-2">
-            <button
-              onClick={handleShare}
-              className="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all hover:scale-110"
-              aria-label="Share property"
-            >
-              <FaShare className="w-5 h-5 text-gray-700" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowShareMenu(!showShareMenu)}
+                className="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all hover:scale-110"
+                aria-label="Share property"
+              >
+                <FaShare className="w-5 h-5 text-gray-700" />
+              </button>
+              
+              {/* Share Menu Dropdown */}
+              {showShareMenu && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setShowShareMenu(false)}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="absolute right-0 top-full mt-2 bg-white rounded-xl shadow-2xl p-2 min-w-[200px] z-50 border border-gray-100"
+                  >
+                    <button
+                      onClick={() => handleShare('native')}
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <FaShare className="w-4 h-4 text-gray-600" />
+                      <span className="text-sm font-medium">Share</span>
+                    </button>
+                    <button
+                      onClick={() => handleShare('whatsapp')}
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <FaWhatsapp className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium">WhatsApp</span>
+                    </button>
+                    <button
+                      onClick={() => handleShare('email')}
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <FaEnvelope className="w-4 h-4 text-gray-600" />
+                      <span className="text-sm font-medium">Email</span>
+                    </button>
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button
+                      onClick={() => handleShare('facebook')}
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <FaFacebook className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium">Facebook</span>
+                    </button>
+                    <button
+                      onClick={() => handleShare('twitter')}
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <FaTwitter className="w-4 h-4 text-blue-400" />
+                      <span className="text-sm font-medium">Twitter</span>
+                    </button>
+                    <button
+                      onClick={() => handleShare('linkedin')}
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                    >
+                      <FaLinkedin className="w-4 h-4 text-blue-700" />
+                      <span className="text-sm font-medium">LinkedIn</span>
+                    </button>
+                  </motion.div>
+                </>
+              )}
+            </div>
             <div className="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg">
               <HeartBtn id={id} />
             </div>
