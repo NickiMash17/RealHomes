@@ -18,7 +18,7 @@ const Home = () => {
                 description="Discover luxury properties across South Africa. Browse premium homes, apartments, and estates in Cape Town, Johannesburg, Durban, and more. Your dream home awaits."
                 keywords="real estate South Africa, luxury properties, Cape Town homes, Johannesburg apartments, Durban estates, property listings"
             />
-            <main id="main-content" className="min-h-screen bg-white" tabIndex={-1}>
+            <div className="min-h-screen bg-white">
                 <Hero />
                 <About />
                 <Properties />
@@ -27,15 +27,15 @@ const Home = () => {
                 <Blogs />
                 <Agents />
             
-            <div className='max-padd-container py-16 overflow-x-hidden'>
-                <OptimizedImage 
-                    src={bannerImg} 
-                    alt="RealHomes - Premium Real Estate Platform" 
-                    className="w-full"
-                    loading="lazy"
-                />
+                <div className='max-padd-container py-16 overflow-x-hidden'>
+                    <OptimizedImage 
+                        src={bannerImg} 
+                        alt="RealHomes - Premium Real Estate Platform" 
+                        className="w-full"
+                        loading="lazy"
+                    />
+                </div>
             </div>
-        </main>
         </>
     )
 }
