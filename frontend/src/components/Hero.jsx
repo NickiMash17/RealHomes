@@ -112,7 +112,7 @@ const Hero = () => {
 
       {/* Content */}
       <motion.div 
-        className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8 text-center text-white"
+        className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -120,10 +120,10 @@ const Hero = () => {
         
         {/* Premium Badge - Simplified */}
         <motion.div 
-          className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-4 py-2 rounded-full text-xs font-semibold mb-6 border border-white/20"
+          className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/15 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold mb-4 sm:mb-6 border border-white/20"
           variants={itemVariants}
         >
-          <FaCrown className="text-amber-400 text-sm" />
+          <FaCrown className="text-amber-400 text-xs sm:text-sm" />
           <span className="text-white/90 tracking-wide">PREMIER LUXURY REAL ESTATE</span>
         </motion.div>
         
@@ -131,9 +131,9 @@ const Hero = () => {
         <motion.div
           key={currentSlide}
           variants={itemVariants}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-none tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black mb-4 sm:mb-6 leading-tight sm:leading-none tracking-tight px-2 sm:px-0">
             {heroSlides[currentSlide].title.split(' ').map((word, index) => (
               <motion.span 
                 key={index} 
@@ -150,46 +150,47 @@ const Hero = () => {
               </motion.span>
             ))}
           </h1>
-          <p className="text-lg sm:text-xl lg:text-2xl text-white/95 max-w-4xl mx-auto leading-relaxed mb-6 font-light">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 max-w-4xl mx-auto leading-relaxed mb-4 sm:mb-6 font-light px-2 sm:px-0">
             {heroSlides[currentSlide].subtitle}
           </p>
-          <p className="text-base sm:text-lg text-white/85 max-w-3xl mx-auto leading-relaxed font-light">
+          <p className="text-sm sm:text-base md:text-lg text-white/85 max-w-3xl mx-auto leading-relaxed font-light px-2 sm:px-0">
             {heroSlides[currentSlide].description}
           </p>
         </motion.div>
 
         {/* Stats Section - Simplified */}
         <motion.div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8 max-w-4xl mx-auto"
+          className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 max-w-4xl mx-auto px-2 sm:px-0"
           variants={itemVariants}
         >
           {heroSlides[currentSlide].stats.map((stat, index) => (
             <motion.div
               key={stat.label}
-              className="bg-white/10 backdrop-blur-md p-3 sm:p-4 rounded-xl border border-white/20"
+              className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl border border-white/20"
               whileHover={{ scale: 1.03 }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 + index * 0.1 }}
             >
-              <div className="text-lg sm:text-xl font-bold mb-1 text-amber-400">{stat.value}</div>
-              <div className="text-xs sm:text-sm text-white/80 font-medium">{stat.label}</div>
+              <div className="text-base sm:text-lg md:text-xl font-bold mb-0.5 sm:mb-1 text-amber-400">{stat.value}</div>
+              <div className="text-xs sm:text-sm text-white/80 font-medium leading-tight">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>
         
         {/* Primary CTA - Simplified */}
         <motion.div 
-          className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-8"
+          className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center mb-6 sm:mb-8 px-2 sm:px-0"
           variants={itemVariants}
         >
           <motion.div
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
+            className="w-full sm:w-auto"
           >
             <Link 
               to="/listing" 
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-700 hover:to-yellow-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-300 shadow-xl hover:shadow-2xl glow-amber-hover"
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-700 hover:to-yellow-600 text-white px-5 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base md:text-lg transition-all duration-300 shadow-xl hover:shadow-2xl glow-amber-hover w-full sm:w-auto"
             >
               <FaSearch className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Explore Properties</span>
@@ -203,25 +204,26 @@ const Hero = () => {
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md hover:bg-white/30 text-white px-6 py-3 rounded-xl border-2 border-white/30 transition-all duration-300 font-medium text-sm sm:text-base hover:shadow-xl"
+            className="inline-flex items-center justify-center gap-2 bg-white/20 backdrop-blur-md hover:bg-white/30 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border-2 border-white/30 transition-all duration-300 font-medium text-sm sm:text-base hover:shadow-xl w-full sm:w-auto"
           >
-            <FaWhatsapp className="w-4 h-4" />
+            <FaWhatsapp className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Contact Us</span>
           </motion.a>
         </motion.div>
       </motion.div>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3">
+      <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 sm:gap-3">
         {heroSlides.map((_, index) => (
           <motion.button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+            className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
               index === currentSlide ? 'bg-amber-400 scale-125 shadow-lg' : 'bg-white/50 hover:bg-white/75'
             }`}
             whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.9 }}
+            aria-label={`Go to slide ${index + 1}`}
           />
         ))}
       </div>

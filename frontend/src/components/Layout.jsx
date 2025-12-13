@@ -11,7 +11,7 @@ const Layout = () => {
             <Header />
             <main 
                 id="main-content"
-                className="pt-20 sm:pt-24"
+                className="pt-16 sm:pt-20 md:pt-24"
             >
                 <Outlet />
             </main>

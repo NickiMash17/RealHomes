@@ -469,10 +469,10 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
       </div>
 
       {/* Content Section */}
-      <div className="p-5 sm:p-6">
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-3 flex-wrap">
-            <span className="bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-2.5 py-1 rounded-md text-xs font-semibold">
+      <div className="p-4 sm:p-5 md:p-6">
+        <div className="mb-3 sm:mb-4">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 flex-wrap">
+            <span className="bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md text-xs font-semibold">
               {type}
             </span>
             <div className="flex items-center gap-1 text-amber-500">
@@ -480,11 +480,11 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
               <span className="text-xs font-semibold">{rating.toFixed(1)}</span>
             </div>
           </div>
-          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1.5 group-hover:text-amber-600 transition-colors duration-300 line-clamp-2">
+          <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-900 mb-1 sm:mb-1.5 group-hover:text-amber-600 transition-colors duration-300 line-clamp-2 leading-tight">
             {title}
           </h3>
-          <div className="flex items-center gap-1 text-gray-600 text-xs">
-            <FaMapMarkerAlt className="w-3 h-3 text-amber-500 flex-shrink-0" />
+          <div className="flex items-center gap-1 text-gray-600 text-xs sm:text-sm">
+            <FaMapMarkerAlt className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-500 flex-shrink-0" />
             <span className="truncate">{location}</span>
           </div>
         </div>
@@ -504,26 +504,26 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
         )}
 
         {/* Stats - Simplified */}
-        <div className="flex items-center gap-3 sm:gap-4 mb-4 pb-4 border-b border-gray-100">
-          <div className="flex items-center gap-1.5">
-            <FaBed className="w-4 h-4 text-gray-400" />
-            <span className="text-sm font-semibold text-gray-700">{beds}</span>
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-100">
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <FaBed className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
+            <span className="text-xs sm:text-sm font-semibold text-gray-700">{beds}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <FaBath className="w-4 h-4 text-gray-400" />
-            <span className="text-sm font-semibold text-gray-700">{baths}</span>
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <FaBath className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
+            <span className="text-xs sm:text-sm font-semibold text-gray-700">{baths}</span>
           </div>
           {area > 0 && (
-            <div className="flex items-center gap-1.5">
-              <FaRulerCombined className="w-4 h-4 text-gray-400" />
-              <span className="text-sm font-semibold text-gray-700">{area}m²</span>
+            <div className="flex items-center gap-1 sm:gap-1.5">
+              <FaRulerCombined className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
+              <span className="text-xs sm:text-sm font-semibold text-gray-700">{area}m²</span>
             </div>
           )}
         </div>
         
         {/* Price */}
-        <div className="mb-4">
-          <div className="text-xl sm:text-2xl font-bold text-amber-600">
+        <div className="mb-3 sm:mb-4">
+          <div className="text-lg sm:text-xl md:text-2xl font-bold text-amber-600">
             {formatPrice(price)}
           </div>
         </div>
@@ -532,12 +532,13 @@ const Item = ({ property: prop, viewMode = 'grid', onClick }) => {
         <motion.button
           onClick={handleClick}
           type="button"
-          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 text-white py-2.5 rounded-lg font-semibold text-sm hover:shadow-md transition-all duration-300 group"
+          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-500 text-white py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm hover:shadow-md transition-all duration-300 group active:scale-95"
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
+          aria-label={`View details for ${title}`}
         >
           <span>View Details</span>
-          <FaArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-300" />
+          <FaArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-0.5 transition-transform duration-300" />
           </motion.button>
         </div>
       </motion.article>
