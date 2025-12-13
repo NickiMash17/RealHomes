@@ -19,6 +19,8 @@ import {
 import { FaMapMarkerAlt, FaArrowLeft, FaShare, FaStar } from "react-icons/fa";
 import { CgRuler } from "react-icons/cg";
 import HeartBtn from "../components/HeartBtn";
+import SEO from "../components/SEO";
+import OptimizedImage from "../components/OptimizedImage";
 
 const Property = () => {
   const { pathname } = useLocation();
@@ -222,10 +224,25 @@ const Property = () => {
     }
   };
 
+  // SEO data for property page
+  const seoTitle = `${propertyTitle} - RealHomes`;
+  const seoDescription = propertyDescription.length > 160 
+    ? propertyDescription.substring(0, 157) + '...' 
+    : propertyDescription;
+
   return (
-    <section className="min-h-screen bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Back Button */}
+    <>
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        image={propertyImage}
+        type="article"
+        property={propertyData}
+        keywords={`${propertyTitle}, ${propertyCity}, ${propertyCountry}, real estate, property for sale`}
+      />
+      <section className="min-h-screen bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Back Button */}
         <motion.button
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -242,14 +259,15 @@ const Property = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 sm:mb-8 relative rounded-xl overflow-hidden shadow-xl"
         >
-          <img
+          <OptimizedImage
             src={propertyImage}
             alt={propertyTitle}
-            className="w-full h-64 sm:h-80 lg:h-[500px] object-cover"
+            className="w-full h-64 sm:h-80 lg:h-[500px]"
+            width={1200}
+            height={500}
             loading="eager"
-            onError={(e) => {
-              e.target.src = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&auto=format&fit=crop&q=80";
-            }}
+            priority={true}
+            objectFit="cover"
           />
           {/* Action Buttons */}
           <div className="absolute top-4 right-4 flex gap-2">
@@ -431,6 +449,7 @@ const Property = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 

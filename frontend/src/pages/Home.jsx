@@ -5,10 +5,18 @@ import Properties from '../components/Properties'
 import bannerImg from '../assets/banner.png'
 import Blogs from '../components/Blogs'
 import Agents from '../components/Agents'
+import SEO from '../components/SEO'
+import OptimizedImage from '../components/OptimizedImage'
 
 const Home = () => {
     return (
-        <main className="min-h-screen bg-white">
+        <>
+            <SEO
+                title="RealHomes - Premium South African Real Estate"
+                description="Discover luxury properties across South Africa. Browse premium homes, apartments, and estates in Cape Town, Johannesburg, Durban, and more. Your dream home awaits."
+                keywords="real estate South Africa, luxury properties, Cape Town homes, Johannesburg apartments, Durban estates, property listings"
+            />
+            <main className="min-h-screen bg-white">
                 <Hero />
                 <About />
                 <Properties />
@@ -16,9 +24,15 @@ const Home = () => {
                 <Agents />
             
             <div className='max-padd-container py-16 overflow-x-hidden'>
-                <img src={bannerImg} alt="Banner" className="w-full" />
+                <OptimizedImage 
+                    src={bannerImg} 
+                    alt="RealHomes - Premium Real Estate Platform" 
+                    className="w-full"
+                    loading="lazy"
+                />
             </div>
         </main>
+        </>
     )
 }
 

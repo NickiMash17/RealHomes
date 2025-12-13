@@ -1,14 +1,17 @@
 import React from 'react'
 import Header from './Header'
 import Footer from './Footer'
+import SkipToContent from './SkipToContent'
 import { Outlet } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 const Layout = () => { 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
+            <SkipToContent />
             <Header />
             <motion.main 
+                id="main-content"
                 className="pt-20 sm:pt-24"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
