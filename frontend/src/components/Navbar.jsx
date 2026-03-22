@@ -1,5 +1,4 @@
 import { NavLink } from "react-router-dom";
-// icons
 import { MdHomeWork } from "react-icons/md";
 import { RiCheckboxMultipleBlankFill } from "react-icons/ri";
 import { MdPermContactCalendar } from "react-icons/md";
@@ -11,53 +10,59 @@ import useAuthCheck from "../hooks/useAuthCheck";
 const Navbar = ({ containerStyles }) => {
   const [modalOpened, setModalOpened] = useState(false);
   const { validateLogin } = useAuthCheck();
+
   const handleAddPropertyClick = () => {
     if (validateLogin()) {
       setModalOpened(true);
     }
   };
+
+  const baseLinkClass =
+    "flexCenter gap-x-2 rounded-xl px-3 py-2 text-sm font-medium text-neutral-600 hover:text-navy-700 hover:bg-navy-50 transition-all duration-200";
+
+  const activeLinkClass =
+    "flexCenter gap-x-2 rounded-xl px-3 py-2 text-sm font-medium bg-navy-700 text-white shadow-navy";
+
   return (
     <nav className={`${containerStyles}`}>
       <NavLink
         to={"/"}
         className={({ isActive }) =>
-          isActive
-            ? "active-link flexCenter gap-x-1 rounded-full px-2 py-1"
-            : "flexCenter gap-x-1 rounded-full px-2 py-1"
+          isActive ? activeLinkClass : baseLinkClass
         }
       >
-        <MdHomeWork />
-        <div>Home</div>
+        <MdHomeWork className="text-base" />
+        <span>Home</span>
       </NavLink>
+
       <NavLink
         to={"/listing"}
         className={({ isActive }) =>
-          isActive
-            ? "active-link flexCenter gap-x-1 rounded-full px-2 py-1"
-            : "flexCenter gap-x-1 rounded-full px-2 py-1"
+          isActive ? activeLinkClass : baseLinkClass
         }
       >
-        <RiCheckboxMultipleBlankFill />
-        <div>Properties</div>
+        <RiCheckboxMultipleBlankFill className="text-base" />
+        <span>Properties</span>
       </NavLink>
+
       <NavLink
         to={"/contact"}
         className={({ isActive }) =>
-          isActive
-            ? "active-link flexCenter gap-x-1 rounded-full px-2 py-1"
-            : "flexCenter gap-x-1 rounded-full px-2 py-1"
+          isActive ? activeLinkClass : baseLinkClass
         }
       >
-        <MdPermContactCalendar />
-        <div>Contact</div>
+        <MdPermContactCalendar className="text-base" />
+        <span>Contact</span>
       </NavLink>
+
       <div
         onClick={handleAddPropertyClick}
-        className="cursor-pointer flexCenter gap-x-1 rounded-full px-2 py-1"
+        className={`${baseLinkClass} cursor-pointer`}
       >
-        <MdAddHome />
-        <div>List Property</div>
+        <MdAddHome className="text-base" />
+        <span>List Property</span>
       </div>
+
       <AddPropertyModal opened={modalOpened} setOpened={setModalOpened} />
     </nav>
   );

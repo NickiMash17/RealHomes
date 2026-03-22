@@ -4,6 +4,7 @@ import agent2 from "../assets/agent2.jpg";
 import agent3 from "../assets/agent3.jpg";
 import agent4 from "../assets/agent4.jpg";
 import { FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa6";
+import { FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const agents = [
@@ -25,62 +26,100 @@ const agents = [
     title: "Agent",
     image: agent3,
     description:
-      "Specializes in residential properties and customer satisfaction.",
+      "Specialises in residential properties and exceptional customer satisfaction.",
   },
   {
     name: "Nicolette Mashaba",
     title: "Agent",
     image: agent4,
     description:
-      "Focused on finding the best investment properties for clients.",
+      "Focused on finding the best investment properties for discerning clients.",
   },
 ];
 
 const Agents = () => {
   return (
-    <section className="max-padd-container">
-      <div className="max-padd-container bg-primary py-16 xl:py-28 rounded-3xl">
-        <span className="medium-18">
-          Dedicated professionals to help you find your perfect property!
-        </span>
-        <h2 className="h2">Our Expert Agents</h2>
+    <section className="bg-white py-20">
+      <div className="max-padd-container">
+        {/* ── Section Header ── */}
+        <div className="flex flex-col items-center text-center gap-4">
+          <span className="section-label-gold">OUR TEAM</span>
+          <h2 className="h2">Meet Our Expert Agents</h2>
+          <p className="text-neutral-600 max-w-2xl leading-relaxed">
+            Our dedicated team of professionals is here to guide you through
+            every step of your property journey — from the first viewing to the
+            final handover.
+          </p>
+        </div>
+
+        {/* ── Agents Grid ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
           {agents.map((agent, index) => (
             <div
               key={index}
-              className=" bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+              className="bg-white rounded-2xl overflow-hidden border border-ivory-300 shadow-card group hover:shadow-navy hover:-translate-y-2 transition-all duration-300"
             >
-              <div className="relative group">
+              {/* Image + Hover Overlay */}
+              <div className="relative overflow-hidden">
                 <img
-                  className="rounded-tl-lg rounded-tr-lg"
                   src={agent.image}
                   alt={agent.name}
+                  className="w-full aspect-square object-cover object-top transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="text-white flexCenter flex-col gap-2">
-                    <Link to={""} className="my-2">
-                      <FaFacebook className="text-xl" />
-                    </Link>
-                    <Link to={""} className="my-2">
-                      <FaTwitter className="text-xl" />
-                    </Link>
-                    <Link to={""} className="my-2">
-                      <FaLinkedin className="text-xl" />
-                    </Link>
-                  </div>
+
+                {/* Navy Overlay with Social Icons */}
+                <div className="absolute inset-0 bg-navy-900/70 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Link
+                    to=""
+                    aria-label={`${agent.name} on Facebook`}
+                    className="w-10 h-10 rounded-full bg-white/20 hover:bg-gold-600 flex items-center justify-center text-white transition-all duration-200 hover:scale-110"
+                  >
+                    <FaFacebook className="text-sm" />
+                  </Link>
+                  <Link
+                    to=""
+                    aria-label={`${agent.name} on Twitter`}
+                    className="w-10 h-10 rounded-full bg-white/20 hover:bg-gold-600 flex items-center justify-center text-white transition-all duration-200 hover:scale-110"
+                  >
+                    <FaTwitter className="text-sm" />
+                  </Link>
+                  <Link
+                    to=""
+                    aria-label={`${agent.name} on LinkedIn`}
+                    className="w-10 h-10 rounded-full bg-white/20 hover:bg-gold-600 flex items-center justify-center text-white transition-all duration-200 hover:scale-110"
+                  >
+                    <FaLinkedin className="text-sm" />
+                  </Link>
                 </div>
               </div>
-              <div className="px-6 pb-4">
-                <h3 className="text-xl font-semibold text-center mt-4">
+
+              {/* Card Content */}
+              <div className="px-5 py-4">
+                <h3 className="font-display font-bold text-charcoal-900 text-lg text-center mt-1">
                   {agent.name}
                 </h3>
-                <p className="text-gray-600 text-center">{agent.title}</p>
-                <p className="text-gray-700 text-center mt-2">
+                <p className="text-gold-600 text-sm font-semibold text-center mb-2">
+                  {agent.title}
+                </p>
+                {/* Gold Divider */}
+                <div className="w-8 h-0.5 bg-gold-600 mx-auto mb-3" />
+                <p className="text-neutral-600 text-sm text-center leading-relaxed">
                   {agent.description}
                 </p>
               </div>
             </div>
           ))}
+        </div>
+
+        {/* ── CTA ── */}
+        <div className="flex justify-center mt-12">
+          <Link
+            to="/agents"
+            className="btn-outline-navy inline-flex items-center gap-2"
+          >
+            View All Agents
+            <FaArrowRight className="text-xs" />
+          </Link>
         </div>
       </div>
     </section>
