@@ -1,12 +1,13 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
-import { useNavigate } from 'react-router-dom';
-import { FaClock, FaTimes, FaEye } from 'react-icons/fa';
-import OptimizedImage from './OptimizedImage';
+import React from "react";
+import { motion } from "framer-motion";
+import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
+import { useNavigate } from "react-router-dom";
+import { FaClock, FaTimes, FaEye, FaMapMarkerAlt } from "react-icons/fa";
+import OptimizedImage from "./OptimizedImage";
 
 const RecentlyViewed = () => {
-  const { recentlyViewed, clearRecentlyViewed, removeFromRecentlyViewed } = useRecentlyViewed();
+  const { recentlyViewed, clearRecentlyViewed, removeFromRecentlyViewed } =
+    useRecentlyViewed();
   const navigate = useNavigate();
 
   if (!recentlyViewed || recentlyViewed.length === 0) {
@@ -14,46 +15,88 @@ const RecentlyViewed = () => {
   }
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
+    return new Intl.NumberFormat("en-ZA", {
+      style: "currency",
+      currency: "ZAR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
   };
 
   return (
-    <section className="max-padd-container py-12 bg-gradient-to-br from-gray-50 to-white">
-      <div className="flex items-center justify-between mb-6">
+    <section className="max-padd-container py-16">
+      {/* Section Header */}
+      <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-            <FaClock className="text-amber-600 w-5 h-5" />
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: "#EEF4FB" }}
+          >
+            <FaClock className="w-4 h-4" style={{ color: "#1B3A5C" }} />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Recently Viewed</h2>
-            <p className="text-sm text-gray-600">Properties you've recently checked out</p>
+            <h2
+              className="text-2xl font-bold leading-tight"
+              style={{
+                fontFamily: "'Playfair Display', serif",
+                color: "#1A1A2E",
+              }}
+            >
+              Recently Viewed
+            </h2>
+            <p className="text-sm text-neutral-500 mt-0.5">
+              Properties you've recently checked out
+            </p>
           </div>
         </div>
-        {recentlyViewed.length > 0 && (
-          <button
-            onClick={clearRecentlyViewed}
-            className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            Clear all
-          </button>
-        )}
+
+        <button
+          onClick={clearRecentlyViewed}
+          className="text-sm font-medium transition-colors duration-200"
+          style={{ color: "#6B7280" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "#1B3A5C")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "#6B7280")}
+        >
+          Clear all
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {recentlyViewed.map((property, index) => (
           <motion.div
             key={property.id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
-            className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden group hover:shadow-xl transition-all duration-300 cursor-pointer relative"
+            transition={{ delay: index * 0.08, ease: "easeOut" }}
+            className="group bg-white rounded-2xl overflow-hidden cursor-pointer relative transition-all duration-300"
+            style={{
+              border: "1px solid #EDE9E0",
+              boxShadow: "var(--shadow-card, 0 2px 8px rgba(0,0,0,0.06))",
+            }}
             onClick={() => navigate(`/listing/${property.id}`)}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-6px)";
+              e.currentTarget.style.borderColor = "rgba(201,150,44,0.4)";
+              e.currentTarget.style.boxShadow =
+                "0 12px 32px rgba(27,58,92,0.14), 0 4px 8px rgba(0,0,0,0.06)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.borderColor = "#EDE9E0";
+              e.currentTarget.style.boxShadow =
+                "0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)";
+            }}
+            tabIndex={0}
+            role="article"
+            aria-label={`View ${property.title}`}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                navigate(`/listing/${property.id}`);
+              }
+            }}
           >
             {/* Remove button */}
             <button
@@ -61,41 +104,99 @@ const RecentlyViewed = () => {
                 e.stopPropagation();
                 removeFromRecentlyViewed(property.id);
               }}
-              className="absolute top-2 right-2 z-10 p-1.5 bg-white/90 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50"
+              className="absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+              style={{
+                background: "rgba(255,255,255,0.92)",
+                backdropFilter: "blur(8px)",
+                border: "1px solid #EDE9E0",
+              }}
               aria-label="Remove from recently viewed"
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "#FEE2E2")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "rgba(255,255,255,0.92)")
+              }
             >
-              <FaTimes className="w-3 h-3 text-gray-600 hover:text-red-600" />
+              <FaTimes className="w-2.5 h-2.5 text-neutral-500" />
             </button>
 
+            {/* "Viewed" badge */}
+            <div className="absolute top-2.5 left-2.5 z-10">
+              <span
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold"
+                style={{
+                  background: "rgba(27,58,92,0.85)",
+                  backdropFilter: "blur(8px)",
+                  color: "#ffffff",
+                }}
+              >
+                <FaEye className="w-2.5 h-2.5" />
+                Viewed
+              </span>
+            </div>
+
             {/* Image */}
-            <div className="relative h-48 overflow-hidden bg-gray-100">
+            <div
+              className="relative overflow-hidden bg-ivory-200"
+              style={{ aspectRatio: "4/3" }}
+            >
               <OptimizedImage
                 src={property.image}
                 alt={property.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 width={400}
                 height={300}
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              {/* Bottom gradient */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(to top, rgba(9,21,36,0.55) 0%, transparent 55%)",
+                }}
+              />
+
+              {/* Price overlay at bottom of image */}
+              <div className="absolute bottom-3 left-3">
+                <span
+                  className="text-sm font-bold px-2.5 py-1 rounded-lg"
+                  style={{
+                    background: "rgba(0,0,0,0.50)",
+                    backdropFilter: "blur(8px)",
+                    color: "#ffffff",
+                  }}
+                >
+                  {property.price
+                    ? formatPrice(property.price)
+                    : "Price on request"}
+                </span>
+              </div>
             </div>
 
             {/* Content */}
             <div className="p-4">
-              <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-amber-600 transition-colors">
+              {/* Title */}
+              <h3
+                className="font-bold text-sm leading-snug mb-1.5 line-clamp-1 transition-colors duration-200"
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  color: "#1A1A2E",
+                }}
+              >
                 {property.title}
               </h3>
-              <p className="text-sm text-gray-600 mb-2 line-clamp-1">
-                {property.address || property.city || 'Location TBD'}
-              </p>
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-bold text-amber-600">
-                  {property.price ? formatPrice(property.price) : 'Price on request'}
-                </span>
-                <div className="flex items-center gap-1 text-xs text-gray-500">
-                  <FaEye className="w-3 h-3" />
-                  <span>Viewed</span>
-                </div>
+
+              {/* Location */}
+              <div className="flex items-center gap-1.5">
+                <FaMapMarkerAlt
+                  className="w-3 h-3 flex-shrink-0"
+                  style={{ color: "#C9962C" }}
+                />
+                <p className="text-xs text-neutral-500 truncate">
+                  {property.address || property.city || "Location TBD"}
+                </p>
               </div>
             </div>
           </motion.div>
@@ -106,4 +207,3 @@ const RecentlyViewed = () => {
 };
 
 export default RecentlyViewed;
-
