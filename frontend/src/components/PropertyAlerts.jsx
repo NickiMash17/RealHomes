@@ -1,44 +1,48 @@
-import React, { useState } from 'react';
-import { Modal, Button, Badge } from '@mantine/core';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaBell, 
-  FaTimes, 
-  FaTrash, 
-  FaToggleOn, 
+import React, { useState } from "react";
+import { Modal } from "@mantine/core";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaBell,
+  FaTimes,
+  FaTrash,
+  FaToggleOn,
   FaToggleOff,
   FaCheckCircle,
   FaHome,
-  FaArrowRight
-} from 'react-icons/fa';
-import { usePropertyAlerts } from '../hooks/usePropertyAlerts';
-import { useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
-import EmptyState from './EmptyState';
+  FaArrowRight,
+} from "react-icons/fa";
+import { usePropertyAlerts } from "../hooks/usePropertyAlerts";
+import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+import EmptyState from "./EmptyState";
 
 const PropertyAlerts = ({ opened, onClose }) => {
-  const { 
-    alerts, 
-    newMatches, 
-    removeAlert, 
-    toggleAlert, 
+  const {
+    alerts,
+    newMatches,
+    removeAlert,
+    toggleAlert,
     clearAllAlerts,
     markMatchesAsRead,
     getUnreadCount,
-    maxAlerts
+    maxAlerts,
   } = usePropertyAlerts();
   const navigate = useNavigate();
 
   const handleViewMatches = (alertId, alertName) => {
-    const alert = alerts.find(a => a.id === alertId);
+    const alert = alerts.find((a) => a.id === alertId);
     if (!alert) return;
 
     // Navigate to listing page with alert criteria
     const params = new URLSearchParams();
-    if (alert.criteria.searchTerm) params.append('search', alert.criteria.searchTerm);
-    if (alert.criteria.selectedCategory !== 'all') params.append('category', alert.criteria.selectedCategory);
-    if (alert.criteria.minBedrooms !== 'any') params.append('bedrooms', alert.criteria.minBedrooms);
-    if (alert.criteria.maxPrice < 50000000) params.append('maxPrice', alert.criteria.maxPrice);
+    if (alert.criteria.searchTerm)
+      params.append("search", alert.criteria.searchTerm);
+    if (alert.criteria.selectedCategory !== "all")
+      params.append("category", alert.criteria.selectedCategory);
+    if (alert.criteria.minBedrooms !== "any")
+      params.append("bedrooms", alert.criteria.minBedrooms);
+    if (alert.criteria.maxPrice < 50000000)
+      params.append("maxPrice", alert.criteria.maxPrice);
 
     markMatchesAsRead(alertId);
     navigate(`/listing?${params.toString()}`);
@@ -46,9 +50,9 @@ const PropertyAlerts = ({ opened, onClose }) => {
   };
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
+    return new Intl.NumberFormat("en-ZA", {
+      style: "currency",
+      currency: "ZAR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
@@ -59,14 +63,14 @@ const PropertyAlerts = ({ opened, onClose }) => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
   };
 
   return (
@@ -75,12 +79,14 @@ const PropertyAlerts = ({ opened, onClose }) => {
       onClose={onClose}
       title={
         <div className="flex items-center gap-3">
-          <FaBell className="text-amber-600 text-2xl" />
-          <span className="text-2xl font-bold text-gray-900">Property Alerts</span>
+          <FaBell className="text-navy-700 text-2xl" />
+          <span className="font-display font-bold text-2xl text-charcoal-900">
+            Property Alerts
+          </span>
           {getUnreadCount() > 0 && (
-            <Badge color="red" size="lg" variant="filled" className="ml-2">
+            <span className="bg-gold-600 text-white rounded-full px-2.5 py-0.5 text-xs font-bold ml-2">
               {getUnreadCount()} new
-            </Badge>
+            </span>
           )}
         </div>
       }
@@ -90,11 +96,11 @@ const PropertyAlerts = ({ opened, onClose }) => {
         backgroundOpacity: 0.55,
         blur: 3,
       }}
-      transitionProps={{ transition: 'pop', duration: 200 }}
+      transitionProps={{ transition: "pop", duration: 200 }}
       classNames={{
-        content: 'rounded-2xl shadow-2xl',
-        header: 'px-6 py-4 border-b border-gray-200',
-        body: 'p-0',
+        content: "rounded-2xl shadow-2xl",
+        header: "px-6 py-4 border-b border-ivory-300",
+        body: "p-0",
       }}
     >
       <motion.div
@@ -114,55 +120,70 @@ const PropertyAlerts = ({ opened, onClose }) => {
         ) : (
           <>
             <div className="max-h-[60vh] overflow-y-auto p-6">
-              <motion.div
-                variants={containerVariants}
-                className="space-y-4"
-              >
+              <motion.div variants={containerVariants} className="space-y-4">
                 {alerts.map((alert) => {
-                  const match = newMatches.find(m => m.alertId === alert.id);
+                  const match = newMatches.find((m) => m.alertId === alert.id);
                   const hasNewMatches = match && match.count > 0;
 
                   return (
                     <motion.div
                       key={alert.id}
                       variants={itemVariants}
-                      className={`bg-white rounded-xl border-2 p-5 transition-all duration-300 ${
-                        hasNewMatches 
-                          ? 'border-amber-400 shadow-lg bg-gradient-to-br from-amber-50 to-yellow-50' 
-                          : 'border-gray-200 shadow-md hover:shadow-lg'
+                      className={`bg-white rounded-2xl border-2 p-5 transition-all duration-300 ${
+                        hasNewMatches
+                          ? "border-gold-300 bg-gold-50/30 shadow-lg"
+                          : "border-ivory-300 shadow-sm hover:shadow-md"
                       }`}
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
-                            <h4 className="font-bold text-lg text-gray-900">{alert.name}</h4>
+                            <h4 className="font-bold text-lg text-charcoal-900">
+                              {alert.name}
+                            </h4>
                             {hasNewMatches && (
-                              <Badge color="red" size="sm" variant="filled">
+                              <span className="bg-red-500 text-white rounded-full px-2 py-0.5 text-xs font-bold">
                                 {match.count} new
-                              </Badge>
+                              </span>
                             )}
                             {!alert.isActive && (
-                              <Badge color="gray" size="sm" variant="light">
+                              <span className="bg-neutral-100 text-neutral-600 rounded-full px-2 py-0.5 text-xs font-medium">
                                 Inactive
-                              </Badge>
+                              </span>
                             )}
                           </div>
-                          <p className="text-xs text-gray-500 mb-3">
-                            Created: {dayjs(alert.createdAt).format('DD MMM YYYY')} • 
-                            Last checked: {dayjs(alert.lastChecked).format('DD MMM YYYY HH:mm')}
+                          <p className="text-xs text-neutral-400 mb-3">
+                            Created:{" "}
+                            {dayjs(alert.createdAt).format("DD MMM YYYY")} •
+                            Last checked:{" "}
+                            {dayjs(alert.lastChecked).format(
+                              "DD MMM YYYY HH:mm",
+                            )}
                           </p>
-                          <div className="space-y-1 text-sm text-gray-700">
+                          <div className="space-y-1 text-sm text-neutral-700">
                             {alert.criteria.searchTerm && (
-                              <p><strong>Keywords:</strong> {alert.criteria.searchTerm}</p>
+                              <p>
+                                <strong>Keywords:</strong>{" "}
+                                {alert.criteria.searchTerm}
+                              </p>
                             )}
-                            {alert.criteria.selectedCategory !== 'all' && (
-                              <p><strong>Type:</strong> {alert.criteria.selectedCategory}</p>
+                            {alert.criteria.selectedCategory !== "all" && (
+                              <p>
+                                <strong>Type:</strong>{" "}
+                                {alert.criteria.selectedCategory}
+                              </p>
                             )}
-                            {alert.criteria.minBedrooms !== 'any' && (
-                              <p><strong>Min Beds:</strong> {alert.criteria.minBedrooms}+</p>
+                            {alert.criteria.minBedrooms !== "any" && (
+                              <p>
+                                <strong>Min Beds:</strong>{" "}
+                                {alert.criteria.minBedrooms}+
+                              </p>
                             )}
                             {alert.criteria.maxPrice < 50000000 && (
-                              <p><strong>Max Price:</strong> {formatPrice(alert.criteria.maxPrice)}</p>
+                              <p>
+                                <strong>Max Price:</strong>{" "}
+                                {formatPrice(alert.criteria.maxPrice)}
+                              </p>
                             )}
                           </div>
                         </div>
@@ -170,13 +191,17 @@ const PropertyAlerts = ({ opened, onClose }) => {
                           <motion.button
                             onClick={() => toggleAlert(alert.id)}
                             className={`p-2 rounded-lg transition-colors ${
-                              alert.isActive 
-                                ? 'text-green-600 hover:bg-green-50' 
-                                : 'text-gray-400 hover:bg-gray-50'
+                              alert.isActive
+                                ? "text-green-600 hover:bg-green-50"
+                                : "text-neutral-400 hover:bg-navy-50"
                             }`}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            aria-label={alert.isActive ? 'Deactivate alert' : 'Activate alert'}
+                            aria-label={
+                              alert.isActive
+                                ? "Deactivate alert"
+                                : "Activate alert"
+                            }
                           >
                             {alert.isActive ? (
                               <FaToggleOn className="w-6 h-6" />
@@ -199,22 +224,24 @@ const PropertyAlerts = ({ opened, onClose }) => {
                       {hasNewMatches && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          className="mt-4 pt-4 border-t border-amber-200"
+                          animate={{ opacity: 1, height: "auto" }}
+                          className="mt-4 pt-4 border-t border-gold-200"
                         >
                           <div className="flex items-center justify-between">
-                            <p className="text-sm font-semibold text-amber-800">
-                              🎉 {match.count} new {match.count === 1 ? 'property' : 'properties'} found!
+                            <p className="text-sm font-semibold text-gold-700">
+                              🎉 {match.count} new{" "}
+                              {match.count === 1 ? "property" : "properties"}{" "}
+                              found!
                             </p>
-                            <Button
-                              onClick={() => handleViewMatches(alert.id, alert.name)}
-                              size="sm"
-                              color="amber"
-                              rightSection={<FaArrowRight className="w-3 h-3" />}
-                              className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600"
+                            <button
+                              onClick={() =>
+                                handleViewMatches(alert.id, alert.name)
+                              }
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-gold-600 hover:bg-gold-700 text-white rounded-xl text-sm font-semibold transition-all"
                             >
                               View Matches
-                            </Button>
+                              <FaArrowRight className="w-3 h-3" />
+                            </button>
                           </div>
                         </motion.div>
                       )}
@@ -224,19 +251,17 @@ const PropertyAlerts = ({ opened, onClose }) => {
               </motion.div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-              <p className="text-sm text-gray-600">
+            <div className="p-6 bg-ivory-200 border-t border-ivory-300 flex items-center justify-between">
+              <p className="text-sm text-neutral-500">
                 {alerts.length} / {maxAlerts} alerts
               </p>
-              <Button
+              <button
                 onClick={clearAllAlerts}
-                variant="light"
-                color="red"
-                leftSection={<FaTrash />}
-                size="sm"
+                className="text-red-600 hover:bg-red-50 border border-red-200 hover:border-red-300 rounded-lg px-3 py-1.5 text-sm font-medium flex items-center gap-2 transition-colors"
               >
+                <FaTrash />
                 Clear All
-              </Button>
+              </button>
             </div>
           </>
         )}
@@ -246,4 +271,3 @@ const PropertyAlerts = ({ opened, onClose }) => {
 };
 
 export default PropertyAlerts;
-
