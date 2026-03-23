@@ -29,6 +29,7 @@ const BookingModal = ({ opened, setOpened, email, propertyId }) => {
         },
       ],
     }));
+    setOpened(false);
   };
 
   const { mutate, isLoading } = useMutation({
@@ -37,8 +38,7 @@ const BookingModal = ({ opened, setOpened, email, propertyId }) => {
       return bookVisit(value, propertyId, email, token)
     },
     onSuccess: () => handleBookingSuccess(),
-    onError: ({ response }) => toast.error(response.data.message),
-    onSettled: () => setOpened(false),
+    onError: (error) => toast.error(error?.response?.data?.message || error?.message || "Something went wrong"),
   });
 
   return (

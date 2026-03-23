@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import { useMockAuth } from "../context/MockAuthContext";
 import { motion } from "framer-motion";
@@ -60,9 +60,9 @@ const Facilities = ({
         token,
         user?.email // Pass userEmail obtained from Auth0
       ),
-    onError: ({ response }) =>
-      toast.error(response.data.message, { position: "bottom-right" }),
-    onSettled: () => {
+    onError: (error) =>
+      toast.error(error?.response?.data?.message || error?.message || "Something went wrong", { position: "bottom-right" }),
+    onSuccess: () => {
       toast.success("Added Successfully", { position: "bottom-right" });
       setPropertyDetails({
         title: "",

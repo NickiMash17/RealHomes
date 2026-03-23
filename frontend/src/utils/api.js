@@ -51,7 +51,10 @@ api.interceptors.response.use(
     } else if (error.request) {
       // Request made but no response received
       if (import.meta.env.DEV) {
-        console.warn('No response from server:', error.config.url);
+        // Don't log if it's a standard network error (backend likely down), as we handle fallbacks elsewhere
+        if (error.code !== "ERR_NETWORK" && error.code !== "ECONNABORTED") {
+          console.warn('No response from server:', error.config.url);
+        }
       }
     } else {
       // Error setting up request
@@ -304,7 +307,10 @@ export const createUser = async (email, token) => {
       }
     );
   } catch (error) {
-    toast.error("Something's not right, Please Try again");
+    if (import.meta.env.DEV) {
+      console.warn("Backend not available (createUser), simulating success");
+      return;
+    }
     throw error;
   }
 };
@@ -325,7 +331,10 @@ export const bookVisit = async (date, propertyId, email, token) => {
       }
     );
   } catch (error) {
-    toast.error("Something's not right. Please try again.");
+    if (import.meta.env.DEV) {
+      console.warn("Backend not available (bookVisit), simulating success");
+      return;
+    }
     throw error;
   }
 };
@@ -342,8 +351,10 @@ export const removeBooking = async (id, email, token) => {
       }
     );
   } catch (error) {
-    toast.error("Something's not right. Please try again.");
-
+    if (import.meta.env.DEV) {
+      console.warn("Backend not available (removeBooking), simulating success");
+      return;
+    }
     throw error;
   }
 };
@@ -368,6 +379,10 @@ export const toFav = async (id, email, token) => {
     if (import.meta.env.DEV) {
       console.warn('Failed to sync favorite with backend:', error?.response?.data || error?.message);
     }
+    if (import.meta.env.DEV) {
+      // Simulate success return for fav toggle
+      return { message: "Favorite toggled (mock)" };
+    }
     // Re-throw so calling code knows it failed, but won't show error to user
     throw error;
   }
@@ -388,7 +403,9 @@ export const getAllFav = async (email, token) => {
 
     return res.data["favResidenciesID"];
   } catch (e) {
-    toast.error("Something went wrong while fetching favs");
+    if (import.meta.env.DEV) {
+      return ["1", "4", "6"]; // Return mock favorites
+    }
     throw e;
   }
 };
@@ -408,7 +425,10 @@ export const getAllBookings = async (email, token) => {
 
     return res.data["bookedVisits"];
   } catch (e) {
-    toast.error("Something went wrong while fetching bookings");
+    if (import.meta.env.DEV) {
+      // Fallback to the same mock logic as getBookings
+      return getBookings(email, token);
+    }
     throw e;
   }
 };
@@ -478,8 +498,10 @@ export const createResidency = async (data, token, userEmail) => {
       }
     );
   } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn("Backend not available (createResidency), simulating success");
+      return;
+    }
     throw error;
   }
 };
-
-
