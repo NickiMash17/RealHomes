@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Modal, Stepper } from "@mantine/core";
 import AddLocation from "./AddLocation";
 import { useMockAuth } from '../context/MockAuthContext'
@@ -24,6 +24,13 @@ const AddPropertyModal = ({ opened, setOpened }) => {
     },
     userEmail: user?.email,
   });
+
+  // Reset step to 0 when modal closes so it doesn't stay on "Completed" or previous step
+  useEffect(() => {
+    if (!opened) {
+      setActive(0);
+    }
+  }, [opened]);
 
   const nextStep = () => {
     setActive((current) => (current < 4 ? current + 1 : current));
@@ -69,7 +76,7 @@ const AddPropertyModal = ({ opened, setOpened }) => {
             setPropertyDetails={setPropertyDetails}
             />
           </Stepper.Step>
-          <Stepper.Step>
+          <Stepper.Step label="Facilities" description="Amenities">
             <Facilities 
             prevStep={prevStep}
             propertyDetails={propertyDetails}
