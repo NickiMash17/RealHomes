@@ -1,34 +1,23 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Modal, Button } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { useMockAuth } from '../context/MockAuthContext'
-import UserDetailContext from "../context/UserDetailContext";
 import { bookVisit } from "../utils/api";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 
 const BookingModal = ({ opened, setOpened, email, propertyId }) => {
   const [value, setValue] = useState(null);
+  const queryClient = useQueryClient();
   const { getAccessTokenSilently } = useMockAuth()
-  const {
-    setUserDetails,
-  } = useContext(UserDetailContext);
 
   const handleBookingSuccess = () => {
     toast.success("You have successfully booked visit", {
       position: "bottom-right",
     });
-    setUserDetails((prev) => ({
-      ...prev,
-      bookings: [
-        ...prev.bookings,
-        {
-          id: propertyId,
-          date: dayjs(value).format("DD/MM/YYYY"),
-        },
-      ],
-    }));
+    // Refresh bookings data
+    queryClient.invalidateQueries(["bookings", email]);
     setOpened(false);
   };
 

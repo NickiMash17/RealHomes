@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
-import { useMutation, useQuery } from "react-query";
+import React, { useState, useEffect } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { PuffLoader } from "react-spinners";
 import Map from "../components/Map";
@@ -8,7 +8,6 @@ import useAuthCheck from "../hooks/useAuthCheck";
 import { useMockAuth } from '../context/MockAuthContext'
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
 import BookingModal from "../components/BookingModal";
-import UserDetailContext from "../context/UserDetailContext";
 import { Button } from "@mantine/core";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
@@ -24,7 +23,7 @@ import SEO from "../components/SEO";
 import OptimizedImage from "../components/OptimizedImage";
 import MortgageCalculator from "../components/MortgageCalculator";
 import PropertyRecommendations from "../components/PropertyRecommendations";
-import { getAllProperties } from "../utils/api";
+import { getAllProperties, getBookings } from "../utils/api";
 import { shareProperty, shareViaWhatsApp, shareViaEmail, shareViaFacebook, shareViaTwitter, shareViaLinkedIn } from "../utils/shareProperty";
 import { errorHandler } from "../utils/errorHandler";
 
@@ -32,6 +31,7 @@ const Property = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const id = pathname.split("/").slice(-1)[0];
+  const queryClient = useQueryClient();
   
   // Validate ID before making query
   const isValidId = id && id !== 'listing' && id !== '';
@@ -64,29 +64,30 @@ const Property = () => {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showMortgageCalculator, setShowMortgageCalculator] = useState(false);
   const { validateLogin } = useAuthCheck();
-  const { user } = useMockAuth();
+  const { user, getAccessTokenSilently } = useMockAuth();
   const { addToRecentlyViewed } = useRecentlyViewed();
 
-  const userDetailContext = useContext(UserDetailContext);
-  const token = userDetailContext?.userDetails?.token || null;
-  const bookings = userDetailContext?.userDetails?.bookings || [];
-  const setUserDetails = userDetailContext?.setUserDetails || (() => {});
+  // Fetch bookings for the current user to persist state across refreshes
+  const { data: bookingsData } = useQuery(
+    ["bookings", user?.email],
+    async () => {
+      if (!user?.email) return [];
+      const token = await getAccessTokenSilently();
+      return getBookings(user.email, token);
+    },
+    { enabled: !!user?.email }
+  );
 
   const { mutate: cancelBooking, isLoading: cancelling } = useMutation({
-    mutationFn: () => {
-      if (!id || !user?.email || !token) {
+    mutationFn: async () => {
+      if (!id || !user?.email) {
         throw new Error('Missing required information to cancel booking');
       }
+      const token = await getAccessTokenSilently();
       return removeBooking(id, user.email, token);
     },
     onSuccess: () => {
-      setUserDetails((prev) => ({
-        ...prev,
-        bookings: prev.bookings?.filter((booking) => {
-          const bookingId = booking?.id || booking?.propertyId || booking?._id;
-          return bookingId !== id && String(bookingId) !== String(id);
-        }) || [],
-      }));
+      queryClient.invalidateQueries(["bookings", user?.email]);
       toast.success("Booking cancelled", { position: "bottom-right" });
     },
     onError: (error) => {
@@ -199,6 +200,7 @@ const Property = () => {
   }
 
   // Safely check bookings
+  const bookings = bookingsData || [];
   const isBooked = bookings?.some((booking) => {
     const bookingId = booking?.id || booking?.propertyId || booking?._id;
     return bookingId === id || String(bookingId) === String(id);

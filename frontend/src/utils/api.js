@@ -309,7 +309,7 @@ export const createUser = async (email, token) => {
   } catch (error) {
     if (import.meta.env.DEV) {
       console.warn("Backend not available (createUser), simulating success");
-      return;
+      return {};
     }
     throw error;
   }
@@ -333,7 +333,7 @@ export const bookVisit = async (date, propertyId, email, token) => {
   } catch (error) {
     if (import.meta.env.DEV) {
       console.warn("Backend not available (bookVisit), simulating success");
-      return;
+      return {};
     }
     throw error;
   }
@@ -500,7 +500,7 @@ export const createResidency = async (data, token, userEmail) => {
   } catch (error) {
     if (import.meta.env.DEV) {
       console.warn("Backend not available (createResidency), simulating success");
-      return;
+      return {};
     }
     throw error;
   }

@@ -1,11 +1,8 @@
-import React, { useContext } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { useMockAuth } from "../context/MockAuthContext";
-import { motion } from "framer-motion";
-import { FaBed, FaBath, FaRulerCombined, FaCar, FaWifi, FaSwimmingPool, FaUtensils, FaSnowflake, FaDumbbell, FaShieldAlt } from "react-icons/fa";
 import { Box, Button, Group, NumberInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import UserDetailContext from "../context/UserDetailContext";
 import useProperties from "../hooks/useProperties";
 import { useMutation } from "react-query";
 import { toast } from "react-toastify";
@@ -15,7 +12,6 @@ const Facilities = ({
   prevStep,
   propertyDetails,
   setPropertyDetails,
-  setOpened,
   setActiveStep,
   onSuccess,
 }) => {
@@ -45,21 +41,21 @@ const Facilities = ({
   };
 
   //   Upload
-  const { user } = useMockAuth();
-  const userDetailContext = useContext(UserDetailContext);
-  const token = userDetailContext?.userDetails?.token || null;
+  const { user, getAccessTokenSilently } = useMockAuth();
   const { refetch: refetchProperties } = useProperties();
 
   const { mutate, isLoading } = useMutation({
-    mutationFn: () =>
-      createResidency(
+    mutationFn: async () => {
+      const token = await getAccessTokenSilently();
+      return createResidency(
         {
           ...propertyDetails,
           facilities: { bedrooms, parkings, bathrooms },
         },
         token,
         user?.email // Pass userEmail obtained from Auth0
-      ),
+      );
+    },
     onError: (error) =>
       toast.error(error?.response?.data?.message || error?.message || "Something went wrong", { position: "bottom-right" }),
     onSuccess: () => {
@@ -79,7 +75,6 @@ const Facilities = ({
         },
         userEmail: user?.email, // Ensure userEmail is included in propertyDetails
       });
-      if (setOpened) setOpened(false);
       if (setActiveStep) setActiveStep(4); // Move to completed step
       if (onSuccess) onSuccess();
       refetchProperties();
@@ -129,7 +124,6 @@ Facilities.propTypes = {
   prevStep: PropTypes.func,
   propertyDetails: PropTypes.object,
   setPropertyDetails: PropTypes.func,
-  setOpened: PropTypes.func,
   setActiveStep: PropTypes.func,
   onSuccess: PropTypes.func,
 };

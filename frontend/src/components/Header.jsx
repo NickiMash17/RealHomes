@@ -35,7 +35,7 @@ const Header = () => {
   const [showComparison, setShowComparison] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
   const [showMortgageCalculator, setShowMortgageCalculator] = useState(false);
-  const { isAuthenticated, user, loginWithRedirect, isLoading } = useMockAuth();
+  const { isAuthenticated, user, loginWithRedirect, isLoading, getAccessTokenSilently } = useMockAuth();
   const { comparisonList } = usePropertyComparison();
   const { getUnreadCount } = usePropertyAlerts();
   const location = useLocation();
@@ -43,7 +43,10 @@ const Header = () => {
   // Favorites count query
   const { data: favoritesData } = useQuery(
     ["favorites", user?.email],
-    () => getAllFav(user?.email, user?.token),
+    async () => {
+      const token = await getAccessTokenSilently();
+      return getAllFav(user?.email, token);
+    },
     {
       enabled: isAuthenticated && !!user?.email,
       staleTime: 2 * 60 * 1000,

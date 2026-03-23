@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useMockAuth } from '../context/MockAuthContext.jsx'
+import { useQueryClient } from 'react-query'
 import { toFav } from '../utils/api'
 import { toast } from 'react-toastify'
 
 const HeartBtn = ({ id }) => {
   const [isLiked, setIsLiked] = useState(false)
-  const { isAuthenticated, user } = useMockAuth()
+  const { isAuthenticated, user, getAccessTokenSilently } = useMockAuth()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     // Check if the property is in favorites
@@ -15,13 +17,14 @@ const HeartBtn = ({ id }) => {
 
   const handleToggleFavorite = async () => {
     if (!isAuthenticated) {
-      toast.error('Please login to add favorites')
+      toast.error('Please login to add favorites', { position: 'bottom-right' })
       return
     }
 
     try {
       const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
       
+      // Optimistic UI update
       if (isLiked) {
         // Remove from favorites
         const newFavorites = favorites.filter(favId => favId !== id)
@@ -36,11 +39,15 @@ const HeartBtn = ({ id }) => {
         toast.success('Added to favorites')
       }
 
-      // Simulate API call
-      await toFav(id)
+      // API call
+      const token = await getAccessTokenSilently()
+      await toFav(id, user.email, token)
+      
+      // Refetch favorites to update the header count
+      queryClient.invalidateQueries(["favorites", user?.email])
     } catch (error) {
       console.error('Error toggling favorite:', error)
-      toast.error('Something went wrong')
+      // Don't show error toast here as api.js might handle it or we want to degrade gracefully
     }
   }
 
