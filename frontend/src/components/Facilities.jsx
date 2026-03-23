@@ -1,10 +1,10 @@
+import React, { useState, useContext } from "react";
+import PropTypes from "prop-types";
 import { useMockAuth } from "../context/MockAuthContext";
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaBed, FaBath, FaRulerCombined, FaCar, FaWifi, FaSwimmingPool, FaUtensils, FaSnowflake, FaDumbbell, FaShieldAlt } from "react-icons/fa";
 import { Box, Button, Group, NumberInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import React, { useContext } from "react";
 import UserDetailContext from "../context/UserDetailContext";
 import useProperties from "../hooks/useProperties";
 import { useMutation } from "react-query";
@@ -123,6 +123,15 @@ const Facilities = ({
       </form>
     </Box>
   );
+};
+
+Facilities.propTypes = {
+  prevStep: PropTypes.func,
+  propertyDetails: PropTypes.object,
+  setPropertyDetails: PropTypes.func,
+  setOpened: PropTypes.func,
+  setActiveStep: PropTypes.func,
+  onSuccess: PropTypes.func,
 };
 
 export default Facilities;
