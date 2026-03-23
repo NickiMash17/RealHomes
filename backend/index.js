@@ -63,7 +63,8 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "https://realhomes.vercel.app",
-  "https://realhomes-south-africa.vercel.app"
+  "https://realhomes-south-africa.vercel.app",
+  "https://real-homes.vercel.app"
 ].filter(Boolean) // Remove undefined values
 
 app.use(cors({
