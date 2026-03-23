@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 import { Container, Modal, Stepper } from "@mantine/core";
 import AddLocation from "./AddLocation";
 import { useMockAuth } from '../context/MockAuthContext'
@@ -9,7 +10,8 @@ import Facilities from "./Facilities";
 const AddPropertyModal = ({ opened, setOpened }) => {
   const [active, setActive] = useState(0);
   const { user } = useMockAuth();
-  const [propertyDetails, setPropertyDetails] = useState({
+
+  const initialPropertyDetails = useMemo(() => ({
     title: "",
     description: "",
     price: 0,
@@ -22,15 +24,25 @@ const AddPropertyModal = ({ opened, setOpened }) => {
       parkings: 0,
       bathrooms: 0,
     },
-    userEmail: user?.email,
-  });
+    userEmail: user?.email || "",
+  }), [user?.email]);
 
-  // Reset step to 0 when modal closes so it doesn't stay on "Completed" or previous step
+  const [propertyDetails, setPropertyDetails] = useState(initialPropertyDetails);
+
+  // Reset step AND form data when modal closes
   useEffect(() => {
     if (!opened) {
       setActive(0);
+      setPropertyDetails(initialPropertyDetails);
     }
-  }, [opened]);
+  }, [opened, initialPropertyDetails]);
+
+  // Sync user email if it loads after component mount
+  useEffect(() => {
+    if (user?.email) {
+      setPropertyDetails((prev) => ({ ...prev, userEmail: user.email }));
+    }
+  }, [user?.email]);
 
   const nextStep = () => {
     setActive((current) => (current < 4 ? current + 1 : current));
@@ -46,7 +58,7 @@ const AddPropertyModal = ({ opened, setOpened }) => {
       closeOnClickOutside
       size={"90rem"}
     >
-      <Container h={"34rem"} w={"100%"}>
+      <Container h={"auto"} w={"100%"}>
         <Stepper
           active={active}
           onStepClick={setActive}
@@ -81,7 +93,6 @@ const AddPropertyModal = ({ opened, setOpened }) => {
             prevStep={prevStep}
             propertyDetails={propertyDetails}
             setPropertyDetails={setPropertyDetails}
-            setOpened={setOpened}
             setActiveStep={setActive}
             />
           </Stepper.Step>
@@ -92,6 +103,11 @@ const AddPropertyModal = ({ opened, setOpened }) => {
       </Container>
     </Modal>
   );
+};
+
+AddPropertyModal.propTypes = {
+  opened: PropTypes.bool,
+  setOpened: PropTypes.func,
 };
 
 export default AddPropertyModal;
