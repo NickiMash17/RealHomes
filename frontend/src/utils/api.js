@@ -2,8 +2,17 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
 
+const getBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  return import.meta.env.DEV 
+    ? "http://localhost:8000/api" 
+    : "https://realhomes-oajb.onrender.com/api";
+};
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:8000/api" : "https://realhomes-oajb.onrender.com/api"),
+  baseURL: getBaseUrl(),
   timeout: 30000, // 30 seconds timeout
   headers: {
     'Content-Type': 'application/json',
@@ -34,33 +43,20 @@ api.interceptors.response.use(
       
       if (status === 401) {
         // Unauthorized - could redirect to login
-        if (import.meta.env.DEV) {
-          console.warn('Unauthorized request');
-        }
+        // if (import.meta.env.DEV) console.warn('Unauthorized request');
       } else if (status === 404) {
         // Not found
-        if (import.meta.env.DEV) {
-          console.warn('Resource not found:', error.config.url);
-        }
+        // if (import.meta.env.DEV) console.warn('Resource not found:', error.config.url);
       } else if (status >= 500) {
         // Server error
-        if (import.meta.env.DEV) {
-          console.error('Server error:', data);
-        }
+        // if (import.meta.env.DEV) console.error('Server error:', data);
       }
     } else if (error.request) {
       // Request made but no response received
-      if (import.meta.env.DEV) {
-        // Don't log if it's a standard network error (backend likely down), as we handle fallbacks elsewhere
-        if (error.code !== "ERR_NETWORK" && error.code !== "ECONNABORTED") {
-          console.warn('No response from server:', error.config.url);
-        }
-      }
+      // if (import.meta.env.DEV) { ... }
     } else {
       // Error setting up request
-      if (import.meta.env.DEV) {
-        console.error('Request setup error:', error.message);
-      }
+      // if (import.meta.env.DEV) console.error('Request setup error:', error.message);
     }
     
     return Promise.reject(error);
@@ -80,16 +76,12 @@ export const getAllProperties = async () => {
     return Array.isArray(properties) ? properties : [];
   } catch (error) {
     // Log error in development only
-    if (import.meta.env.DEV) {
-      console.warn("Backend not available, using mock data", error.message);
-    }
     
     // In production, show user-friendly message if backend is down
     if (!import.meta.env.DEV) {
       if (error.code === 'ECONNABORTED') {
         toast.error("Connection timeout. Server might be waking up.");
       } else {
-        console.error("API Error, switching to offline mode:", error);
         toast.error("Cannot connect to server. Showing offline data.");
       }
     }
