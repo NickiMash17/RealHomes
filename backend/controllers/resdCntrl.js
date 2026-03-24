@@ -325,7 +325,7 @@ export const createProperty = async (req, res) => {
           select: {
             name: true,
             email: true,
-            avatar: true
+            image: true
           }
         }
       }
@@ -361,7 +361,7 @@ export const updateProperty = async (req, res) => {
           select: {
             name: true,
             email: true,
-            avatar: true
+            image: true
           }
         }
       }
@@ -487,7 +487,7 @@ export const searchProperties = async (req, res) => {
           select: {
             name: true,
             email: true,
-            avatar: true
+            image: true
           }
         }
       },
