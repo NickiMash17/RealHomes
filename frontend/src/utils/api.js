@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { toast } from "react-toastify";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
+  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:8000/api" : "https://realhomes-oajb.onrender.com/api"),
   timeout: 30000, // 30 seconds timeout
   headers: {
     'Content-Type': 'application/json',
@@ -85,8 +85,13 @@ export const getAllProperties = async () => {
     }
     
     // In production, show user-friendly message if backend is down
-    if (!import.meta.env.DEV && error.code === 'ECONNABORTED') {
-      toast.error("Connection timeout. Please try again.");
+    if (!import.meta.env.DEV) {
+      if (error.code === 'ECONNABORTED') {
+        toast.error("Connection timeout. Server might be waking up.");
+      } else {
+        console.error("API Error, switching to offline mode:", error);
+        toast.error("Cannot connect to server. Showing offline data.");
+      }
     }
     return [
       {
@@ -193,8 +198,12 @@ export const getProperty = async (id) => {
     }
     
     // In production, show user-friendly message
-    if (!import.meta.env.DEV && error.code === 'ECONNABORTED') {
-      toast.error("Connection timeout. Please try again.");
+    if (!import.meta.env.DEV) {
+      if (error.code === 'ECONNABORTED') {
+        toast.error("Connection timeout. Server might be waking up.");
+      } else {
+        toast.error("Cannot connect to server. Showing offline data.");
+      }
     }
     
     // Mock data for individual properties
