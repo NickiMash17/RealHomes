@@ -345,4 +345,20 @@ const Listing = () => {
             <EmptyState
               type="search"
               title="No Properties Found"
+              description="Try adjusting your search criteria or filters."
+              actionLabel="Clear Filters"
+              onAction={() => {
+                setFilter("");
+                setCategoryFilter("all");
+                setSortBy("newest");
+              }}
+            />
+          )}
+        </div>
+      </main>
+    </>
+  );
+};
+
+export default Listing;
               
