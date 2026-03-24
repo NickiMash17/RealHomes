@@ -28,24 +28,10 @@ const Listing = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Debug logging (development only)
-  useEffect(() => {
-    if (import.meta.env.DEV) {
-      console.log("Listing Page - Data:", data);
-      console.log("Listing Page - isLoading:", isLoading);
-      console.log("Listing Page - isError:", isError);
-    }
-  }, [data, isLoading, isError]);
-
   // Process and deduplicate properties
   const uniqueProperties = useMemo(() => {
     try {
-      if (!data) {
-        if (import.meta.env.DEV) {
-          console.log("No data available");
-        }
-        return [];
-      }
+      if (!data) return [];
 
       // Handle different data structures
       let dataArray = [];
@@ -56,10 +42,6 @@ const Listing = () => {
         if (!Array.isArray(dataArray)) {
           dataArray = [];
         }
-      }
-
-      if (import.meta.env.DEV) {
-        console.log("Processed data array length:", dataArray.length);
       }
 
       const seen = new Set();
@@ -77,9 +59,6 @@ const Listing = () => {
 
       return processed;
     } catch (err) {
-      if (import.meta.env.DEV) {
-        console.error("Error processing properties:", err);
-      }
       return [];
     }
   }, [data]);
