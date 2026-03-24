@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import SEO from "../components/SEO";
 import PropertySkeleton from "../components/PropertySkeleton";
 
+// Listing page component
 const Listing = () => {
   const navigate = useNavigate();
   const { data, isError, isLoading, error, refetch } = useProperties();
@@ -365,18 +366,4 @@ const Listing = () => {
             <EmptyState
               type="search"
               title="No Properties Found"
-              description="We couldn't find any properties matching your search criteria. Try adjusting your filters."
-              actionLabel="Clear Filters"
-              onAction={() => {
-                setFilter("");
-                setCategoryFilter("all");
-              }}
-            />
-          )}
-        </div>
-      </main>
-    </>
-  );
-};
-
-export default Listing;
+              
