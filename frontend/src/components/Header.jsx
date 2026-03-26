@@ -65,6 +65,19 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
   const handleFavoritesClick = () => {
     if (!isAuthenticated) {
       loginWithRedirect();
@@ -120,12 +133,15 @@ const Header = () => {
               whileTap={{ scale: 0.98 }}
               className="flex-shrink-0 mr-2 sm:mr-8"
             >
-              <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
+              <Link
+                to="/"
+                className="flex items-center gap-2 sm:gap-3 group min-w-0"
+              >
                 <div className="w-9 h-9 bg-navy-700 rounded-xl flex items-center justify-center shadow-navy group-hover:bg-navy-800 transition-colors duration-300">
                   <FaCrown className="text-gold-400 text-base" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-base sm:text-lg font-bold font-display text-charcoal-900 group-hover:text-navy-700 transition-colors duration-300 tracking-tight">
+                  <span className="text-base sm:text-lg font-bold font-display text-charcoal-900 group-hover:text-navy-700 transition-colors duration-300 tracking-tight truncate">
                     RealHomes
                   </span>
                   <span className="hidden sm:block text-xs text-neutral-500 font-medium tracking-wide">
@@ -177,7 +193,7 @@ const Header = () => {
             </form>
 
             {/* ── Action Buttons ────────────────────────────────────── */}
-            <div className="flex items-center gap-1 sm:gap-1.5">
+            <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
               {/* WhatsApp */}
               <motion.a
                 href="https://wa.me/27112345678"
@@ -194,7 +210,7 @@ const Header = () => {
               {/* Property Comparison */}
               <motion.button
                 onClick={() => setShowComparison(true)}
-                className="relative p-2.5 rounded-lg text-neutral-500 hover:text-navy-700 hover:bg-navy-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-navy-300 focus:ring-offset-1"
+                className="relative hidden md:inline-flex p-2.5 rounded-lg text-neutral-500 hover:text-navy-700 hover:bg-navy-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-navy-300 focus:ring-offset-1"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 aria-label={`Compare properties${comparisonList.length > 0 ? ` (${comparisonList.length} selected)` : ""}`}
@@ -211,7 +227,7 @@ const Header = () => {
               {/* Property Alerts */}
               <motion.button
                 onClick={() => setShowAlerts(true)}
-                className="relative p-2.5 rounded-lg text-neutral-500 hover:text-navy-700 hover:bg-navy-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-navy-300 focus:ring-offset-1"
+                className="relative hidden md:inline-flex p-2.5 rounded-lg text-neutral-500 hover:text-navy-700 hover:bg-navy-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-navy-300 focus:ring-offset-1"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 aria-label={`Property alerts${getUnreadCount() > 0 ? ` (${getUnreadCount()} new)` : ""}`}
@@ -228,7 +244,7 @@ const Header = () => {
               {/* Mortgage Calculator */}
               <motion.button
                 onClick={() => setShowMortgageCalculator(true)}
-                className="p-2.5 rounded-lg text-neutral-500 hover:text-navy-700 hover:bg-navy-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-navy-300 focus:ring-offset-1"
+                className="hidden md:inline-flex p-2.5 rounded-lg text-neutral-500 hover:text-navy-700 hover:bg-navy-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-navy-300 focus:ring-offset-1"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 aria-label="Open mortgage calculator"
@@ -241,7 +257,7 @@ const Header = () => {
               <motion.button
                 onClick={handleFavoritesClick}
                 disabled={isLoading}
-                className="relative p-2.5 rounded-lg text-neutral-500 hover:text-navy-700 hover:bg-navy-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-navy-300 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative hidden sm:inline-flex p-2.5 rounded-lg text-neutral-500 hover:text-navy-700 hover:bg-navy-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-navy-300 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 aria-label={`View favorites${favoritesCount > 0 ? ` (${favoritesCount} properties)` : ""}`}
@@ -256,26 +272,28 @@ const Header = () => {
               </motion.button>
 
               {/* Profile / Login */}
-              {isAuthenticated ? (
-                <ProfileMenu user={user} />
-              ) : (
-                <motion.button
-                  onClick={handleProfileClick}
-                  disabled={isLoading}
-                  className="flex items-center gap-2 px-4 py-2 bg-navy-700 hover:bg-navy-800 text-white rounded-xl font-semibold text-sm transition-all duration-200 shadow-navy disabled:opacity-50 disabled:cursor-not-allowed"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {isLoading ? (
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    <>
-                      <FaUser className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Login</span>
-                    </>
-                  )}
-                </motion.button>
-              )}
+              <div className="hidden sm:block">
+                {isAuthenticated ? (
+                  <ProfileMenu user={user} />
+                ) : (
+                  <motion.button
+                    onClick={handleProfileClick}
+                    disabled={isLoading}
+                    className="flex items-center gap-2 px-4 py-2 bg-navy-700 hover:bg-navy-800 text-white rounded-xl font-semibold text-sm transition-all duration-200 shadow-navy disabled:opacity-50 disabled:cursor-not-allowed"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {isLoading ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        <FaUser className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Login</span>
+                      </>
+                    )}
+                  </motion.button>
+                )}
+              </div>
 
               {/* Mobile Menu Toggle */}
               <motion.button
@@ -375,6 +393,51 @@ const Header = () => {
                       <span>
                         Favorites {favoritesCount > 0 && `(${favoritesCount})`}
                       </span>
+                    </motion.button>
+
+                    {/* Comparison shortcut */}
+                    <motion.button
+                      onClick={() => {
+                        setShowComparison(true);
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg text-charcoal-700 hover:text-navy-700 hover:bg-navy-50 text-sm font-medium transition-all duration-200"
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      <FaBalanceScale className="w-4 h-4" />
+                      <span>
+                        Compare{" "}
+                        {comparisonList.length > 0 &&
+                          `(${comparisonList.length})`}
+                      </span>
+                    </motion.button>
+
+                    {/* Alerts shortcut */}
+                    <motion.button
+                      onClick={() => {
+                        setShowAlerts(true);
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg text-charcoal-700 hover:text-navy-700 hover:bg-navy-50 text-sm font-medium transition-all duration-200"
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      <FaBell className="w-4 h-4" />
+                      <span>
+                        Alerts {getUnreadCount() > 0 && `(${getUnreadCount()})`}
+                      </span>
+                    </motion.button>
+
+                    {/* Mortgage calculator shortcut */}
+                    <motion.button
+                      onClick={() => {
+                        setShowMortgageCalculator(true);
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-lg text-charcoal-700 hover:text-navy-700 hover:bg-navy-50 text-sm font-medium transition-all duration-200"
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      <FaCalculator className="w-4 h-4" />
+                      <span>Mortgage Calculator</span>
                     </motion.button>
 
                     {/* Authenticated user info OR login button */}

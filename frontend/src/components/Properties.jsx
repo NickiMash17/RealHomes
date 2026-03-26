@@ -876,7 +876,7 @@ const Properties = () => {
             CATEGORY PILLS
         ══════════════════════════════════════════════════════════ */}
         <motion.div
-          className="flex flex-wrap gap-2 mb-5 sm:mb-6 overflow-x-auto pb-1 -mx-2 px-2 scrollbar-hide"
+          className="flex gap-2 mb-5 sm:mb-6 overflow-x-auto pb-2 scrollbar-hide sm:flex-wrap sm:overflow-visible"
           variants={itemVariants}
         >
           {categories.map((category) => (

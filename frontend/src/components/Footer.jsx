@@ -379,7 +379,7 @@ const Footer = () => {
       <motion.button
         onClick={scrollToTop}
         aria-label="Scroll to top"
-        className="fixed bottom-8 right-8 w-12 h-12 bg-navy-700 hover:bg-gold-600 text-white rounded-xl shadow-navy z-50 flex items-center justify-center transition-colors duration-300"
+        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 w-12 h-12 bg-navy-700 hover:bg-gold-600 text-white rounded-xl shadow-navy z-50 flex items-center justify-center transition-colors duration-300"
         whileHover={{ scale: 1.1, y: -2 }}
         whileTap={{ scale: 0.9 }}
         initial={{ opacity: 0, y: 20 }}
