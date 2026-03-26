@@ -138,6 +138,18 @@ export const registerServiceWorker = () => {
                 if (import.meta.env.DEV) {
                   console.log('New service worker available');
                 }
+
+                // Reload once to ensure the new deployment shell is picked up.
+                // Avoid infinite reload loops by using a session flag.
+                try {
+                  const key = 'realhomes_sw_reloaded';
+                  if (!sessionStorage.getItem(key)) {
+                    sessionStorage.setItem(key, '1');
+                    window.location.reload();
+                  }
+                } catch {
+                  window.location.reload();
+                }
               }
             });
           });

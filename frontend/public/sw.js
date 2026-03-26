@@ -1,13 +1,10 @@
 // Service Worker for RealHomes - Performance & Offline Support
-const CACHE_NAME = 'realhomes-v1';
-const RUNTIME_CACHE = 'realhomes-runtime-v1';
+// Bump these when changing caching behavior to avoid serving stale shells.
+const CACHE_NAME = 'realhomes-v2';
+const RUNTIME_CACHE = 'realhomes-runtime-v2';
 
 // Assets to cache on install
-const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/favicon.svg',
-];
+const STATIC_ASSETS = ['/favicon.svg'];
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
@@ -44,6 +41,23 @@ self.addEventListener('fetch', (event) => {
 
   // Skip cross-origin requests
   if (!event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
+  // Navigation requests: always prefer network so deployments reflect immediately.
+  // If offline, fall back to the last cached app shell (index.html).
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseToCache = response.clone();
+          caches.open(RUNTIME_CACHE).then((cache) => {
+            cache.put('/index.html', responseToCache);
+          });
+          return response;
+        })
+        .catch(() => caches.match('/index.html')),
+    );
     return;
   }
 
