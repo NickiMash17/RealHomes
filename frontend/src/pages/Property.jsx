@@ -104,19 +104,28 @@ const Property = () => {
     }).format(price)
   }
 
+  // Track property view (declared before any early returns to keep hook order stable)
+  useEffect(() => {
+    if (!data) return;
+    const derivedPropertyId = data?.id || data?._id || id;
+    if (!derivedPropertyId) return;
+    addToRecentlyViewed(data);
+    errorHandler.logUserAction('property_view', { propertyId: derivedPropertyId, title: data?.title || 'Property' });
+  }, [data, id, addToRecentlyViewed]);
+
   // Handle invalid ID
   if (!isValidId) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
+      <div className="min-h-screen flex items-center justify-center bg-ivory-200 pt-24 pb-16">
         <div className="text-center max-w-md mx-auto px-4">
           <div className="text-6xl mb-4">🔍</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Invalid Property ID</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="font-display text-2xl font-bold text-charcoal-900 mb-4">Invalid Property ID</h2>
+          <p className="text-neutral-600 mb-6">
             The property ID is missing or invalid. Please select a property from the listings.
           </p>
           <button
             onClick={() => navigate('/listing')}
-            className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
+            className="btn-gold"
           >
             Back to Listings
           </button>
@@ -127,16 +136,16 @@ const Property = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
+      <div className="min-h-screen flex items-center justify-center bg-ivory-200">
         <div className="text-center">
           <PuffLoader
             height="80"
             width="80"
             radius={1}
-            color="#f59e0b"
+            color="#C9962C"
             aria-label="puff-loading"
           />
-          <p className="mt-4 text-gray-600 font-medium">Loading property details...</p>
+          <p className="mt-4 text-neutral-600 font-medium">Loading property details...</p>
         </div>
       </div>
     );
@@ -144,23 +153,23 @@ const Property = () => {
 
   if (isError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
+      <div className="min-h-screen flex items-center justify-center bg-ivory-200 pt-24 pb-16">
         <div className="text-center max-w-md mx-auto px-4">
           <div className="text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Property Not Found</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="font-display text-2xl font-bold text-charcoal-900 mb-4">Property Not Found</h2>
+          <p className="text-neutral-600 mb-6">
             {error?.message || error?.response?.data?.message || "The property you're looking for doesn't exist or has been removed."}
           </p>
           <div className="flex gap-4 justify-center">
             <button
               onClick={() => navigate('/listing')}
-              className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
+              className="btn-gold"
             >
               Back to Listings
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-semibold transition-all"
+              className="btn-white"
             >
               Retry
             </button>
@@ -173,23 +182,23 @@ const Property = () => {
   // Safely check if data exists and has required fields
   if (!data || (!data.id && !data._id)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
+      <div className="min-h-screen flex items-center justify-center bg-ivory-200 pt-24 pb-16">
         <div className="text-center max-w-md mx-auto px-4">
           <div className="text-6xl mb-4">🏠</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">No Property Data</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="font-display text-2xl font-bold text-charcoal-900 mb-4">No Property Data</h2>
+          <p className="text-neutral-600 mb-6">
             Unable to load property information. The property may not exist or the data is incomplete.
           </p>
           <div className="flex gap-4 justify-center">
             <button
               onClick={() => navigate('/listing')}
-              className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
+              className="btn-gold"
             >
               Back to Listings
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-semibold transition-all"
+              className="btn-white"
             >
               Retry
             </button>
@@ -223,14 +232,6 @@ const Property = () => {
   const propertyRating = propertyData.rating || null;
   const propertyFacilities = propertyData.facilities || {};
   const isFeatured = propertyData.featured || false;
-
-  // Track property view
-  useEffect(() => {
-    if (data && propertyId) {
-      addToRecentlyViewed(data);
-      errorHandler.logUserAction('property_view', { propertyId, title: propertyTitle });
-    }
-  }, [data, propertyId, propertyTitle, addToRecentlyViewed]);
 
   const handleShare = async (method = 'native') => {
     try {
@@ -294,14 +295,14 @@ const Property = () => {
         property={propertyData}
         keywords={`${propertyTitle}, ${propertyCity}, ${propertyCountry}, real estate, property for sale`}
       />
-      <section className="min-h-screen bg-gradient-to-br from-gray-50 to-white pt-24 pb-16">
+      <section className="min-h-screen bg-ivory-200 pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
         <motion.button
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           onClick={() => navigate('/listing')}
-          className="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-medium"
+          className="mb-6 flex items-center gap-2 text-neutral-600 hover:text-navy-700 transition-colors font-semibold"
         >
           <FaArrowLeft className="w-4 h-4" />
           Back to Listings
@@ -311,7 +312,8 @@ const Property = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6 sm:mb-8 relative rounded-xl overflow-hidden shadow-xl"
+          className="mb-6 sm:mb-8 relative rounded-2xl overflow-hidden border border-ivory-300"
+          style={{ boxShadow: "var(--shadow-card-hover)" }}
         >
           <OptimizedImage
             src={propertyImage}
@@ -331,7 +333,7 @@ const Property = () => {
                 className="p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all hover:scale-110"
                 aria-label="Share property"
               >
-                <FaShare className="w-5 h-5 text-gray-700" />
+                <FaShare className="w-5 h-5 text-charcoal-800" />
               </button>
               
               {/* Share Menu Dropdown */}
@@ -345,47 +347,47 @@ const Property = () => {
                     initial={{ opacity: 0, scale: 0.95, y: -10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-2 bg-white rounded-xl shadow-2xl p-2 min-w-[200px] z-50 border border-gray-100"
+                    className="absolute right-0 top-full mt-2 bg-white rounded-xl shadow-2xl p-2 min-w-[200px] z-50 border border-ivory-300"
                   >
                     <button
                       onClick={() => handleShare('native')}
-                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-ivory-200 flex items-center gap-3 transition-colors text-charcoal-900"
                     >
-                      <FaShare className="w-4 h-4 text-gray-600" />
+                      <FaShare className="w-4 h-4 text-neutral-500" />
                       <span className="text-sm font-medium">Share</span>
                     </button>
                     <button
                       onClick={() => handleShare('whatsapp')}
-                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-ivory-200 flex items-center gap-3 transition-colors text-charcoal-900"
                     >
                       <FaWhatsapp className="w-4 h-4 text-green-600" />
                       <span className="text-sm font-medium">WhatsApp</span>
                     </button>
                     <button
                       onClick={() => handleShare('email')}
-                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-ivory-200 flex items-center gap-3 transition-colors text-charcoal-900"
                     >
-                      <FaEnvelope className="w-4 h-4 text-gray-600" />
+                      <FaEnvelope className="w-4 h-4 text-neutral-500" />
                       <span className="text-sm font-medium">Email</span>
                     </button>
-                    <div className="border-t border-gray-100 my-1"></div>
+                    <div className="border-t border-ivory-300 my-1"></div>
                     <button
                       onClick={() => handleShare('facebook')}
-                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-ivory-200 flex items-center gap-3 transition-colors text-charcoal-900"
                     >
                       <FaFacebook className="w-4 h-4 text-blue-600" />
                       <span className="text-sm font-medium">Facebook</span>
                     </button>
                     <button
                       onClick={() => handleShare('twitter')}
-                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-ivory-200 flex items-center gap-3 transition-colors text-charcoal-900"
                     >
                       <FaTwitter className="w-4 h-4 text-blue-400" />
                       <span className="text-sm font-medium">Twitter</span>
                     </button>
                     <button
                       onClick={() => handleShare('linkedin')}
-                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                      className="w-full text-left px-4 py-2 rounded-lg hover:bg-ivory-200 flex items-center gap-3 transition-colors text-charcoal-900"
                     >
                       <FaLinkedin className="w-4 h-4 text-blue-700" />
                       <span className="text-sm font-medium">LinkedIn</span>
@@ -401,7 +403,7 @@ const Property = () => {
           {/* Featured Badge */}
           {isFeatured && (
             <div className="absolute top-4 left-4">
-              <span className="px-4 py-2 bg-amber-500 text-white rounded-full text-sm font-semibold shadow-lg">
+              <span className="px-4 py-2 bg-gold-600 text-white rounded-full text-sm font-semibold shadow-gold">
                 ⭐ Featured
               </span>
             </div>
@@ -416,85 +418,86 @@ const Property = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-xl shadow-lg p-6 sm:p-8"
+              className="bg-white rounded-2xl border border-ivory-300 p-6 sm:p-8"
+              style={{ boxShadow: "var(--shadow-card)" }}
             >
               {/* Location */}
-              <div className="flex items-center gap-2 text-gray-600 text-sm mb-4">
-                <FaMapMarkerAlt className="text-amber-500" />
-                <span>{propertyCity}, {propertyCountry}</span>
+              <div className="flex items-center gap-2 text-neutral-500 text-sm mb-4">
+                <FaMapMarkerAlt className="text-gold-600" />
+                <span className="font-medium">{propertyCity}, {propertyCountry}</span>
               </div>
 
               {/* Title and Price */}
               <div className="mb-6">
-                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+                <h1 className="font-display text-3xl sm:text-4xl font-bold text-charcoal-900 mb-3">
                   {propertyTitle}
                 </h1>
-                <div className="flex items-center gap-4">
-                  <div className="text-3xl sm:text-4xl font-bold text-amber-600">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                  <div className="text-3xl sm:text-4xl font-bold text-navy-700">
                     {formatPrice(propertyPrice)}
                   </div>
                   {propertyRating && (
-                    <div className="flex items-center gap-1 px-3 py-1 bg-amber-50 rounded-full">
-                      <FaStar className="w-4 h-4 text-amber-500" />
-                      <span className="text-sm font-semibold text-gray-900">{propertyRating}</span>
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-gold-50 border border-gold-100 rounded-full w-fit">
+                      <FaStar className="w-4 h-4 text-gold-600" />
+                      <span className="text-sm font-semibold text-charcoal-900">{propertyRating}</span>
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Property Info */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6 border-y border-gray-200 mb-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6 border-y border-ivory-300 mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-amber-50 rounded-lg">
-                    <MdOutlineBed className="w-6 h-6 text-amber-600" />
+                  <div className="p-2 bg-gold-50 rounded-lg">
+                    <MdOutlineBed className="w-6 h-6 text-gold-600" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">{propertyFacilities.bedrooms || 0}</div>
-                    <div className="text-xs text-gray-600">Bedrooms</div>
+                    <div className="text-2xl font-bold text-charcoal-900">{propertyFacilities.bedrooms || 0}</div>
+                    <div className="text-xs text-neutral-500">Bedrooms</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-amber-50 rounded-lg">
-                    <MdOutlineBathtub className="w-6 h-6 text-amber-600" />
+                  <div className="p-2 bg-gold-50 rounded-lg">
+                    <MdOutlineBathtub className="w-6 h-6 text-gold-600" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">{propertyFacilities.bathrooms || 0}</div>
-                    <div className="text-xs text-gray-600">Bathrooms</div>
+                    <div className="text-2xl font-bold text-charcoal-900">{propertyFacilities.bathrooms || 0}</div>
+                    <div className="text-xs text-neutral-500">Bathrooms</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-amber-50 rounded-lg">
-                    <MdOutlineGarage className="w-6 h-6 text-amber-600" />
+                  <div className="p-2 bg-gold-50 rounded-lg">
+                    <MdOutlineGarage className="w-6 h-6 text-gold-600" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">{propertyFacilities.parkings || 0}</div>
-                    <div className="text-xs text-gray-600">Parking</div>
+                    <div className="text-2xl font-bold text-charcoal-900">{propertyFacilities.parkings || 0}</div>
+                    <div className="text-xs text-neutral-500">Parking</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-amber-50 rounded-lg">
-                    <CgRuler className="w-6 h-6 text-amber-600" />
+                  <div className="p-2 bg-gold-50 rounded-lg">
+                    <CgRuler className="w-6 h-6 text-gold-600" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900">{propertyFacilities.area || 'N/A'}</div>
-                    <div className="text-xs text-gray-600">Area (m²)</div>
+                    <div className="text-2xl font-bold text-charcoal-900">{propertyFacilities.area || 'N/A'}</div>
+                    <div className="text-xs text-neutral-500">Area (m²)</div>
                   </div>
                 </div>
               </div>
 
               {/* Description */}
               <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Description</h2>
-                <p className="text-gray-600 leading-relaxed text-base">
+                <h2 className="font-display text-2xl font-bold text-charcoal-900 mb-4">Description</h2>
+                <p className="text-neutral-600 leading-relaxed text-base">
                   {propertyDescription}
                 </p>
               </div>
 
               {/* Address */}
               <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Address</h2>
-                <div className="flex items-start gap-3 text-gray-600 bg-gray-50 p-4 rounded-lg">
-                  <FaMapMarkerAlt className="text-amber-500 mt-1 flex-shrink-0" />
+                <h2 className="font-display text-2xl font-bold text-charcoal-900 mb-4">Address</h2>
+                <div className="flex items-start gap-3 text-neutral-600 bg-ivory-200 border border-ivory-300 p-4 rounded-xl">
+                  <FaMapMarkerAlt className="text-gold-600 mt-1 flex-shrink-0" />
                   <p className="text-base">
                     {propertyAddress}, {propertyCity}, {propertyCountry}
                   </p>
@@ -502,11 +505,11 @@ const Property = () => {
               </div>
 
               {/* Action Buttons Section */}
-              <div className="pt-6 border-t border-gray-200 space-y-3">
+              <div className="pt-6 border-t border-ivory-300 space-y-3">
                 {/* Mortgage Calculator Button */}
                 <button
                   onClick={() => setShowMortgageCalculator(true)}
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-4 rounded-xl font-semibold hover:shadow-xl transition-all duration-300 text-lg hover:scale-105 flex items-center justify-center gap-2"
+                  className="btn-primary w-full py-4 text-base sm:text-lg"
                 >
                   <FaCalculator className="w-5 h-5" />
                   Calculate Mortgage
@@ -539,7 +542,7 @@ const Property = () => {
                         setModalOpened(true);
                       }
                     }}
-                    className="w-full bg-gradient-to-r from-amber-600 to-yellow-500 text-white px-6 py-4 rounded-xl font-semibold hover:shadow-xl transition-all duration-300 text-lg hover:scale-105"
+                    className="btn-gold w-full py-4 text-base sm:text-lg"
                   >
                     Book a Visit
                   </button>
@@ -560,10 +563,11 @@ const Property = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white rounded-xl shadow-lg overflow-hidden sticky top-24"
+              className="bg-white rounded-2xl border border-ivory-300 overflow-hidden sticky top-24"
+              style={{ boxShadow: "var(--shadow-card)" }}
             >
               <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Location</h3>
+                <h3 className="font-display text-lg font-bold text-charcoal-900 mb-4">Location</h3>
                 <Map
                   address={propertyAddress}
                   city={propertyCity}
