@@ -105,7 +105,8 @@ app.use((req, res, next) => {
 app.get('/health', async (req, res) => {
   try {
     // Check database connection
-    await prisma.$queryRaw`SELECT 1`
+    // Prisma MongoDB doesn't support SQL-style queries; use ping instead
+    await prisma.$runCommandRaw({ ping: 1 })
     const dbStatus = 'connected'
     
     res.status(200).json({

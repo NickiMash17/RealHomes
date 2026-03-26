@@ -7,6 +7,20 @@ const prisma = new PrismaClient()
 const cache = new Map()
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
+const parseFacilities = (facilities) => {
+  if (!facilities) return {}
+  if (typeof facilities === 'object') return facilities
+  if (typeof facilities === 'string') {
+    try {
+      const parsed = JSON.parse(facilities)
+      return parsed && typeof parsed === 'object' ? parsed : {}
+    } catch {
+      return {}
+    }
+  }
+  return {}
+}
+
 // Helper function to validate and sanitize input
 const validateInput = (req, res, next) => {
   const errors = validationResult(req)
@@ -289,7 +303,7 @@ export const createProperty = async (req, res) => {
     } = req.body
 
     // Validate required fields
-    if (!title || !description || !price || !address || !city || !country) {
+    if (!title || !description || !price || !address || !city || !country || !userEmail) {
       return res.status(400).json({
         success: false,
         message: 'Missing required fields'
@@ -308,6 +322,8 @@ export const createProperty = async (req, res) => {
       })
     }
 
+    const parsedFacilities = parseFacilities(facilities)
+
     const property = await prisma.residency.create({
       data: {
         title,
@@ -317,11 +333,11 @@ export const createProperty = async (req, res) => {
         city,
         country,
         image,
-        facilities: JSON.parse(facilities),
+        facilities: parsedFacilities,
         userEmail
       },
       include: {
-        user: {
+        owner: {
           select: {
             name: true,
             email: true,
@@ -337,7 +353,25 @@ export const createProperty = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Property created successfully',
-      data: property
+      data: {
+        id: property.id,
+        title: property.title,
+        description: property.description,
+        price: property.price,
+        address: property.address,
+        city: property.city,
+        country: property.country,
+        image: property.image,
+        facilities: parseFacilities(property.facilities),
+        rating: parsedFacilities.rating || 4.5,
+        category: parsedFacilities.category || 'Property',
+        featured: parsedFacilities.featured || false,
+        bedrooms: parsedFacilities.bedrooms || parsedFacilities.bed || 0,
+        bathrooms: parsedFacilities.bathrooms || parsedFacilities.bath || 0,
+        parkings: parsedFacilities.parkings || parsedFacilities.parking || 0,
+        createdAt: property.createdAt,
+        updatedAt: property.updatedAt
+      }
     })
   } catch (error) {
     handleDatabaseError(error, res)
@@ -352,12 +386,18 @@ export const updateProperty = async (req, res) => {
 
     // Remove userEmail from update data if present
     delete updateData.userEmail
+    if (updateData.price != null) {
+      updateData.price = parseInt(updateData.price)
+    }
+    if (updateData.facilities != null) {
+      updateData.facilities = parseFacilities(updateData.facilities)
+    }
 
     const property = await prisma.residency.update({
       where: { id },
       data: updateData,
       include: {
-        user: {
+        owner: {
           select: {
             name: true,
             email: true,
@@ -370,10 +410,29 @@ export const updateProperty = async (req, res) => {
     // Clear cache
     cache.clear()
 
+    const facilities = parseFacilities(property.facilities)
     res.json({
       success: true,
       message: 'Property updated successfully',
-      data: property
+      data: {
+        id: property.id,
+        title: property.title,
+        description: property.description,
+        price: property.price,
+        address: property.address,
+        city: property.city,
+        country: property.country,
+        image: property.image,
+        facilities,
+        rating: facilities.rating || 4.5,
+        category: facilities.category || 'Property',
+        featured: facilities.featured || false,
+        bedrooms: facilities.bedrooms || facilities.bed || 0,
+        bathrooms: facilities.bathrooms || facilities.bath || 0,
+        parkings: facilities.parkings || facilities.parking || 0,
+        createdAt: property.createdAt,
+        updatedAt: property.updatedAt
+      }
     })
   } catch (error) {
     handleDatabaseError(error, res)
@@ -483,7 +542,7 @@ export const searchProperties = async (req, res) => {
     const properties = await prisma.residency.findMany({
       where,
       include: {
-        user: {
+        owner: {
           select: {
             name: true,
             email: true,
@@ -496,7 +555,28 @@ export const searchProperties = async (req, res) => {
 
     res.json({
       success: true,
-      data: properties,
+      data: properties.map((property) => {
+        const facilities = parseFacilities(property.facilities)
+        return {
+          id: property.id,
+          title: property.title,
+          description: property.description,
+          price: property.price,
+          address: property.address,
+          city: property.city,
+          country: property.country,
+          image: property.image,
+          facilities,
+          rating: facilities.rating || 4.5,
+          category: facilities.category || 'Property',
+          featured: facilities.featured || false,
+          bedrooms: facilities.bedrooms || facilities.bed || 0,
+          bathrooms: facilities.bathrooms || facilities.bath || 0,
+          parkings: facilities.parkings || facilities.parking || 0,
+          createdAt: property.createdAt,
+          updatedAt: property.updatedAt
+        }
+      }),
       total: properties.length
     })
   } catch (error) {

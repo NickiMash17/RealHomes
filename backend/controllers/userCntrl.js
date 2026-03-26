@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+const isValidObjectId = (value) => /^[a-f\d]{24}$/i.test(String(value || ''))
+
 // Get user profile
 export const getUserProfile = async (req, res) => {
   try {
@@ -188,6 +190,15 @@ export const toFav = async (req, res) => {
 
     // Check if already in favorites (compare as strings)
     const isFav = currentFavorites.includes(propertyId)
+
+    // If the id isn't a Mongo ObjectId, don't write it into favResidenciesID (schema expects ObjectId)
+    if (!isValidObjectId(propertyId)) {
+      return res.json({
+        success: true,
+        message: 'Favorite updated (skipped invalid property id)',
+        favResidenciesID: currentFavorites
+      })
+    }
 
     if (isFav) {
       // Remove from favorites
