@@ -122,7 +122,7 @@ const Hero = () => {
       </div>
 
       {/* ── Main Content ──────────────────────────────────────────────── */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 lg:px-12 pt-24 sm:pt-28 pb-28 sm:pb-20">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 lg:px-12 pt-20 sm:pt-28 pb-24 sm:pb-20">
         <div className="grid grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* ── Left Column — Content (col-span-7) ───────────────────── */}
           <motion.div
@@ -133,7 +133,7 @@ const Hero = () => {
           >
             {/* Gold pill badge */}
             <motion.div variants={itemVariants} className="mb-6">
-              <span className="inline-flex items-center bg-gold-600/20 border border-gold-400/40 text-gold-400 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase">
+              <span className="inline-flex items-center bg-gold-600/20 border border-gold-400/40 text-gold-400 px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-bold tracking-widest uppercase max-w-full">
                 PREMIER LUXURY REAL ESTATE
               </span>
             </motion.div>
@@ -141,7 +141,7 @@ const Hero = () => {
             {/* Headline — per-word animation, highlight words get gold gradient */}
             <motion.h1
               key={`title-${currentSlide}`}
-              className="text-4xl sm:text-5xl lg:text-7xl font-display font-black text-white leading-tight"
+              className="text-[34px] leading-[1.08] sm:text-5xl lg:text-7xl font-display font-black text-white"
               variants={itemVariants}
             >
               {heroSlides[currentSlide].title.split(" ").map((word, index) => (
@@ -168,7 +168,7 @@ const Hero = () => {
             {/* Subtitle */}
             <motion.p
               key={`subtitle-${currentSlide}`}
-              className="text-lg text-white/90 font-light mt-4"
+              className="text-base sm:text-lg text-white/90 font-light mt-3 sm:mt-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.35 }}
@@ -179,7 +179,7 @@ const Hero = () => {
             {/* Description */}
             <motion.p
               key={`desc-${currentSlide}`}
-              className="text-base text-white/75 mt-3 leading-relaxed max-w-xl"
+              className="text-sm sm:text-base text-white/75 mt-3 leading-relaxed max-w-xl line-clamp-3 sm:line-clamp-none"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
@@ -189,12 +189,12 @@ const Hero = () => {
 
             {/* CTAs */}
             <motion.div
-              className="mt-8 flex flex-col sm:flex-row gap-4"
+              className="mt-7 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4"
               variants={itemVariants}
             >
               <Link
                 to="/listing"
-                className="bg-gold-600 hover:bg-gold-700 text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-gold transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0"
+                className="bg-gold-600 hover:bg-gold-700 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-gold transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0"
               >
                 <FaSearch className="w-4 h-4 flex-shrink-0" />
                 <span>Explore Properties</span>
@@ -205,7 +205,7 @@ const Hero = () => {
                 href="https://wa.me/27112345678"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="border-2 border-white/40 hover:border-white text-white px-6 py-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-all duration-300 hover:bg-white/5"
+                className="border-2 border-white/40 hover:border-white text-white px-6 py-3.5 sm:py-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-all duration-300 hover:bg-white/5"
               >
                 <FaWhatsapp className="w-5 h-5 flex-shrink-0" />
                 <span>WhatsApp Us</span>
@@ -216,7 +216,7 @@ const Hero = () => {
             <AnimatePresence mode="wait">
               <motion.div
                 key={`stats-bar-${currentSlide}`}
-                className="mt-10 pt-8 border-t border-white/20 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-4"
+                className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-white/20 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
@@ -224,10 +224,10 @@ const Hero = () => {
               >
                 {heroSlides[currentSlide].stats.map((stat) => (
                   <div key={stat.label}>
-                    <div className="text-xl sm:text-2xl font-bold text-gold-400 leading-none">
+                    <div className="text-lg sm:text-2xl font-bold text-gold-400 leading-none">
                       {stat.value}
                     </div>
-                    <div className="text-xs text-white/70 mt-1 leading-tight">
+                    <div className="text-[11px] sm:text-xs text-white/70 mt-1 leading-tight">
                       {stat.label}
                     </div>
                   </div>
