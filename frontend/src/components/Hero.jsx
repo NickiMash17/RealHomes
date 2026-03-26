@@ -86,7 +86,10 @@ const Hero = () => {
 
   /* ── Render ───────────────────────────────────────────────────────── */
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
+    <section
+      className="relative min-h-screen flex items-center overflow-hidden"
+      style={{ minHeight: "100svh" }}
+    >
       {/* ── Background Images ─────────────────────────────────────────── */}
       <div className="absolute inset-0">
         <AnimatePresence mode="wait">
@@ -119,7 +122,7 @@ const Hero = () => {
       </div>
 
       {/* ── Main Content ──────────────────────────────────────────────── */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 lg:px-12 pt-28 pb-20">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 lg:px-12 pt-24 sm:pt-28 pb-28 sm:pb-20">
         <div className="grid grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* ── Left Column — Content (col-span-7) ───────────────────── */}
           <motion.div
@@ -213,7 +216,7 @@ const Hero = () => {
             <AnimatePresence mode="wait">
               <motion.div
                 key={`stats-bar-${currentSlide}`}
-                className="mt-10 pt-8 border-t border-white/20 grid grid-cols-4 gap-4"
+                className="mt-10 pt-8 border-t border-white/20 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-4"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
@@ -292,7 +295,7 @@ const Hero = () => {
       </div>
 
       {/* ── Slide Indicators ──────────────────────────────────────────── */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20">
+      <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20">
         {heroSlides.map((_, index) => (
           <motion.button
             key={index}

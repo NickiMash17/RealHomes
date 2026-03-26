@@ -291,7 +291,7 @@ const Listing = () => {
               </div>
 
               {/* Results Count */}
-              <div className="ml-auto text-sm text-neutral-500">
+              <div className="w-full sm:w-auto sm:ml-auto text-sm text-neutral-500 sm:text-right">
                 <span className="font-bold text-charcoal-900">
                   {filteredAndSortedProperties.length}
                 </span>{" "}
